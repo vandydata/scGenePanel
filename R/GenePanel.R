@@ -24,6 +24,10 @@
 #' @importFrom ggplot2
 #' @importFrom dplyr tally
 #' @importFrom ggpubr textgrob annotate
+#' @importFrom ggforce
+#' @importFrom viridis
+#' @importFrom cowplot
+#' @importFrom tidylog
 
 create_gene_panel <- function(seurat_object,
                               gene,
