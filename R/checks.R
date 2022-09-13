@@ -28,7 +28,7 @@ Is_Seurat <- function(
 
 
 Is_celltype_colname <- function(
-  seurat_object
+  seurat_object, cell_type_colname
 ) {
   meta_col_names <- colnames(x = seurat_object@meta.data)
   if (cell_type_colname %in% meta_col_names == "FALSE") {
@@ -45,12 +45,13 @@ Is_celltype_colname <- function(
 #'
 #' @param seurat_object Seurat object name.
 #' @param cell_type_name cell type name to highlight
+#' @param cell_type_colname The metadata column name for the cell identity annotations
 #' @return returns an error message if cell type name does not exist
 
 
 
 Is_cell_type_name <- function(
-  seurat_object
+  seurat_object, cell_type_name, cell_type_colname
 ) {
   meta <- seurat_object@meta.data
   cell_type_column <- meta[,cell_type_colname]
@@ -69,8 +70,9 @@ Is_cell_type_name <- function(
 #' @return returns an error message if meta_group does not exist
 
 Is_meta_group <- function(
-  seurat_object
+  seurat_object, meta_group
 ) {
+  meta_col_names <- colnames(x = seurat_object@meta.data)
   if (meta_group %in% meta_col_names == "FALSE") {
     stop("Entered 'meta_group' not found in object metadata")
   }
@@ -87,7 +89,7 @@ Is_meta_group <- function(
 
 
 Is_gene <- function(
-  seurat_object
+  seurat_object, gene
 ) {
   gene_names <- rownames(seurat_object)
   if (gene %in% gene_names == "FALSE") {
