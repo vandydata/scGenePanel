@@ -1,10 +1,5 @@
 
 
-
-
-
-
-
 #' scRNAseq multipanel gene expression visual
 #'
 #' This functions exports a multipanel scRNAseq gene expression plots of UMAP, violin plot with usen defined cell type and condition/groups
@@ -15,12 +10,13 @@
 #' @param gene Name of gene to explore gene expression in UMAP and violin plot by condition of interest
 #' @param meta_group The metadata column name that contains the groups to be compared
 #' @param cell_type_name The cell type identity that will be highlighted all plots
-#' @param col.palette color palettes to choose from. Options are "tableu","varibow" or RColorBrewer qualitative variables like "Dark2","Paired","Set1" etc
-#' @param group_order user defined order of the groups to be displayed
+#' @param cell_type_colname The metadata column name for the cell identity annotations
+#' @param col.palette Color palettes to choose from. Options are "tableu","varibow" or RColorBrewer qualitative variables like "Dark2","Paired","Set1" etc
+#' @param group_order User defined order of the groups to be displayed
 #' @param output_dir Output directory where the image will be saved
 #' @return Multipanel plots
 #' @importFrom magrittr %>%
-#' @importFrom Seurat Idemts FeaturePlot
+#' @importFrom Seurat Idents FeaturePlot
 #' @importFrom ggplot2
 #' @importFrom dplyr tally
 #' @importFrom ggpubr textgrob annotate
@@ -30,10 +26,10 @@
 #' @importFrom tidylog
 
 create_gene_panel <- function(seurat_object,
-                              gene,
-                              meta_group,
-                              cell_type_name,
                               cell_type_colname,
+                              cell_type_name,
+                              meta_group,
+                              gene,
                               col.palette,
                               group_order = NULL,
                               output_dir="."){
@@ -41,17 +37,17 @@ create_gene_panel <- function(seurat_object,
   # Check Seurat object
   Is_Seurat(seurat_object = seurat_object)
 
-  # Check if gene included in object
-  Is_gene(seurat_object = seurat_object)
-
-  # Check if 'meta_group' exists
-  Is_meta_group(seurat_object = seurat_object)
+  # Check if 'cell_type_colname' exists
+  Is_celltype_colname(seurat_object = seurat_object, cell_type_colname = cell_type_colname)
 
   # Check if 'cell_type_name' exists
-  Is_cell_type_name(seurat_object = seurat_object)
+  Is_cell_type_name(seurat_object = seurat_object, cell_type_colname = cell_type_colname, cell_type_name = cell_type_name)
 
-  # Check if 'cell_type_colname' exists
-  Is_celltype_colname(seurat_object = seurat_object)
+  # Check if 'meta_group' exists
+  Is_meta_group(seurat_object = seurat_object, meta_group = meta_group)
+
+  # Check if gene included in object
+  Is_gene(seurat_object = seurat_object, gene = gene)
 
   # retrieve group idents to visualize umaps/violinplots by
   Seurat::Idents(seurat_object) <- meta_group
@@ -143,7 +139,7 @@ create_gene_panel <- function(seurat_object,
 
 }
 
-#test with any seurat object
+# test with any seurat object
 # create_gene_panel(seurat_object = data,
 #                   gene = "INS",
 #                   cell_type_name = "Beta",
