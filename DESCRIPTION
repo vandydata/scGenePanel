@@ -18,7 +18,7 @@ Imports:
 	ggplot2 (>= 3.3.6),
 	ggpubr (>= 0.4.0),
 	magrittr (>= 2.0.3),
-	shinybs (>= 0.61.1),
+	shinyBS (>= 0.61.1),
 	shinydashboard (>= 0.7.2),
 	shinythemes (>= 1.2.0),
 	shinyjs (>= 2.1.0),
