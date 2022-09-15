@@ -1,28 +1,29 @@
-Package: GenePanel
+Package: scGenePanel
 Title: An R package for visuals of per gene expression in single cell RNA-sequencing data
 Version: 0.0.0.9000
 Authors@R: c(
-	person("Shristi", "Shrestha", ,"Shristi.Shrestha.2@vanderbilt.edu", role = c("aut", "cre"),
+	person(given = "Shristi", family = "Shrestha", email = "shristi.shrestha.2@vanderbilt.edu", role = c("aut", "cre"),
            comment = c(ORCID = " https://orcid.org/0000-0003-4519-1712")),
-	person("Jean-Philippe","Cartailler", "jp.cartailler@Vanderbilt.edu", role = c("aut", "cre"))
+	person(given = "Jean-Philippe", family = "Cartailler", email = "jp.cartailler@vanderbilt.edu", role = c("aut"))
+	)
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.0
 Description: A function for plotting umaps, violin plots and expression metrics per user selected celltype in single panel.
-Depends: Seurat (>= 4.1.1)
+Depends: 
+    shiny,
+    shinyBS,
+    shinydashboard,
+    shinyjs,
+    shinythemes,
+    shinyWidgets
 Imports:
-	Seurat (>= 4.1.1),
-	dplyr (>= 1.0.9),
-	shiny (>= 1.7.1),
-	ggplot2 (>= 3.3.6),
-	ggpubr (>= 0.4.0),
-	magrittr (>= 2.0.3),
-	shinyBS (>= 0.61.1),
-	shinydashboard (>= 0.7.2),
-	shinythemes (>= 1.2.0),
-	shinyjs (>= 2.1.0),
-	shinyWidgets (>= 0.7.3)
+    Seurat (>= 4.1.1),
+    dplyr (>= 1.0.9),
+    ggpubr (>= 0.4.0.999),
+    magrittr (>= 2.0.3),
+    ggplot2
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3

@@ -24,6 +24,13 @@
 #' @importFrom viridis
 #' @importFrom cowplot
 #' @importFrom tidylog
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' create_gene_panel(seurat_object = obj, cell_type_colname = "orig.ident", cell_type_name = "T cels", meta_group = "Treatment", gene = "IL6" , col.palette = "Dark2")
+#' }
 
 create_gene_panel <- function(seurat_object,
                               cell_type_colname,
