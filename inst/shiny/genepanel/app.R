@@ -3,11 +3,9 @@ library(shiny)
 library(shinydashboard)
 library(shinythemes)
 require(shinyjs)
-library(Seurat)
-library(ggplot2)
 library(shinyBS)
 library(shinyWidgets)
-library(dplyr)
+
 
 # load data----
 data <- readRDS("DATA/data.TK.Rds")
