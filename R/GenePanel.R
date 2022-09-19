@@ -2,16 +2,16 @@
 
 #' scRNAseq multipanel gene expression visual
 #'
-#' This functions exports a multipanel scRNAseq gene expression plots of UMAP, violin plot with usen defined cell type and condition/groups
+#' `create_gene_panel` exports a multipanel scRNAseq gene expression plots of UMAPs clusters highlighted with user defined cell types, violin plot with user defined groups
 #' along with tabular cell counts and ratios per chosen group in one visual
 #'
 #'
-#' @param object A Seurat S4 class object
-#' @param gene Name of gene to explore gene expression in UMAP and violin plot by condition of interest
-#' @param meta_group The metadata column name that contains the groups to be compared
-#' @param cell_type_name The cell type identity that will be highlighted all plots
+#' @param seurat_object A Seurat S4 class object
+#' @param gene Name of gene to explore gene expression in UMAP, violinplot, and cell frequency panel
+#' @param meta_group The metadata column name that contains the groups identity per cell
+#' @param cell_type_name The cell type identity to focus
 #' @param cell_type_colname The metadata column name for the cell identity annotations
-#' @param col.palette Color palettes to choose from. Options are "tableu","varibow" or RColorBrewer qualitative variables like "Dark2","Paired","Set1" etc
+#' @param col.palette Color palettes to choose for violinplot panel. Options are "tableu","varibow" or RColorBrewer qualitative variables like "Dark2","Paired","Set1" etc
 #' @param group_order User defined order of the groups to be displayed
 #' @param output_dir Output directory where the image will be saved
 #' @return Multipanel plots
@@ -33,10 +33,10 @@
 #' }
 
 create_gene_panel <- function(seurat_object,
-                              cell_type_colname,
-                              cell_type_name,
-                              meta_group,
                               gene,
+                              meta_group,
+                              cell_type_name,
+                              cell_type_colname,
                               col.palette,
                               group_order = NULL,
                               output_dir="."){
@@ -73,12 +73,20 @@ create_gene_panel <- function(seurat_object,
     plot1 <- p1.d + ggforce::geom_mark_ellipse(ggplot2::aes(x = p1.d.umap$UMAP_1, y = p1.d.umap$UMAP_2,
                                                    fill = Seurat::Idents(obj_idents),
                                                    filter = Seurat::Idents(obj_idents) == cell_type_name),
-                                               alpha = 0.1)
+                                               alpha = 0.1) + scale_fill_discrete(name = "Cell Type")
     suppressMessages(plot1)
   }
 
-  panels <- lapply(levels_idents, loop_idents)
-  panel_figure <- cowplot::plot_grid(plotlist = panels, ncol = length(levels_idents))
+
+  if(is.null(group_order)){
+    panels <- lapply(levels_idents, loop_idents)
+    panel_figure <- cowplot::plot_grid(plotlist = panels, ncol = length(levels_idents))
+  }else{
+    levels_idents <- levels_idents[order(match(levels_idents, group_order))]
+    panels <- lapply(levels_idents, loop_idents)
+    panel_figure <- cowplot::plot_grid(plotlist = panels, ncol = length(levels_idents))
+    }
+
 
   # Violin plot by meta_group
 
@@ -112,7 +120,10 @@ create_gene_panel <- function(seurat_object,
 
   }else{
 
-    selected_cells_expressed_tally <- selected_cells_expressed@meta.data %>% tidylog::group_by_at(meta_group) %>% dplyr::tally()     # tally cells expressing my.gene
+    selected_cells_expressed_tally <- selected_cells_expressed@meta.data %>%
+      tidylog::group_by_at(meta_group) %>%
+      dplyr::tally()     # tally cells expressing my.gene
+
     # merge DFs
     cc_table <- merge(cell_counts_tally, selected_cells_expressed_tally,
                       by = meta_group,
@@ -121,7 +132,28 @@ create_gene_panel <- function(seurat_object,
 
     cc_table$ratio = cc_table$n_expressing / cc_table$n_cells # ratio
     cc_table[is.na(cc_table)] <- 0
-    t1 <- ggpubr::ggtexttable(cc_table, rows = NULL)
+
+    #add quantiles for number of genes per cell per meta_group
+    obj_meta <- seurat_object@meta.data
+    meta_subset <- obj_meta[,c( cell_type_colname, meta_group)]
+    names(meta_subset) <- c("celltype","group")
+    meta_subset <- meta_subset %>% filter(celltype == cell_type_name)
+
+    exp_orig <- Seurat::GetAssayData(selected_cluster_cells[["RNA"]])[gene, ]
+    exp_orig <- as.data.frame(exp_orig)
+
+    reorder_exp <- exp_orig[match(rownames(meta_subset), rownames(exp_orig)),]
+
+    meta_subset_final <- meta_subset %>% mutate(gene_exp = reorder_exp)
+
+    result <- do.call("cbind", tapply(meta_subset_final$gene_exp, meta_subset_final$group,quantile,probs=seq(0,1,0.25)))
+    result <- t(result)[,2:5]
+
+
+    combined_cc_table <- cbind(cc_table, result)
+    names(combined_cc_table) <- c(meta_group,"n_cells", "n_expressing(>0.25)", "ratio", "25%(quantile)", "50%(quantile)", "75%(quantile)", "100%(quantile)" )
+
+    t1 <- ggpubr::ggtexttable(combined_cc_table, rows = NULL)
 
     #filename <- paste0(output_dir, "genePanel__", my.gene, '_', cell_type_clean, '.csv')
     #write.csv(cc_table, file=filename)
@@ -146,14 +178,6 @@ create_gene_panel <- function(seurat_object,
 
 }
 
-# test with any seurat object
-# create_gene_panel(seurat_object = data,
-#                   gene = "INS",
-#                   cell_type_name = "Beta",
-#                   meta_group = "Age",
-#                   cell_type_colname = "CellTypes",
-#                   col.palette = "Dark2",
-#                   output_dir = "/Users/shristishrestha/Documents/scViz/results/")
 
 
 
