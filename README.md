@@ -1,16 +1,9 @@
 # scGenePanel
 
-scGenePanel is a functions that creates a multipanel visualization for various gene expression metrics on user defined gene and cell group using single-cell data using R.
+scGenePanel creates a multipanel visualization for various gene expression metrics on user defined gene, sample group and cell types using single-cell RNAseq data.
 
 
 
-## Installation
-
-You can install the package using the devtools install_github function, example below:
-
-```
-devtools::install_github(repo = "vandydata/scGenePanel")
-```
 
 
 
