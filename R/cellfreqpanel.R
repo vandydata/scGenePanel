@@ -1,9 +1,9 @@
 
 
-#' scRNAseq multipanel gene expression visual by sample groups
+#' scRNAseq multipanel gene expression visual
 #'
-#' `create_gene_panel` exports a multipanel scRNAseq gene expression plots of UMAPs clusters highlighted with user defined cell types and split view on user defined sample groups, violin plot with user defined sample groups
-#' along with tabular cell counts, ratios and expression values per sample group, in one visual
+#' This functions exports a multipanel scRNAseq gene expression plots of UMAP, violin plot with usen defined cell type and condition/groups
+#' along with tabular cell counts and ratios per chosen group in one visual
 #'
 #'
 #' @param object A Seurat or SingleCellExperiment
@@ -12,8 +12,6 @@
 #' @param cell_type_name The cell type identity to highlight
 #' @param cell_type_colname The metadata column name that contains the cell identity annotations
 #' @param col.palette Color palettes to choose for violinplot panel. Options are "tableu","varibow" or RColorBrewer qualitative variables like "Dark2","Paired","Set1" etc
-#' @param group_order User defined order of the groups to be displayed
-#' @param output_dir Output directory where the image will be saved
 #' @return Multipanel plots
 #' @importFrom stats quantile
 #' @importFrom dplyr filter mutate
@@ -21,15 +19,12 @@
 #' @importFrom methods as
 #' @export
 
-
-create_gene_panel <- function(object,
-                              gene,
-                              meta_group,
-                              cell_type_name,
+cellfreq_panel <- function(object,
                               cell_type_colname,
-                              col.palette,
-                              group_order = NULL,
-                              output_dir="."){
+                              cell_type_name,
+                              meta_group,
+                              gene
+                           ){
 
   # Convert to Seurat object
   seurat_obj <- suppressMessages(make_seurat(object = object))
@@ -45,44 +40,6 @@ create_gene_panel <- function(object,
 
   # Check if gene included in object
   Is_gene(seurat_obj, gene = gene)
-
-  # Retrieve group idents to visualize umaps/violinplots by
-  Seurat::Idents(seurat_obj) <- meta_group
-  levels_idents<-unique(seurat_obj[[meta_group]][,1])
-  levels_idents<-as.character(levels_idents)
-
-  # Loop through group idents for respective umaps
-  loop_idents <- function(x) {
-    obj_idents <- subset(seurat_obj, idents = x)
-    p1.d <- suppressMessages(Seurat::FeaturePlot(obj_idents, features = gene,  pt.size=1) +
-                               viridis::scale_color_viridis(direction = -1) +
-                               ggplot2::labs(title = paste(x,"_subset", sep="")))
-    p1.d[[1]]$layers[[1]]$aes_params$alpha = .5
-    p1.d.umap <- data.frame(obj_idents@reductions$umap@cell.embeddings)
-    Seurat::Idents(obj_idents) <- cell_type_colname
-    plot1 <- p1.d + ggforce::geom_mark_ellipse(ggplot2::aes(x = p1.d.umap$UMAP_1, y = p1.d.umap$UMAP_2,
-                                                   fill = Seurat::Idents(obj_idents),
-                                                   filter = Seurat::Idents(obj_idents) == cell_type_name),
-                                               alpha = 0.1) + ggplot2::scale_fill_discrete(name = "Cell Type")
-    suppressMessages(plot1)
-  }
-
-
-  if (is.null(group_order)){
-    panels <- lapply(levels_idents, loop_idents)
-    panel_figure <- cowplot::plot_grid(plotlist = panels, ncol = length(levels_idents))
-  } else {
-    levels_idents <- levels_idents[order(match(levels_idents, group_order))]
-    panels <- lapply(levels_idents, loop_idents)
-    panel_figure <- cowplot::plot_grid(plotlist = panels, ncol = length(levels_idents))
-    }
-
-
-  # Violin plot by meta_group
-
-  select_col <-  discrete_col_palette(num_colors = length(levels_idents), palette = col.palette)
-  plot2 <- Seurat::VlnPlot(object = seurat_obj, features = gene,group.by = cell_type_colname, split.by = meta_group, cols = select_col, pt.size=-1)
-
 
   # Table of cell counts/expression ratios
   Seurat::Idents(seurat_obj) <- cell_type_colname
@@ -111,7 +68,7 @@ create_gene_panel <- function(object,
       tidylog::group_by_at(meta_group) %>%
       dplyr::tally()     # tally cells expressing the gene
 
-   # Merge cell frequency and expression tally
+    # Merge cell frequency and expression tally
     cc_table <- merge(cell_counts_tally, selected_cells_expressed_tally,
                       by = meta_group,
                       suffixes = c("_cells", "_expressing"),
@@ -119,8 +76,9 @@ create_gene_panel <- function(object,
 
     cc_table$ratio = cc_table$n_expressing / cc_table$n_cells # ratio
     cc_table[is.na(cc_table)] <- 0
+    #t1 <- ggpubr::ggtexttable(cc_table, rows = NULL)
 
-   # Add quantiles for gene expression per meta_group
+    # Add quantiles for gene expression per meta_group
     celltype <- NULL # need this to remove “no visible binding” note, peculiarity of using dplyr
     obj_meta <- seurat_obj@meta.data
     meta_subset <- obj_meta[,c( cell_type_colname, meta_group)]
@@ -142,22 +100,16 @@ create_gene_panel <- function(object,
     names(combined_cc_table) <- c(meta_group,"n_cells", "n_expressing(>0.25)", "ratio", "25%(quantile)", "50%(quantile)", "75%(quantile)", "100%(quantile)" )
 
     t1 <- ggpubr::ggtexttable(combined_cc_table, rows = NULL)
+    print(t1)
 
-    # Combine figures
-    figure  <- suppressWarnings(ggpubr::ggarrange(panel_figure, plot2, t1, heights = c(1.8, 3, 1), ncol = 1, nrow = 3))
-    figure <- ggpubr::annotate_figure(figure,
-                                      top = ggpubr::text_grob(paste0("Gene: ", gene), face = "bold", size = 18),
-                                      bottom = ggpubr::text_grob("Generated by genemap.R",
-                                                         hjust = 1, x = 1, face = "italic", size = 10)
-    )
-    figure
 
-    # Export figure
-    filename <- paste0(output_dir, "genePanel__", gene, '_', cell_type_name, '.png')
-    ggplot2::ggsave(filename, width = 12, height = 5, scale = 2, dpi=300, units="in")
+
 
 
   }
+
+  #return(not_expressed_features)
+
 
 }
 
