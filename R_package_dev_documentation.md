@@ -2,7 +2,7 @@
 
 
 
-Go to for R package dev best practice : https://r-pkgs.org/ by [Hadley Wickham](http://hadley.nz/) and [Jenny Bryan](http://jennybryan.org/)
+R package dev best practice : https://r-pkgs.org/ by [Hadley Wickham](http://hadley.nz/) and [Jenny Bryan](http://jennybryan.org/)
 
 
 
@@ -36,9 +36,15 @@ if (interactive()) {
 }
 ```
 
-- devtools::dev_sitrep() :If this reveals that certain tools or packages are missing or out-of-date, you are encouraged to update them.
-- devtools::build() to make bundled package "source tarballs" for easy export between platforms
+- `devtools::dev_sitrep()` :If this reveals that certain tools or packages are missing or out-of-date, you are encouraged to update them.
+
+- `devtools::build()` to make bundled package "source tarballs" for easy export between platforms
+
 - to exclude a specific file or directory is to use `usethis::use_build_ignore("notes")`. this is quivalent to adding it in `.Rbuildignore`
+
+- After adding roxygen2 comments to your `.R` files`devtools::document()`  runs `roxygen2::roxygenise()` which generates a doc in man folder
+
+  
 
 
 

@@ -1,22 +1,13 @@
 
-library(shiny)
 library(shinydashboard)
-library(shinythemes)
-require(shinyjs)
-library(shinyBS)
+library(shinyjs)
 library(shinyWidgets)
+library(scGenePanel)
 
-
-# load data----
+# Load data----
 data <- readRDS("DATA/data.TK.Rds")
 
-# required R functions
-source("../../../R/checks.R")
-source("../../../R/colorpanels.R")
-source("../../../R/genepanel.R")
-
-
-#1.Header----
+# 1.Header----
 header <- dashboardHeader(titleWidth = "100%",
                           # Set height of dashboardHeader
                           tags$li(class = "dropdown",
@@ -25,12 +16,12 @@ header <- dashboardHeader(titleWidth = "100%",
                           )
 )
 
-# webpage links to the images
+# Webpage links to the images
 anchor <- tags$header(
   tags$a(href='https://cds.vanderbilt.edu',
          tags$img(src='CDS-logo-600x85.png', width='200',style="float:left; margin:0 70px 10px 20px; margin-top:15px;" )),
   #style = "padding-top:100px; padding-bottom:100px;"),
-  'Genemap Visual for Single Cell RNA-seq Data',
+  'scGenemap : Visuals for Single Cell RNA-seq Data',
   style = "color: #FFFFFF;
   float:center;
   /*font-family: Avenir Light;*/
@@ -44,11 +35,11 @@ header$children[[2]]$children <- tags$div(
   anchor,
   class = 'name')
 
-#2.User Interface----
+# 2.User Interface----
 
 #*  Dashboard header----
 ui<-dashboardPage( header,
-                   title = "Genemap visual for single cell RNAseq data",
+                   title = "scGenemap : Visuals for Single Cell RNA-seq Data",
                    #skin = "green",
 
                   #* Dashboard sidebar ----
@@ -120,14 +111,14 @@ ui<-dashboardPage( header,
                                             '))),
 
 
-                    #mainPanel(tableOutput("table1")), # gene description table
+                    # mainPanel(tableOutput("table1")), # gene description table
 
                     tabItems(
                       tabItem(tabName = "home",
                               fluidPage(
                                 verticalLayout(tags$h2("Welcome!"),
                                                hr(),
-                                               tags$h4("This app provides interactive access to our single cell RNA-Seq data that is reported in:")
+                                               tags$h4("This app provides interactive access to single cell RNA-Seq data that is reported in ...")
                                                #                                      tags$div(
                                                #                                        HTML("<p style = 'font-size:20px;'><u><b>Combinatorial transcription factor profiles predict mature and functional human islet α and β cells.</u></b><br></p> Shristi Shrestha*, Diane C. Saunders*, John T. Walker*, Joan Camunas-Soler, Xiao-Qing Dai, Rachana Haliyur, Radhika Aramandla, Greg Poffenberger, Nripesh Prasad, Rita Bottino, Roland Stein, Jean-Philippe Cartailler, Stephen C. J. Parker, Patrick E. MacDonald, Shawn E. Levy, Alvin C. Powers, Marcela Brissova, <b>JCI Insight. 2021 Sep 22 doi: 10.1172/jci.insight.151621 </b><br> *first co-authors <blockquote style='font-size:15px'> Abstract <br> Islet-enriched transcription factors (TFs) exert broad control over cellular processes in pancreatic α and β cells and changes in their expression are associated with developmental state and diabetes. However, the implications of heterogeneity in TF expression across islet cell populations are not well understood. To define this TF heterogeneity and its consequences for cellular function, we profiled >40,000 cells from normal human islets by scRNA-seq and stratified α and β cells based on combinatorial TF expression. Subpopulations of islet cells co-expressing ARX/MAFB (α cells) and MAFA/MAFB (β cells) exhibited greater expression of key genes related to glucose sensing and hormone secretion relative to subpopulations expressing only one or neither TF. Moreover, all subpopulations were identified in native pancreatic tissue from multiple donors. By Patch-seq, MAFA/MAFB co-expressing β cells showed enhanced electrophysiological activity. Thus, these results indicate combinatorial TF expression in islet α and β cells predicts highly functional, mature subpopulations.</blockquote>
                                                # 	                                                      "))
@@ -136,7 +127,7 @@ ui<-dashboardPage( header,
 
                       ),
 
-                    #For UMAP plot tab
+                    # For UMAP plot tab
                     tabItem(tabName = "umap",
                             fluidPage(
                               verticalLayout(tableOutput("umap"),
@@ -146,7 +137,7 @@ ui<-dashboardPage( header,
                             )
                     ),
 
-                    #For violinplot tab
+                    # For violinplot tab
                     tabItem(tabName = "vlnplot",
                             fluidPage(
                               verticalLayout(tableOutput("vlnplot"),
@@ -168,18 +159,18 @@ ui<-dashboardPage( header,
                                 )
                               ),
 
-                      # Cell frequency
+                      # Cell frequency tab
                       tabItem(tabName = "cellfreq",
-                              fluidPage(
-                                verticalLayout(plotOutput("plot3"),
-                                )
+                              fluidRow(
+                                column(width = 6, align = "left",
+                                       plotOutput("plot3"))
                               )
                       )
 
                     )))
 
 
-#3.Server
+# 3.Server
 server <- function(input, output, session) {
 
   observe({
@@ -213,13 +204,13 @@ server <- function(input, output, session) {
     req(input$cell_type_colname)
     req(input$color)
 
-    umap_panel(seurat_object = data,
+    umap_panel(object = data,
                       gene = input$Gene,
-                      cell_type_name = input$cell_type_name,
                       meta_group = input$meta_group,
+                      cell_type_name = input$cell_type_name,
                       cell_type_colname = input$cell_type_colname,
-                      col.palette = input$color,
-                      output_dir = getwd())
+                      col.palette = input$color
+               )
 
   }, height = 700, width = 600)
 
@@ -232,13 +223,13 @@ server <- function(input, output, session) {
     req(input$cell_type_colname)
     req(input$color)
 
-    violin_panel(seurat_object = data,
+    violin_panel(object = data,
                gene = input$Gene,
                cell_type_name = input$cell_type_name,
                meta_group = input$meta_group,
                cell_type_colname = input$cell_type_colname,
-               col.palette = input$color,
-               output_dir = getwd())
+               col.palette = input$color
+               )
 
   }, height = 600, width = 1200)
 
@@ -250,12 +241,12 @@ server <- function(input, output, session) {
     req(input$cell_type_colname)
     req(input$color)
 
-    cellfreq_panel(seurat_object = data,
+    cellfreq_panel(object = data,
                  gene = input$Gene,
                  cell_type_name = input$cell_type_name,
                  meta_group = input$meta_group,
-                 cell_type_colname = input$cell_type_colname,
-                 output_dir = getwd())
+                 cell_type_colname = input$cell_type_colname
+                 )
 
   }, height = 1000, width = 1200)
 

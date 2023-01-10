@@ -4,10 +4,10 @@
 \alias{Is_cell_type_name}
 \title{Check if cell type name exists}
 \usage{
-Is_cell_type_name(seurat_object, cell_type_name, cell_type_colname)
+Is_cell_type_name(object, cell_type_name, cell_type_colname)
 }
 \arguments{
-\item{seurat_object}{Seurat object name.}
+\item{object}{A Seurat or SingleCellExperiment object}
 
 \item{cell_type_name}{cell type name to highlight}
 

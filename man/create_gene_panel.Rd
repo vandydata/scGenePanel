@@ -2,45 +2,40 @@
 % Please edit documentation in R/genepanel.R
 \name{create_gene_panel}
 \alias{create_gene_panel}
-\title{scRNAseq multipanel gene expression visual}
+\title{scRNAseq multipanel gene expression visual by sample groups}
 \usage{
 create_gene_panel(
-  seurat_object,
-  cell_type_colname,
-  cell_type_name,
-  meta_group,
+  object,
   gene,
+  meta_group,
+  cell_type_name,
+  cell_type_colname,
   col.palette,
   group_order = NULL,
   output_dir = "."
 )
 }
 \arguments{
-\item{cell_type_colname}{The metadata column name for the cell identity annotations}
+\item{object}{A Seurat or SingleCellExperiment}
 
-\item{cell_type_name}{The cell type identity that will be highlighted all plots}
+\item{gene}{Name of gene to explore gene expression in UMAP, violin plot, and cell frequency table}
 
-\item{meta_group}{The metadata column name that contains the groups to be compared}
+\item{meta_group}{The metadata column name that contains the groups identity per cell}
 
-\item{gene}{Name of gene to explore gene expression in UMAP and violin plot by condition of interest}
+\item{cell_type_name}{The cell type identity to highlight}
 
-\item{col.palette}{Color palettes to choose from. Options are "tableu","varibow" or RColorBrewer qualitative variables like "Dark2","Paired","Set1" etc}
+\item{cell_type_colname}{The metadata column name that contains the cell identity annotations}
+
+\item{col.palette}{Color palettes to choose for violinplot panel. Options are "tableu","varibow" or RColorBrewer qualitative variables like "Dark2","Paired","Set1" etc}
 
 \item{group_order}{User defined order of the groups to be displayed}
 
 \item{output_dir}{Output directory where the image will be saved}
-
-\item{object}{A Seurat S4 class object}
 }
 \value{
 Multipanel plots
 }
 \description{
-This functions exports a multipanel scRNAseq gene expression plots of UMAP, violin plot with usen defined cell type and condition/groups
-along with tabular cell counts and ratios per chosen group in one visual
-}
-\examples{
-\dontrun{
-create_gene_panel(seurat_object = obj, cell_type_colname = "orig.ident", cell_type_name = "T cels", meta_group = "Treatment", gene = "IL6" , col.palette = "Dark2")
-}
+\code{create_gene_panel} exports a multipanel scRNAseq gene expression plots of UMAPs clusters highlighted with user defined cell types and split view on user defined sample groups, violin plot with user defined sample groups
+along with tabular cell counts, ratios and expression values per sample group, in one visual
 }

@@ -4,10 +4,10 @@
 \alias{Is_meta_group}
 \title{Check meta_group}
 \usage{
-Is_meta_group(seurat_object, meta_group)
+Is_meta_group(object, meta_group)
 }
 \arguments{
-\item{seurat_object}{Seurat object name.}
+\item{object}{A Seurat or SingleCellExperiment object}
 
 \item{meta_group}{name of group to split visuals by}
 }

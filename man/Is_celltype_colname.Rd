@@ -4,10 +4,10 @@
 \alias{Is_celltype_colname}
 \title{Check if cell type metadata exists}
 \usage{
-Is_celltype_colname(seurat_object, cell_type_colname)
+Is_celltype_colname(object, cell_type_colname)
 }
 \arguments{
-\item{seurat_object}{Seurat object name.}
+\item{object}{A Seurat or SingleCellExperiment object}
 
 \item{cell_type_colname}{cell type column name in metadata}
 }

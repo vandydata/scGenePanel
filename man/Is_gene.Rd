@@ -4,10 +4,10 @@
 \alias{Is_gene}
 \title{Check gene exists}
 \usage{
-Is_gene(seurat_object, gene)
+Is_gene(object, gene)
 }
 \arguments{
-\item{seurat_object}{Seurat object name.}
+\item{object}{A Seurat or SingleCellExperiment object}
 
 \item{gene}{name of gene}
 }
