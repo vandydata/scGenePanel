@@ -23,7 +23,8 @@ cellfreq_panel <- function(object,
                               cell_type_colname,
                               cell_type_name,
                               meta_group,
-                              gene
+                              gene,
+                              col.palette
                            ){
 
   # Convert to Seurat object

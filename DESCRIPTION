@@ -23,14 +23,14 @@ Imports:
     ggforce,
     RColorBrewer,
     ggthemes,
-    scrattch,
     shiny,
     methods,
     reader,
     SingleCellExperiment,
     SummarizedExperiment,
     shinydashboard,
-    shinyjs
+    shinyjs,
+    scrattch
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
