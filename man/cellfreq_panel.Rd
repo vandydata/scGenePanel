@@ -4,7 +4,14 @@
 \alias{cellfreq_panel}
 \title{scRNAseq multipanel gene expression visual}
 \usage{
-cellfreq_panel(object, cell_type_colname, cell_type_name, meta_group, gene)
+cellfreq_panel(
+  object,
+  cell_type_colname,
+  cell_type_name,
+  meta_group,
+  gene,
+  col.palette
+)
 }
 \arguments{
 \item{object}{A Seurat or SingleCellExperiment}
