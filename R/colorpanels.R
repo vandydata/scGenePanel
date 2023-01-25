@@ -2,7 +2,7 @@
 #' Discrete color paletters from multiple packages (varibow,Rcolorbrewer,ggtheme)
 #' @param num_colors Number of colors to be generated.
 #' @param hex_cols hex code of the colors to be selected for violin plot
-#' @param palette Options are "tableu","varibow" or RColorBrewer qualitative variables like "Dark2","Paired","Set1" etc
+#' @param palette Options are "tableu", or RColorBrewer qualitative variables like "Dark2","Paired","Set1" etc
 #' if empty, the function will use based on the entered n.
 #' @return A color palette for plotting violin plot
 
@@ -17,28 +17,30 @@ discrete_col_palette <- function(
 
   pal <- ggthemes::tableau_color_pal("Tableau 20")
 
+  # only qualitative palettes suitable for categorical data from Rcolorbrewer
+  Dark2 <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(num_colors, "Set1"))
+  Paired <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(num_colors, 'Paired'))
+  Set1 <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(num_colors, 'Set1'))
+  Set2 <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(num_colors, 'Set2'))
+  Set3 <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(num_colors, 'Set3'))
+  Pastel1 <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(num_colors, 'Pastel1'))
+  Pastel2 <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(num_colors, 'Pastel2'))
+  Paired <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(num_colors, 'Paired'))
+  Accent <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(num_colors, 'Accent'))
+
   col_list <- list(
     tableau = pal(attr(pal, "max_n")),
-    varibow = scrattch::varibow(n_colors = num_colors),
-    # only qualitative palettes suitable for categorical data from Rcolorbrewer
-    Dark2 = RColorBrewer::brewer.pal(num_colors, 'Dark2'),
-    Paired = RColorBrewer::brewer.pal(num_colors, 'Paired'),
-    Set1 = RColorBrewer::brewer.pal(num_colors, 'Set1'),
-    Set2 = RColorBrewer::brewer.pal(num_colors, 'Set2'),
-    Set3 = RColorBrewer::brewer.pal(num_colors, 'Set3'),
-    Pastel1 = RColorBrewer::brewer.pal(num_colors, 'Pastel1'),
-    Pastel2 = RColorBrewer::brewer.pal(num_colors, 'Pastel2'),
-    Paired = RColorBrewer::brewer.pal(num_colors, 'Paired'),
-    Accent = RColorBrewer::brewer.pal(num_colors, 'Accent')
-  )
+    Dark2 = Dark2(num_colors),
+    Paired = Paired(num_colors),
+    Set1 = Set1(num_colors),
+    Set2 = Set2(num_colors),
+    Set3 = Set3(num_colors),
+    Pastel1 = Pastel1(num_colors),
+    Pastel2 = Pastel2(num_colors),
+    Paired = Paired(num_colors),
+    Accent = Accent(num_colors)
 
-  if (is.null(x = palette) && is.null(x = hex_cols)) {
-    if (num_colors <= 20) {
-      palette <- "tableu"
-    } else {
-      palette <- "varibow"
-    }
-  }
+  )
 
   selected_palette <- col_list[[palette]]
 
