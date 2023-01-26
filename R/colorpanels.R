@@ -17,26 +17,16 @@ discrete_col_palette <- function(
 
   pal <- ggthemes::tableau_color_pal("Tableau 20")
 
-  # only qualitative palettes suitable for categorical data from Rcolorbrewer
-  Dark2 <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(num_colors, "Dark2"))
-  Paired <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(num_colors, 'Paired'))
-  Set1 <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(num_colors, 'Set1'))
-  Set2 <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(num_colors, 'Set2'))
-  Set3 <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(num_colors, 'Set3'))
-  Pastel1 <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(num_colors, 'Pastel1'))
-  Pastel2 <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(num_colors, 'Pastel2'))
-  Accent <- grDevices::colorRampPalette(RColorBrewer::brewer.pal(num_colors, 'Accent'))
-
   col_list <- list(
     tableau = pal(attr(pal, "max_n")),
-    Dark2 = Dark2(num_colors),
-    Paired = Paired(num_colors),
-    Set1 = Set1(num_colors),
-    Set2 = Set2(num_colors),
-    Set3 = Set3(num_colors),
-    Pastel1 = Pastel1(num_colors),
-    Pastel2 = Pastel2(num_colors),
-    Accent = Accent(num_colors)
+    Dark2 = grDevices::colorRampPalette(RColorBrewer::brewer.pal(8, "Dark2"))(num_colors),
+    Paired = grDevices::colorRampPalette(RColorBrewer::brewer.pal(12, 'Paired'))(num_colors),
+    Set1 = grDevices::colorRampPalette(RColorBrewer::brewer.pal(9, 'Set1'))(num_colors),
+    Set2 = grDevices::colorRampPalette(RColorBrewer::brewer.pal(8, 'Set2'))(num_colors),
+    Set3 = grDevices::colorRampPalette(RColorBrewer::brewer.pal(12, 'Set3'))(num_colors),
+    Pastel1 = grDevices::colorRampPalette(RColorBrewer::brewer.pal(9, 'Pastel1'))(num_colors),
+    Pastel2 = grDevices::colorRampPalette(RColorBrewer::brewer.pal(8, 'Pastel2'))(num_colors),
+    Accent = grDevices::colorRampPalette(RColorBrewer::brewer.pal(8, 'Accent'))(num_colors)
 
   )
 

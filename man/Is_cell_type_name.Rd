@@ -9,9 +9,9 @@ Is_cell_type_name(object, cell_type_name, cell_type_colname)
 \arguments{
 \item{object}{A Seurat or SingleCellExperiment object}
 
-\item{cell_type_name}{cell type name to highlight}
+\item{cell_type_name}{The cell type identity to highlight in UMAP}
 
-\item{cell_type_colname}{The metadata column name for the cell identity annotations}
+\item{cell_type_colname}{The metadata column name that contains the cell identity annotations}
 }
 \value{
 returns an error message if cell type name does not exist

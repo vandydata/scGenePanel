@@ -20,7 +20,7 @@ cellfreq_panel(
 
 \item{cell_type_name}{The cell type identity to highlight}
 
-\item{meta_group}{The metadata column name that contains the groups identity per cell}
+\item{meta_group}{The metadata column name of the variable to split the UMAP, violinplot and cell frequency table by. for example, to split by disease condition}
 
 \item{gene}{Name of gene to explore gene expression in UMAP, violin plot, and cell frequency table}
 

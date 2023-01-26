@@ -18,13 +18,13 @@ umap_panel(
 
 \item{cell_type_colname}{The metadata column name that contains the cell identity annotations}
 
-\item{cell_type_name}{The cell type identity to highlight}
+\item{cell_type_name}{The cell type identity to highlight in UMAP}
 
-\item{meta_group}{The metadata column name that contains the groups identity per cell}
+\item{meta_group}{The metadata column name of the variable to split the UMAP, violinplot and cell frequency table by. for example, to split by disease condition}
 
 \item{gene}{Name of gene to explore gene expression in UMAP, violin plot, and cell frequency table}
 
-\item{col.palette}{Color palettes to choose for violinplot panel. Options are "tableu","varibow" or RColorBrewer qualitative variables like "Dark2","Paired","Set1" etc}
+\item{col.palette}{Color palettes to choose for violinplot panel. Options are "tableu" or RColorBrewer qualitative variables like "Dark2","Paired","Set1","Set2", "Set3", "Accent" etc.}
 }
 \value{
 Multipanel plots
