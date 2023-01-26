@@ -8,7 +8,7 @@
 #'
 #' @param object A Seurat or SingleCellExperiment
 #' @param gene Name of gene to explore gene expression in UMAP, violin plot, and cell frequency table
-#' @param meta_group The metadata column name that contains the groups identity per cell
+#' @param meta_group The metadata column name of the variable to split the UMAP, violinplot and cell frequency table by. for example, to split by disease condition
 #' @param cell_type_name The cell type identity to highlight
 #' @param cell_type_colname The metadata column name that contains the cell identity annotations
 #' @param col.palette Color palettes to choose for violinplot panel. Options are "tableu","varibow" or RColorBrewer qualitative variables like "Dark2","Paired","Set1" etc

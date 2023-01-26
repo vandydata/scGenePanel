@@ -53,7 +53,7 @@ make_seurat <- function(object) {
 #' Check to see if cell type metadata column name exist in the seurat object, if not returns an error
 #'
 #' @param object A Seurat or SingleCellExperiment object
-#' @param cell_type_colname cell type column name in metadata
+#' @param cell_type_colname The metadata column name that contains the cell identity annotations
 #' @return returns an error message if cell_type_colname does not exist
 
 
@@ -76,8 +76,8 @@ Is_celltype_colname <- function(
 #' Check to see if cell type  name exist in the seurat object, if not returns an error
 #'
 #' @param object A Seurat or SingleCellExperiment object
-#' @param cell_type_name cell type name to highlight
-#' @param cell_type_colname The metadata column name for the cell identity annotations
+#' @param cell_type_name The cell type identity to highlight in UMAP
+#' @param cell_type_colname The metadata column name that contains the cell identity annotations
 #' @return returns an error message if cell type name does not exist
 
 
@@ -99,7 +99,7 @@ Is_cell_type_name <- function(
 #' Check if 'meta_group' exists
 #'
 #' @param object A Seurat or SingleCellExperiment object
-#' @param meta_group name of group to split visuals by
+#' @param meta_group The metadata column name of the variable to split the UMAP, violinplot and cell frequency table by. for example, to split by disease condition
 #' @return returns an error message if meta_group does not exist
 
 Is_meta_group <- function(
