@@ -2,17 +2,17 @@
 
 #' scRNAseq multipanel gene expression visual by sample groups
 #'
-#' `create_gene_panel` exports a multipanel scRNAseq gene expression plots of UMAPs clusters highlighted with user defined cell types and split view on user defined sample groups, violin plot with user defined sample groups
+#' `create_gene_panel` exports a multipanel scRNAseq gene expression plots of UMAP clusters highlighted with user defined cell types and split view on user defined sample groups, violin plot with user defined sample groups
 #' along with tabular cell counts, ratios and expression values per sample group, in one visual
 #'
 #'
 #' @param object A Seurat or SingleCellExperiment
 #' @param gene Name of gene to explore gene expression in UMAP, violin plot, and cell frequency table
-#' @param meta_group The metadata column name that contains the groups identity per cell
-#' @param cell_type_name The cell type identity to highlight
+#' @param meta_group The metadata column name of the variable to split the UMAP, violinplot and cell frequency table by. for example, to split by disease condition
+#' @param cell_type_name The cell type identity to highlight in UMAP
 #' @param cell_type_colname The metadata column name that contains the cell identity annotations
-#' @param col.palette Color palettes to choose for violinplot panel. Options are "tableu","varibow" or RColorBrewer qualitative variables like "Dark2","Paired","Set1" etc
-#' @param group_order User defined order of the groups to be displayed
+#' @param col.palette Color palettes to choose for violinplot panel. Options are "tableu" or RColorBrewer qualitative variables like "Dark2","Paired","Set1","Set2", "Set3", "Accent" etc.
+#' @param group_order User defined order of the meta_groups to be displayed
 #' @param output_dir Output directory where the image will be saved
 #' @return Multipanel plots
 #' @importFrom stats quantile
