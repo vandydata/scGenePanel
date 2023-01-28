@@ -48,8 +48,8 @@ create_gene_panel <- function(object,
 
   # Retrieve group idents to visualize umaps/violinplots by
   Seurat::Idents(seurat_obj) <- meta_group
-  levels_idents<-unique(seurat_obj[[meta_group]][,1])
-  levels_idents<-as.character(levels_idents)
+  levels_idents <- unique(seurat_obj[[meta_group]][,1])
+  levels_idents <- as.character(levels_idents)
 
   # Loop through group idents for respective umaps
   loop_idents <- function(x) {
