@@ -16,7 +16,7 @@ make_seurat <- function(object) {
 
     } else if (is(object,"SingleCellExperiment")) {
       # Check if the count assay exists
-      if(dim(SummarizedExperiment::assay(object, "counts"))[1] == 0 || dim(SummarizedExperiment::assay(object,"counts"))[2] == 0){
+      if(dim(SingleCellExperiment::counts(object))[1] == 0 || dim(SingleCellExperiment::counts(object))[2] == 0){
         stop(paste0(
           "counts assay is empty",
         ))
@@ -27,7 +27,7 @@ make_seurat <- function(object) {
 
     # Add normalized counts if it doesn't exist
     tryCatch({
-      if("logcounts" %in% SummarizedExperiment::assayNames(object)){
+      if("logcounts" %in% SingleCellExperiment::logcounts(object)){
         converted_obj <- Seurat::as.Seurat(object, counts = "counts", data = "logcounts")
       }
     }, error = function(e) {
@@ -37,7 +37,8 @@ make_seurat <- function(object) {
     })
 
     # Add a compatible assay name "RNA"
-    converted_obj <- suppressWarnings(RenameAssays(object = converted_obj, originalexp = 'RNA'))
+    #converted_obj <- suppressWarnings(RenameAssays(object = converted_obj, originalexp = 'RNA')) #errors out
+    converted_obj@assays$RNA <- converted_obj@assays$originalexp
 
     return(converted_obj)
 
