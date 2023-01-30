@@ -13,7 +13,7 @@ RoxygenNote: 7.2.1
 Description: A function for plotting umaps, violin plots and expression metrics per user selected celltype in single panel.
 Imports:
     Seurat (>= 4.1.1),
-    dplyr (>= 1.0.9),
+    dplyr,
     ggpubr (>= 0.4.0.999),
     magrittr (>= 2.0.3),
     viridis,
@@ -27,7 +27,6 @@ Imports:
     methods,
     reader,
     SingleCellExperiment,
-    SummarizedExperiment,
     shinydashboard,
     shinyjs,
     dichromat
