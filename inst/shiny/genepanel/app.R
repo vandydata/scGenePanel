@@ -18,8 +18,10 @@ header <- dashboardHeader(titleWidth = "100%",
 
 # Webpage links to the images
 anchor <- tags$header(
-  tags$a(href='https://cds.vanderbilt.edu',
-         tags$img(src='CDS-logo-600x85.png', width='200',style="float:left; margin:0 70px 10px 20px; margin-top:15px;" )),
+  tags$a(href="https://cds.vanderbilt.edu",
+         tags$img(src="CDS-logo-600x85.png",
+                  width="200",
+                  style="float:left; margin:0 70px 10px 20px; margin-top:15px;" )),
   #style = "padding-top:100px; padding-bottom:100px;"),
   'scGenemap : Visuals for Single Cell RNA-seq Data',
   style = "color: #FFFFFF;
