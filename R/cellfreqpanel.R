@@ -100,8 +100,25 @@ cellfreq_panel <- function(object,
     combined_cc_table <- cbind(cc_table, result)
     names(combined_cc_table) <- c(meta_group,"n_cells", "n_expressing(>0.25)", "ratio", "25%(quantile)", "50%(quantile)", "75%(quantile)", "100%(quantile)" )
 
+
+    #add title and subtitle
+    # Add titles andd footnote
+    # :::::::::::::::::::::::::::::::::::::::::::::::::::
+    # Add titles and footnote
+    # Wrap subtitle into multiple lines using strwrap()
+    main.title <- paste0("Metrics of ", gene, " expression in ", cell_type_name, " cells per ", meta_group)
+    subtitle <- paste(
+      "n_cells = cell frequency per group",
+      "n_expressing = cells expression above 0.25",
+      "%expressed = n_expressing/n_cells*100", sep = "\n"
+    ) %>%
+      strwrap(width = 80) %>%
+      paste(collapse = "\n")
+
     t1 <- ggpubr::ggtexttable(combined_cc_table, rows = NULL)
-    print(t1)
+    t1 %>%
+      ggpubr::tab_add_title(text = subtitle, face = "plain", size = 10) %>%
+      ggpubr::tab_add_title(text = main.title, face = "bold", padding = unit(0.1, "line"))
 
 
 

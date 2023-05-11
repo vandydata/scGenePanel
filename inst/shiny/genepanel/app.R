@@ -5,7 +5,7 @@ library(shinyWidgets)
 library(scGenePanel)
 
 # Load data----
-data <- readRDS("DATA/data.TK.Rds")
+#data <- readRDS(url("https://github.com/vandydata/CDS-datasets/tree/main/scRNA-Seq/human_pancreas-islets_seurat.Rds","rb"))
 
 # 1.Header----
 header <- dashboardHeader(titleWidth = "100%",
@@ -63,8 +63,8 @@ ui<-dashboardPage( header,
                                                              label = "Enter color palette",
                                                              choices=NULL)),
                                      menuItem("UMAP", tabName = "umap"),
-                                     menuItem("Violinplot", tabName = "vlnplot"),
-                                     menuItem("Cell Frequency", tabName = "cellfreq")
+                                     menuItem("Violinplot", tabName = "vlnplot")
+                                     #menuItem("Cell Frequency", tabName = "cellfreq")
                                    )
                   ),
 
@@ -159,15 +159,15 @@ ui<-dashboardPage( header,
                                                #   )
                                                )
                                 )
-                              ),
+                              )
 
                       # Cell frequency tab
-                      tabItem(tabName = "cellfreq",
-                              fluidRow(
-                                column(width = 6, align = "left",
-                                       plotOutput("plot3"))
-                              )
-                      )
+                      # tabItem(tabName = "cellfreq",
+                      #         fluidRow(
+                      #           column(width = 12, align = "left",
+                      #                  plotOutput("plot3",height = '250px'))
+                      #         )
+                      # )
 
                     )))
 
@@ -214,7 +214,7 @@ server <- function(input, output, session) {
                       col.palette = input$color
                )
 
-  }, height = 700, width = 600)
+  }, height = 800, width = 600)
 
   # 2. Vlnplot ----
   output$plot2<- renderPlot({
@@ -235,22 +235,22 @@ server <- function(input, output, session) {
 
   }, height = 600, width = 1200)
 
-  # 3. Cell frequency table ----
-  output$plot3<-renderPlot({
-    req(input$Gene)
-    req(input$cell_type_name)
-    req(input$meta_group)
-    req(input$cell_type_colname)
-    req(input$color)
-
-    cellfreq_panel(object = data,
-                 gene = input$Gene,
-                 cell_type_name = input$cell_type_name,
-                 meta_group = input$meta_group,
-                 cell_type_colname = input$cell_type_colname
-                 )
-
-  }, height = 1000, width = 1200)
+  # # 3. Cell frequency table ----
+  # output$plot3<-renderPlot({
+  #   req(input$Gene)
+  #   req(input$cell_type_name)
+  #   req(input$meta_group)
+  #   req(input$cell_type_colname)
+  #   req(input$color)
+  #
+  #   cellfreq_panel(object = data,
+  #                gene = input$Gene,
+  #                cell_type_name = input$cell_type_name,
+  #                meta_group = input$meta_group,
+  #                cell_type_colname = input$cell_type_colname
+  #                )
+  #
+  # }, height = 1200, width = 1600)
 
 }
 

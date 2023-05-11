@@ -18,7 +18,7 @@ discrete_col_palette <- function(
   pal <- ggthemes::tableau_color_pal("Tableau 20")
 
   col_list <- list(
-    tableau = pal(attr(pal, "max_n")),
+    Tableau = pal(attr(pal, "max_n")),
     Dark2 = grDevices::colorRampPalette(RColorBrewer::brewer.pal(8, "Dark2"))(num_colors),
     Paired = grDevices::colorRampPalette(RColorBrewer::brewer.pal(12, 'Paired'))(num_colors),
     Set1 = grDevices::colorRampPalette(RColorBrewer::brewer.pal(9, 'Set1'))(num_colors),

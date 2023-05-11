@@ -90,7 +90,9 @@ Is_cell_type_name <- function(
   meta <- seurat_obj@meta.data
   cell_type_column <- meta[,cell_type_colname]
   if (cell_type_name %in% cell_type_column == "FALSE") {
-    stop("Entered 'cell_type_name' not found in the 'cell_type_colname' of object metadata")
+    error_message <- paste("Entered 'cell_type_name' was not found in metadata. Enter a cell type name among the following:",
+                           paste(unique(meta[,cell_type_colname]), collapse = ", "))
+    stop(error_message)
   }
 }
 
