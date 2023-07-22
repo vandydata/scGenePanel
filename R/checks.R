@@ -65,7 +65,9 @@ Is_celltype_colname <- function(
   seurat_obj <- make_seurat(object)
   meta_col_names <- colnames(x = seurat_obj@meta.data)
   if (cell_type_colname %in% meta_col_names == "FALSE") {
-    stop("Entered 'cell_type_colname' not found in object metadata")
+    error_message <- paste("Entered 'cell_type_colname' was not found in metadata. Enter a cell type identity containing column name among the following:",
+                           paste(meta_col_names, collapse = ", "))
+    stop(error_message)
   }
 }
 
@@ -90,7 +92,9 @@ Is_cell_type_name <- function(
   meta <- seurat_obj@meta.data
   cell_type_column <- meta[,cell_type_colname]
   if (cell_type_name %in% cell_type_column == "FALSE") {
-    stop("Entered 'cell_type_name' not found in the 'cell_type_colname' of object metadata")
+    error_message <- paste("Entered 'cell_type_name' was not found in metadata. Enter a cell type name among the following:",
+                           paste(unique(meta[,cell_type_colname]), collapse = ", "))
+    stop(error_message)
   }
 }
 
@@ -109,7 +113,9 @@ Is_meta_group <- function(
   seurat_obj <- make_seurat(object)
   meta_col_names <- colnames(x = seurat_obj@meta.data)
   if (meta_group %in% meta_col_names == "FALSE") {
-    stop("Entered 'meta_group' not found in object metadata")
+    error_message <- paste("Entered 'meta_group' was not found in metadata. Enter a cell identity among the following:",
+                           paste(meta_col_names, collapse = ", "))
+    stop(error_message)
   }
 }
 

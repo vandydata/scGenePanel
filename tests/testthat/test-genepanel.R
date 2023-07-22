@@ -1,6 +1,6 @@
 test_that("scGenePanel works with seurat object input", {
   library(scGenePanel)
-  data <- readRDS(system.file("extdata", "seurat_object.Rds", package="scGenePanel"))
+  data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
 
   gene <- 'INS'
   meta_group <- 'Age'
