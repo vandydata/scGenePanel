@@ -61,17 +61,21 @@ install.packages("scGenePanel", repos = NULL, type = "source", dependencies = TR
 
 # Loading data
 
-scGenePanel works natively with any pre-processed Seurat and SingleCellExperiment objects. For this vignette, dataset loaded `human_pancreas-islets_seurat.Rds` is publicly available at [github](https://github.com/vandydata/CDS-datasets/tree/main/scRNA-Seq). This seurat object contains single cell RNAseq data of human pancreatic islets from 5 healthy donors published in Shrestha et al., JCI Insight (2021) that has been concised to 500 cells only. Inferred cell types from this data are added to metadata column `CellTypes`. Donor's age has been added to metadata column `Age`. Full dataset including all cells is available in [zenodo](https://zenodo.org/record/7626110)
+scGenePanel works natively with any pre-processed Seurat and SingleCellExperiment objects. For this vignette, the dataset used (`human_pancreas-islets_seurat.Rds`) is publicly available at [github](https://github.com/vandydata/CDS-datasets/tree/main/scRNA-Seq). This Seurat object contains single cell RNAseq data of human pancreatic islets from five healthy donors published in Shrestha et al., JCI Insight (2021) that has been <u>downsampled to 500 cells</u>. Key annotations included in the metadata are:
+* `CellTypes` - cell types annotations
+* `Age` - donor age
+
+If interested, the complete dataset (X cells) is available in [zenodo](https://zenodo.org/record/7626110).
 
 ```{r eval=F, echo=T}
 library(scGenePanel)
-data <- readRDS("../GitHub/CDS-datasets/scRNA-Seq/human_pancreas-islets_seurat.Rds")
+data <- readRDS(url("https://github.com/vandydata/CDS-datasets/raw/main/scRNA-Seq/human_pancreas-islets_seurat.Rds"))
 ```
 
 
 # Visualization
 
-`create_gene_panel()` loads the multipanel visual for the gene of interest among the cell identity of interest entered by parameter `meta_group` and cell type of interest entered by parameter `cell_typ_name`. 
+`create_gene_panel()` loads the multi-panel visual for the gene of interest among the cell identity of interest entered by parameter `meta_group` and cell type of interest entered by parameter `cell_typ_name`.
 
 ```{r eval=F, echo=T}
 create_gene_panel(

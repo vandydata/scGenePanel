@@ -11,11 +11,13 @@ Is_cell_type_name(object, cell_type_name, cell_type_colname)
 
 \item{cell_type_name}{The cell type identity to highlight in UMAP}
 
-\item{cell_type_colname}{The metadata column name that contains the cell identity annotations}
+\item{cell_type_colname}{The metadata column name that contains the cell
+identity annotations}
 }
 \value{
 returns an error message if cell type name does not exist
 }
 \description{
-Check to see if cell type  name exist in the seurat object, if not returns an error
+Check to see if cell type  name exist in the seurat object, if not returns an
+error
 }

@@ -1,25 +1,24 @@
-
-
 #' Check Seurat Object
 #'
 #' Convert SingleCellExperiment object to Seurat object
 #'
 #' @param object A Seurat or SingleCellExperiment object
-#' @return returns an error message if the object is not among the expected input object
+#' @return returns an error message if the object is not among the expected
+#'   input object
 #' @importFrom methods is
 
 
 make_seurat <- function(object) {
 
-    if (class(x = object)[[1]] == "Seurat") {
-      return(object)
+  if (class(x = object)[[1]] == "Seurat") {
+    return(object)
 
-    } else if (is(object,"SingleCellExperiment")) {
-      # Check if the count assay exists
-      if(dim(SingleCellExperiment::counts(object))[1] == 0 || dim(SingleCellExperiment::counts(object))[2] == 0){
-        stop(paste0(
-          "counts assay is empty",
-        ))
+  } else if (is(object, "SingleCellExperiment")) {
+    # Check if the count assay exists
+    if (dim(SingleCellExperiment::counts(object))[1] == 0 || dim(SingleCellExperiment::counts(object))[2] == 0) {
+      stop(paste0(
+        "counts assay is empty",
+      ))
     }
 
     # Convert SingleCellExperiment object to Seurat object
@@ -27,7 +26,7 @@ make_seurat <- function(object) {
 
     # Add normalized counts if it doesn't exist
     tryCatch({
-      if("logcounts" %in% SingleCellExperiment::logcounts(object)){
+      if ("logcounts" %in% SingleCellExperiment::logcounts(object)) {
         converted_obj <- Seurat::as.Seurat(object, counts = "counts", data = "logcounts")
       }
     }, error = function(e) {
@@ -42,7 +41,7 @@ make_seurat <- function(object) {
 
     return(converted_obj)
 
-    }
+  }
 
   stop("entered 'object' is not a Seurat or SingleCellExperiment")
 
@@ -51,10 +50,12 @@ make_seurat <- function(object) {
 #
 #' Check if cell type metadata exists
 #'
-#' Check to see if cell type metadata column name exist in the seurat object, if not returns an error
+#' Check to see if cell type metadata column name exist in the seurat object,
+#'   if not returns an error
 #'
 #' @param object A Seurat or SingleCellExperiment object
-#' @param cell_type_colname The metadata column name that contains the cell identity annotations
+#' @param cell_type_colname The metadata column name that contains the cell
+#' identity annotations
 #' @return returns an error message if cell_type_colname does not exist
 
 
@@ -65,8 +66,10 @@ Is_celltype_colname <- function(
   seurat_obj <- make_seurat(object)
   meta_col_names <- colnames(x = seurat_obj@meta.data)
   if (cell_type_colname %in% meta_col_names == "FALSE") {
-    error_message <- paste("Entered 'cell_type_colname' was not found in metadata. Enter a cell type identity containing column name among the following:",
-                           paste(meta_col_names, collapse = ", "))
+    error_message <- paste(
+      "Entered 'cell_type_colname' was not found in metadata. ",
+      "Enter a cell type identity containing column name among the following:",
+       paste(meta_col_names, collapse = ", "))
     stop(error_message)
   }
 }
@@ -76,11 +79,13 @@ Is_celltype_colname <- function(
 
 #' Check if cell type name exists
 #'
-#' Check to see if cell type  name exist in the seurat object, if not returns an error
+#' Check to see if cell type  name exist in the seurat object, if not returns an
+#'   error
 #'
 #' @param object A Seurat or SingleCellExperiment object
 #' @param cell_type_name The cell type identity to highlight in UMAP
-#' @param cell_type_colname The metadata column name that contains the cell identity annotations
+#' @param cell_type_colname The metadata column name that contains the cell
+#'   identity annotations
 #' @return returns an error message if cell type name does not exist
 
 
@@ -93,7 +98,7 @@ Is_cell_type_name <- function(
   cell_type_column <- meta[,cell_type_colname]
   if (cell_type_name %in% cell_type_column == "FALSE") {
     error_message <- paste("Entered 'cell_type_name' was not found in metadata. Enter a cell type name among the following:",
-                           paste(unique(meta[,cell_type_colname]), collapse = ", "))
+                           paste(unique(meta[, cell_type_colname]), collapse = ", "))
     stop(error_message)
   }
 }
@@ -104,7 +109,9 @@ Is_cell_type_name <- function(
 #' Check if 'meta_group' exists
 #'
 #' @param object A Seurat or SingleCellExperiment object
-#' @param meta_group The metadata column name of the variable to split the UMAP, violinplot and cell frequency table by. for example, to split by disease condition
+#' @param meta_group The metadata column name of the variable to split the UMAP,
+#' violinplot and cell frequency table by. for example, to split by disease
+#' condition
 #' @return returns an error message if meta_group does not exist
 
 Is_meta_group <- function(

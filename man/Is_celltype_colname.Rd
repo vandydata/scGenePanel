@@ -9,11 +9,13 @@ Is_celltype_colname(object, cell_type_colname)
 \arguments{
 \item{object}{A Seurat or SingleCellExperiment object}
 
-\item{cell_type_colname}{The metadata column name that contains the cell identity annotations}
+\item{cell_type_colname}{The metadata column name that contains the cell
+identity annotations}
 }
 \value{
 returns an error message if cell_type_colname does not exist
 }
 \description{
-Check to see if cell type metadata column name exist in the seurat object, if not returns an error
+Check to see if cell type metadata column name exist in the seurat object,
+if not returns an error
 }

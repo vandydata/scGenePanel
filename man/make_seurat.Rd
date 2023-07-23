@@ -10,7 +10,8 @@ make_seurat(object)
 \item{object}{A Seurat or SingleCellExperiment object}
 }
 \value{
-returns an error message if the object is not among the expected input object
+returns an error message if the object is not among the expected
+input object
 }
 \description{
 Convert SingleCellExperiment object to Seurat object

@@ -2,7 +2,7 @@
 % Please edit documentation in R/cellfreqpanel.R
 \name{cellfreq_panel}
 \alias{cellfreq_panel}
-\title{scRNAseq multipanel gene expression visual}
+\title{scRNAseq multi-panel gene expression visual}
 \usage{
 cellfreq_panel(
   object,
@@ -10,26 +10,33 @@ cellfreq_panel(
   cell_type_name,
   meta_group,
   gene,
-  col.palette
+  col_palette
 )
 }
 \arguments{
 \item{object}{A Seurat or SingleCellExperiment}
 
-\item{cell_type_colname}{The metadata column name that contains the cell identity annotations}
+\item{cell_type_colname}{The metadata column name that contains the cell
+identity annotations}
 
 \item{cell_type_name}{The cell type identity to highlight}
 
-\item{meta_group}{The metadata column name of the variable to split the UMAP, violinplot and cell frequency table by. for example, to split by disease condition}
+\item{meta_group}{The metadata column name of the variable to split the UMAP,
+violinplot and cell frequency table by. for example, to split by disease
+condition}
 
-\item{gene}{Name of gene to explore gene expression in UMAP, violin plot, and cell frequency table}
+\item{gene}{Name of gene to explore gene expression in UMAP, violin plot and
+cell frequency table}
 
-\item{col.palette}{Color palettes to choose for violinplot panel. Options are "tableu","varibow" or RColorBrewer qualitative variables like "Dark2","Paired","Set1" etc}
+\item{col_palette}{Color palettes to choose for violinplot panel. Options
+are "tableu","varibow" or RColorBrewer qualitative variables like "Dark2",
+"Paired", "Set1" etc}
 }
 \value{
-Multipanel plots
+multi-panel plots
 }
 \description{
-This functions exports a multipanel scRNAseq gene expression plots of UMAP, violin plot with usen defined cell type and condition/groups
-along with tabular cell counts and ratios per chosen group in one visual
+This functions exports a multi-panel scRNAseq gene expression plots of UMAP,
+violin plot with user defined cell type and condition/groups along with
+tabular cell counts and ratios per chosen group in one visual
 }

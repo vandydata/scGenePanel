@@ -9,7 +9,9 @@ Is_meta_group(object, meta_group)
 \arguments{
 \item{object}{A Seurat or SingleCellExperiment object}
 
-\item{meta_group}{The metadata column name of the variable to split the UMAP, violinplot and cell frequency table by. for example, to split by disease condition}
+\item{meta_group}{The metadata column name of the variable to split the UMAP,
+violinplot and cell frequency table by. for example, to split by disease
+condition}
 }
 \value{
 returns an error message if meta_group does not exist

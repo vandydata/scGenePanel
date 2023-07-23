@@ -2,7 +2,8 @@
 % Please edit documentation in R/colorpanels.R
 \name{discrete_col_palette}
 \alias{discrete_col_palette}
-\title{Discrete color paletters from multiple packages (varibow,Rcolorbrewer,ggtheme)}
+\title{Discrete color paletters from multiple packages (varibow, Rcolorbrewer,
+ggtheme)}
 \usage{
 discrete_col_palette(num_colors, hex_cols = NULL, palette = NULL)
 }
@@ -11,12 +12,14 @@ discrete_col_palette(num_colors, hex_cols = NULL, palette = NULL)
 
 \item{hex_cols}{hex code of the colors to be selected for violin plot}
 
-\item{palette}{Options are "tableu" or RColorBrewer qualitative variables like "Dark2","Paired","Set1","Set2", "Set3", "Accent" etc.
+\item{palette}{Options are "tableu" or RColorBrewer qualitative variables
+like "Dark2","Paired","Set1","Set2", "Set3", "Accent" etc.
 if empty, the function will use based on the entered n.}
 }
 \value{
 A color palette for plotting violin plot
 }
 \description{
-Discrete color paletters from multiple packages (varibow,Rcolorbrewer,ggtheme)
+Discrete color paletters from multiple packages (varibow, Rcolorbrewer,
+ggtheme)
 }
