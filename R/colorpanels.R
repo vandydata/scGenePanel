@@ -14,7 +14,9 @@ discrete_col_palette <- function(num_colors, hex_cols = NULL,  palette = NULL) {
 
   pal <- ggthemes::tableau_color_pal("Tableau 20")
 
+
   col_list <- list(
+    default = ggsci::pal_ucscgb()(num_colors),
     Tableau = pal(attr(pal, "max_n")),
     Dark2 = grDevices::colorRampPalette(RColorBrewer::brewer.pal(8, "Dark2"))(num_colors),
     Paired = grDevices::colorRampPalette(RColorBrewer::brewer.pal(12, "Paired"))(num_colors),
@@ -27,10 +29,14 @@ discrete_col_palette <- function(num_colors, hex_cols = NULL,  palette = NULL) {
 
   )
 
+  if(is.null(palette)){
+    palette <- "default"
+  }
+
   selected_palette <- col_list[[palette]]
 
   if (num_colors > length(selected_palette)) {
-    warning("Not enough colors in specified palette. Choose another or enter NULL which will default to varibow")
+    warning("Not enough colors in specified palette. Choose another or enter NULL (TODO: which will default to varibow)")
   }
 
 
