@@ -3,7 +3,7 @@
 #' ggtheme)
 #' @param num_colors Number of colors to be generated.
 #' @param hex_cols hex code of the colors to be selected for violin plot
-#' @param palette Options are "tableu" or RColorBrewer qualitative variables
+#' @param palette Options are "Tableau" or RColorBrewer qualitative variables
 #' like "Dark2","Paired","Set1","Set2", "Set3", "Accent" etc.
 #' if empty, the function will use based on the entered n.
 #' @return A color palette for plotting violin plot
