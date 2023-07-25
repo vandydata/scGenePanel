@@ -18,7 +18,7 @@
 #' @param cell_type_name The cell type identity to highlight in UMAP
 #' @param cell_type_colname The metadata column name that contains the cell
 #'   identity annotations
-#' @param col.palette Color palettes to choose for violinplot panel. Options
+#' @param col_palette Color palettes to choose for violinplot panel. Options
 #'   are "tableu" or RColorBrewer qualitative variables like "Dark2", "Paired",
 #'   "Set1", "Set2", "Set3", "Accent" etc.
 #' @param group_order User defined order of the meta_groups to be displayed
@@ -36,7 +36,7 @@ create_gene_panel <- function(object,
                               meta_group,
                               cell_type_name,
                               cell_type_colname,
-                              col.palette,
+                              col_palette,
                               group_order = NULL,
                               output_dir = ".") {
 
@@ -98,7 +98,7 @@ create_gene_panel <- function(object,
 
   # Violin plot by meta_group
 
-  select_col <-  discrete_col_palette(num_colors = length(levels_idents), palette = col.palette)
+  select_col <-  discrete_col_palette(num_colors = length(levels_idents), palette = col_palette)
   max_value <- max(Seurat::GetAssayData(seurat_obj[["RNA"]])[gene, ])
   plot2 <- suppressWarnings(Seurat::VlnPlot(object = seurat_obj, features = gene, group.by = cell_type_colname, split.by = meta_group, cols = select_col, pt.size = -1) +
     ggpubr::stat_compare_means(method = "anova", label.y = max_value, label = "p.signif") + #currently this does not work on all plot
