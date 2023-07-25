@@ -10,7 +10,7 @@ create_gene_panel(
   meta_group,
   cell_type_name,
   cell_type_colname,
-  col.palette,
+  col_palette,
   group_order = NULL,
   output_dir = "."
 )
@@ -30,7 +30,7 @@ condition}
 \item{cell_type_colname}{The metadata column name that contains the cell
 identity annotations}
 
-\item{col.palette}{Color palettes to choose for violinplot panel. Options
+\item{col_palette}{Color palettes to choose for violinplot panel. Options
 are "tableu" or RColorBrewer qualitative variables like "Dark2", "Paired",
 "Set1", "Set2", "Set3", "Accent" etc.}
 
