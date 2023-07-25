@@ -31,7 +31,11 @@ condition}
 identity annotations}
 
 \item{col_palette}{Color palettes to choose for violinplot panel. Options
+<<<<<<< Updated upstream
 are "tableu" or RColorBrewer qualitative variables like "Dark2", "Paired",
+=======
+are "Tableau" or RColorBrewer qualitative variables like "Dark2", "Paired",
+>>>>>>> Stashed changes
 "Set1", "Set2", "Set3", "Accent" etc.}
 
 \item{group_order}{User defined order of the meta_groups to be displayed}
