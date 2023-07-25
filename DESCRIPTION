@@ -2,24 +2,26 @@ Package: scGenePanel
 Title: Gene expression visual for single cell RNA-sequencing data 
 Version: 0.0.0.9000
 Authors@R: c(
-	person(
+    person(
         given = "Shristi", 
         family = "Shrestha", 
         email = "shristi.shrestha.2@vanderbilt.edu", 
         role = c("aut", "cre"),
         comment = c(ORCID = "0000-0003-4519-1712")),
-	person(
+    person(
         given = "Jean-Philippe", 
         family = "Cartailler", 
         email = "jp.cartailler@vanderbilt.edu", 
         role = c("aut"),
         comment = c(ORCID = "0000-0002-0312-2391"))
-	)
+    )
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Description: A package for creating a multi-panel view of a single gene within a selected cell population, including UMAPs, violin plots and expression metrics derived from single cell (or nucleus) gene expression data.
+Depends:
+    R (>= 3.5.0)
 Imports:
     Seurat (>= 4.1.1),
     dplyr,
