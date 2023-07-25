@@ -36,7 +36,7 @@ discrete_col_palette <- function(num_colors, hex_cols = NULL,  palette = NULL) {
   selected_palette <- col_list[[palette]]
 
   if (num_colors > length(selected_palette)) {
-    warning("Not enough colors in specified palette. Choose another or enter NULL (TODO: which will default to varibow)")
+    warning("Not enough colors in specified palette. Choose another or enter NULL (default to ggsci UCSCB Genome Browser palette).")
   }
 
 

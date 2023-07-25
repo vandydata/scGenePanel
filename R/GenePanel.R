@@ -36,7 +36,7 @@ create_gene_panel <- function(object,
                               meta_group,
                               cell_type_name,
                               cell_type_colname,
-                              col_palette,
+                              col_palette = NULL,
                               group_order = NULL,
                               output_dir = ".") {
 
