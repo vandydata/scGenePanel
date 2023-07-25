@@ -35,19 +35,19 @@ cellfreq_panel <- function(object,
 ) {
 
   # Convert to Seurat object
-  seurat_obj <- suppressMessages(make_seurat(object = object))
+  seurat_obj <- suppressMessages(.make_seurat(object = object))
 
   # Check if 'cell_type_colname' exists
-  Is_celltype_colname(seurat_obj, cell_type_colname = cell_type_colname)
+  .is_celltype_colname(seurat_obj, cell_type_colname = cell_type_colname)
 
   # Check if 'cell_type_name' exists
-  Is_cell_type_name(seurat_obj, cell_type_colname = cell_type_colname, cell_type_name = cell_type_name)
+  .is_cell_type_name(seurat_obj, cell_type_colname = cell_type_colname, cell_type_name = cell_type_name)
 
   # Check if 'meta_group' exists
-  Is_meta_group(seurat_obj, meta_group = meta_group)
+  .is_meta_group(seurat_obj, meta_group = meta_group)
 
   # Check if gene included in object
-  Is_gene(seurat_obj, gene = gene)
+  .is_gene(seurat_obj, gene = gene)
 
   # Table of cell counts/expression ratios
   Seurat::Idents(seurat_obj) <- cell_type_colname
