@@ -91,7 +91,7 @@ create_gene_panel(
 ```
 
 ```{r, echo = FALSE, fig.retina = 1, dpi = 128}
-add_image('/Users/shristishrestha/Documents/GitHub/scGenePanel/genePanel__INS_Beta2.png')
+add_image('genePanel__INS_Beta2.png')
 ```
 
 # Explore via shiny app
