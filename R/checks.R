@@ -65,7 +65,7 @@
 .is_celltype_colname <- function(
   object, cell_type_colname
 ) {
-  seurat_obj <- make_seurat(object)
+  seurat_obj <- .make_seurat(object)
   meta_col_names <- colnames(x = seurat_obj@meta.data)
   if (cell_type_colname %in% meta_col_names == "FALSE") {
     error_message <- paste(
@@ -96,7 +96,7 @@
 .is_cell_type_name <- function(
   object, cell_type_name, cell_type_colname
 ) {
-  seurat_obj <- make_seurat(object)
+  seurat_obj <- .make_seurat(object)
   meta <- seurat_obj@meta.data
   cell_type_column <- meta[,cell_type_colname]
   if (cell_type_name %in% cell_type_column == "FALSE") {
@@ -121,7 +121,7 @@
 .is_meta_group <- function(
   object, meta_group
 ) {
-  seurat_obj <- make_seurat(object)
+  seurat_obj <- .make_seurat(object)
   meta_col_names <- colnames(x = seurat_obj@meta.data)
   if (meta_group %in% meta_col_names == "FALSE") {
     error_message <- paste("Entered 'meta_group' was not found in metadata. Enter a cell identity among the following:",
@@ -144,7 +144,7 @@
 .is_gene <- function(
   object, gene
 ) {
-  seurat_obj <- make_seurat(object)
+  seurat_obj <- .make_seurat(object)
   gene_names <- rownames(seurat_obj)
   if (gene %in% gene_names == "FALSE") {
     stop("Entered 'gene' in object not found")
