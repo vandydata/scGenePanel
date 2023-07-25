@@ -6,9 +6,10 @@
 #' @return returns an error message if the object is not among the expected
 #'   input object
 #' @importFrom methods is
+#' @noRd
 
 
-make_seurat <- function(object) {
+.make_seurat <- function(object) {
 
   if (class(x = object)[[1]] == "Seurat") {
     return(object)
@@ -57,10 +58,11 @@ make_seurat <- function(object) {
 #' @param cell_type_colname The metadata column name that contains the cell
 #' identity annotations
 #' @return returns an error message if cell_type_colname does not exist
+#' @noRd
 
 
 
-Is_celltype_colname <- function(
+.is_celltype_colname <- function(
   object, cell_type_colname
 ) {
   seurat_obj <- make_seurat(object)
@@ -87,10 +89,11 @@ Is_celltype_colname <- function(
 #' @param cell_type_colname The metadata column name that contains the cell
 #'   identity annotations
 #' @return returns an error message if cell type name does not exist
+#' @noRd
 
 
 
-Is_cell_type_name <- function(
+.is_cell_type_name <- function(
   object, cell_type_name, cell_type_colname
 ) {
   seurat_obj <- make_seurat(object)
@@ -113,8 +116,9 @@ Is_cell_type_name <- function(
 #' violinplot and cell frequency table by. for example, to split by disease
 #' condition
 #' @return returns an error message if meta_group does not exist
+#' @noRd
 
-Is_meta_group <- function(
+.is_meta_group <- function(
   object, meta_group
 ) {
   seurat_obj <- make_seurat(object)
@@ -134,9 +138,10 @@ Is_meta_group <- function(
 #' @param object A Seurat or SingleCellExperiment object
 #' @param gene name of gene
 #' @return returns an error message if gene is not found in seurat object
+#' @noRd
 
 
-Is_gene <- function(
+.is_gene <- function(
   object, gene
 ) {
   seurat_obj <- make_seurat(object)
