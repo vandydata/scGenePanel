@@ -1,7 +1,10 @@
 .Rproj.user
-.Rhistory
+*.Rproj
+*.Rhistory
 .RData
 .Ruserdata
 inst/doc
 .idea
 .vscode
+vignettes/*.html
+vignettes/*.R
