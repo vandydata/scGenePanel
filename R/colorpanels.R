@@ -14,18 +14,17 @@ discrete_col_palette <- function(num_colors, hex_cols = NULL,  palette = NULL) {
 
   pal <- ggthemes::tableau_color_pal("Tableau 20")
 
-
   col_list <- list(
     default = ggsci::pal_ucscgb()(num_colors),
     Tableau = pal(attr(pal, "max_n")),
-    Dark2 = grDevices::colorRampPalette(RColorBrewer::brewer.pal(8, "Dark2"))(num_colors),
-    Paired = grDevices::colorRampPalette(RColorBrewer::brewer.pal(12, "Paired"))(num_colors),
-    Set1 = grDevices::colorRampPalette(RColorBrewer::brewer.pal(9, "Set1"))(num_colors),
-    Set2 = grDevices::colorRampPalette(RColorBrewer::brewer.pal(8, "Set2"))(num_colors),
-    Set3 = grDevices::colorRampPalette(RColorBrewer::brewer.pal(12, "Set3"))(num_colors),
-    Pastel1 = grDevices::colorRampPalette(RColorBrewer::brewer.pal(9, "Pastel1"))(num_colors),
-    Pastel2 = grDevices::colorRampPalette(RColorBrewer::brewer.pal(8, "Pastel2"))(num_colors),
-    Accent = grDevices::colorRampPalette(RColorBrewer::brewer.pal(8, "Accent"))(num_colors)
+    Dark2 = RColorBrewer::brewer.pal(8, "Dark2"),
+    Paired = RColorBrewer::brewer.pal(12, "Paired"),
+    Set1 = RColorBrewer::brewer.pal(9, "Set1"),
+    Set2 = RColorBrewer::brewer.pal(8, "Set2"),
+    Set3 = RColorBrewer::brewer.pal(12, "Set3"),
+    Pastel1 = RColorBrewer::brewer.pal(9, "Pastel1"),
+    Pastel2 = RColorBrewer::brewer.pal(8, "Pastel2"),
+    Accent = RColorBrewer::brewer.pal(8, "Accent")
 
   )
 
@@ -47,7 +46,7 @@ discrete_col_palette <- function(num_colors, hex_cols = NULL,  palette = NULL) {
     if (num_colors > length(selected_palette)) {
       warning("Not enough colors in specified hex_cols.")
     }
-    selected_palette # TODO - do you really need this?
+    #selected_palette # TODO - do you really need this?
   }
   selected_palette
 
