@@ -28,8 +28,18 @@ discrete_col_palette <- function(num_colors, hex_cols = NULL,  palette = NULL) {
 
   )
 
+  # Empty palette input? Set to default
   if(is.null(palette)){
     palette <- "default"
+  }
+
+  # Incorrect (unknown) color palette input? Set to default, warn user
+  if(palette %in% names(col_list)){
+    palette <- palette
+  } else {
+    palette <- "default"
+    palette_str <- paste0(names(col_list), collapse = ", ")
+    warning(paste0("You have provided an unknown palette so defaulting to pal_ucscgb. Please choose from: " , palette_str, "."))
   }
 
   selected_palette <- col_list[[palette]]
@@ -39,14 +49,12 @@ discrete_col_palette <- function(num_colors, hex_cols = NULL,  palette = NULL) {
   }
 
 
-
   if (is.null(x = palette) && !is.null(x = hex_cols)) {
 
     selected_palette <- hex_cols
     if (num_colors > length(selected_palette)) {
       warning("Not enough colors in specified hex_cols.")
     }
-    #selected_palette # TODO - do you really need this?
   }
   selected_palette
 
