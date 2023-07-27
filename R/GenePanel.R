@@ -68,7 +68,7 @@ create_gene_panel <- function(object,
   # Loop through group idents for respective umaps
   loop_idents <- function(x) {
     obj_idents <- subset(seurat_obj, idents = x)
-    p1.d <- suppressMessages(Seurat::FeaturePlot(obj_idents, features = gene,  pt.size = 1) +
+    p1.d <- suppressMessages(Seurat::FeaturePlot(obj_idents, features = gene,  pt.size = 1, reduction = "umap") +
                                viridis::scale_color_viridis(direction = -1) +
                                ggplot2::theme(plot.title = ggplot2::element_text(size = 20),
                                               axis.title.x = ggplot2::element_text(size = 20, face = "bold"),
