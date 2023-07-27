@@ -104,9 +104,12 @@ create_gene_panel <- function(object,
   # Violin plot by meta_group
 
   select_col <-  discrete_col_palette(num_colors = length(levels_idents), palette = col_palette)
-  max_value <- max(Seurat::GetAssayData(seurat_obj[["RNA"]])[gene, ])
+  #max_value <- max(Seurat::GetAssayData(seurat_obj[["RNA"]])[gene, ], slot = "data")
+  max_value <- Seurat::VlnPlot(object = seurat_obj, features = gene, group.by = cell_type_colname)
+  max_value <- max_value$data
+  max_value <- max(max_value[,1])
   plot2 <- suppressWarnings(Seurat::VlnPlot(object = seurat_obj, features = gene, group.by = cell_type_colname, split.by = meta_group, cols = select_col, pt.size = -1) +
-    ggpubr::stat_compare_means(method = "anova", label.y = max_value, label = "p.signif") + #currently this does not work on all plot
+    ggpubr::stat_compare_means(method = "anova", label.y = max_value, label = "p.signif") + # Add global p-value #currently this does not work on all plot
     ggplot2::geom_violin(trim = FALSE, alph = 0.5, scale = "width", draw_quantiles = c(0.25, 0.5, 0.75)) +
     ggplot2::theme(plot.title = ggplot2::element_text(size = 20),
                    axis.title.x = ggplot2::element_text(size = 20, face = "bold"),
