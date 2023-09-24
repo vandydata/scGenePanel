@@ -110,7 +110,8 @@ create_gene_panel <- function(object,
   max_value <- max_value$data
   max_value <- max(max_value[,1])
   plot2 <- suppressWarnings(Seurat::VlnPlot(object = seurat_obj, features = gene, group.by = cell_type_colname, split.by = meta_group, cols = select_col, pt.size = -1) +
-    ggpubr::stat_compare_means(method = "anova", label.y = max_value, label = "p.signif") + # Add global p-value #currently this does not work on all plot
+    #this is one-way ANOVA test, a significant p-value indicates that some of the group means are different, but we don’t know which pairs of groups are different.
+    ggpubr::stat_compare_means(method = "anova", label.y = max_value, label = "p.signif", size = 8) + # Add global p-value #currently this does not work on all plot, 
     ggplot2::geom_violin(trim = FALSE, alph = 0.5, scale = "width", draw_quantiles = c(0.25, 0.5, 0.75)) +
     ggplot2::theme(plot.title = ggplot2::element_text(size = 20),
                    axis.title.x = ggplot2::element_text(size = 20, face = "bold"),
