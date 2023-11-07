@@ -79,7 +79,9 @@ create_gene_panel <- function(object,
                                               legend.text = ggplot2::element_text(size = 16, face = "bold"),
                                               legend.title = ggplot2::element_text(size = 16, face = "bold")
                                ) +
-                               ggplot2::labs(title = paste(x, "_subset", sep = "")))
+                               ggplot2::labs(title = paste(x, "_subset", sep = ""),x = " ", y = " ")
+                             )
+    
     p1.d[[1]]$layers[[1]]$aes_params$alpha <- .5
     p1.d.umap <- data.frame(obj_idents@reductions$umap@cell.embeddings)
     Seurat::Idents(obj_idents) <- cell_type_colname
@@ -95,10 +97,20 @@ create_gene_panel <- function(object,
   if (is.null(group_order)) {
     panels <- lapply(levels_idents, loop_idents)
     panel_figure <- cowplot::plot_grid(plotlist = panels, ncol = length(levels_idents))
+    #create common x and y labels
+    y.grob <- grid::textGrob("UMAP_2",gp=grid::gpar(fontface="bold", col="black", fontsize=15), rot=90)
+    x.grob <- grid::textGrob("UMAP_1",gp=grid::gpar(fontface="bold", col="black", fontsize=15))
+    panel_figure <- gridExtra::grid.arrange(gridExtra::arrangeGrob(panel_figure, left = y.grob, bottom = x.grob))
+    
   } else {
     levels_idents <- levels_idents[order(match(levels_idents, group_order))]
     panels <- lapply(levels_idents, loop_idents)
     panel_figure <- cowplot::plot_grid(plotlist = panels, ncol = length(levels_idents))
+    #create common x and y labels
+    y.grob <- grid::textGrob("UMAP_2",gp=grid::gpar(fontface="bold", col="black", fontsize=15), rot=90)
+    x.grob <- grid::textGrob("UMAP_1",gp=grid::gpar(fontface="bold", col="black", fontsize=15))
+    panel_figure <- gridExtra::grid.arrange(gridExtra::arrangeGrob(panel_figure, left = y.grob, bottom = x.grob))
+    
   }
 
 
