@@ -1,23 +1,18 @@
-#' scRNAseq multi-panel gene expression visual
 #'
-#' This functions exports a multi-panel scRNAseq gene expression plots of UMAP,
-#'   violin plot with usen defined cell type and condition/groups along with
-#'   tabular cell counts and ratios per chosen group in one visual
+#' This functions generates violin plots for scGenePanel
 #'
 #'
-#' @param object A Seurat or SingleCellExperiment
-#' @param gene Name of gene to explore gene expression in UMAP, violin plot,
-#'   and cell frequency table
-#' @param meta_group The metadata column name of the variable to split the UMAP,
-#'   violinplot and cell frequency table by. for example, to split by disease
-#'   condition
-#' @param cell_type_name The cell type identity to highlight in UMAP
+#' @param object A Seurat object
 #' @param cell_type_colname The metadata column name that contains the cell
 #'   identity annotations
+#' @param cell_type_name The cell type identity to highlight
+#' @param meta_group The metadata column name of the variable to split with
+#' @param gene Name of gene to explore gene expression
 #' @param col_palette Color palettes to choose for violinplot panel. Options are
 #'   "tableu" or RColorBrewer qualitative variables like "Dark2", "Paired",
 #'   "Set1", "Set2", "Set3", "Accent" etc.
-#' @return multi-panel plots
+#'
+#' @return ggplot2 violing plot object
 #' @importFrom stats quantile
 #' @importFrom dplyr filter mutate
 #' @importFrom magrittr %>%

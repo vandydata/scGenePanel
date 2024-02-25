@@ -1,6 +1,8 @@
 
 
-#' scRNAseq multi-panel gene expression visual by sample groups
+#' scGenePanel - A method for generating scRNAseq multi-panel gene expression
+#' visuals that are focused on one gene, all cell types, and a chosen metadata
+#' attribute of interest.
 #'
 #' `create_gene_panel` exports a multi-panel scRNAseq gene expression plots of
 #'   UMAP clusters highlighted with user defined cell types and split view on
