@@ -107,7 +107,7 @@ cellfreq_panel <- function(seurat_obj,
       "100% (quantile)"
     )
 
-    # Add titles andd footnote
+    # Add titles and footnote
     # :::::::::::::::::::::::::::::::::::::::::::::::::::
     # Wrap subtitle into multiple lines using strwrap()
     main_title <- paste0("Metrics of ", gene, " expression in ", cell_type_name, " cells per ", meta_group)
@@ -133,7 +133,7 @@ cellfreq_panel <- function(seurat_obj,
     t1 <- ggpubr::ggtexttable(combined_cc_table, rows = NULL, theme = table_theme)
     t1 %>%
       ggpubr::tab_add_title(text = subtitle, face = "plain", size = 10) %>%
-      ggpubr::tab_add_title(text = main_title, face = "bold", padding = unit(0.1, "line"))
+      ggpubr::tab_add_title(text = main_title, face = "bold", padding =  ggplot2::unit(0.1, "line"))
 
   }
 
