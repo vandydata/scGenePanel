@@ -29,13 +29,12 @@ umap_panel <- function(seurat_obj,
                        cell_type_name,
                        meta_group,
                        gene,
-                       group_order,
-                       col_palette,
-                       levels_idents) {
-
+                       levels_idents,
+                       group_order=NULL) {
 
   # loop through group idents for respective umaps
   loop_idents <- function(x) {
+    #Idents(seurat_obj) <- meta_group
     obj_idents <- subset(seurat_obj, idents = x)
     p1.d <- suppressMessages(scCustomize::FeaturePlot_scCustom(obj_idents, features = gene,  pt.size = 1) +
                                ggplot2::labs(title = x))

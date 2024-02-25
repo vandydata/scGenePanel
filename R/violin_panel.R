@@ -24,7 +24,7 @@
 #' @importFrom methods as
 #' @export
 
-violin_panel <- function(object,
+violin_panel <- function(seurat_obj,
                          cell_type_colname,
                          cell_type_name,
                          meta_group,

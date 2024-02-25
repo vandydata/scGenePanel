@@ -26,7 +26,7 @@
 #' @importFrom methods as
 #' @export
 
-cellfreq_panel <- function(object,
+cellfreq_panel <- function(seurat_obj,
                            cell_type_colname,
                            cell_type_name,
                            meta_group,
@@ -41,8 +41,9 @@ cellfreq_panel <- function(object,
   selected_cluster_cells <- subset(seurat_obj, idents = cell_type_name)
   #cc_tally <- selected_cluster_cells@meta.data %>% group_by(!!! syms(meta_group)) %>% tally()
   cell_counts_tally <- suppressMessages(
-    selected_cluster_cells@meta.data %>% tidylog::group_by_at(meta_group)
-    %>% dplyr::tally()
+    selected_cluster_cells@meta.data %>%
+      dplyr::group_by_at(meta_group) %>%
+      dplyr::tally()
   )
 
   # if gene has no expression over 0.25, print message of "No detection"
@@ -61,7 +62,7 @@ cellfreq_panel <- function(object,
   } else {
 
     selected_cells_expressed_tally <- selected_cells_expressed@meta.data %>%
-      tidylog::group_by_at(meta_group) %>%
+      dplyr::group_by_at(meta_group) %>%
       dplyr::tally()     # tally cells expressing the gene
 
     # Merge cell frequency and expression tally
