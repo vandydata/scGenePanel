@@ -2,7 +2,9 @@
 % Please edit documentation in R/GenePanel.R
 \name{create_gene_panel}
 \alias{create_gene_panel}
-\title{scRNAseq multi-panel gene expression visual by sample groups}
+\title{scGenePanel - A method for generating scRNAseq multi-panel gene expression
+visuals that are focused on one gene, all cell types, and a chosen metadata
+attribute of interest.}
 \usage{
 create_gene_panel(
   object,
@@ -10,9 +12,9 @@ create_gene_panel(
   meta_group,
   cell_type_name,
   cell_type_colname,
-  col_palette,
+  col_palette = "Tableau",
   group_order = NULL,
-  output_dir = "."
+  output_dir = getwd()
 )
 }
 \arguments{
@@ -31,11 +33,7 @@ condition}
 identity annotations}
 
 \item{col_palette}{Color palettes to choose for violinplot panel. Options
-<<<<<<< Updated upstream
-are "tableu" or RColorBrewer qualitative variables like "Dark2", "Paired",
-=======
 are "Tableau" or RColorBrewer qualitative variables like "Dark2", "Paired",
->>>>>>> Stashed changes
 "Set1", "Set2", "Set3", "Accent" etc.}
 
 \item{group_order}{User defined order of the meta_groups to be displayed}
