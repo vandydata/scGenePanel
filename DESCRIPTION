@@ -18,7 +18,7 @@ Authors@R: c(
 License: AGPLv3 + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.0
 Description: A package for creating a multi-panel view of a single gene within a selected cell population and variable trait, including UMAP embeddings, violin plots and expression metrics derived from single cell (or nucleus) gene expression data.
 Depends:
     R (>= 3.5.0)
@@ -42,7 +42,8 @@ Imports:
     dichromat,
     BiocManager,
     SingleCellExperiment,
-    formattable
+    formattable,
+    scCustomize
 Suggests: 
     knitr,
     rmarkdown,

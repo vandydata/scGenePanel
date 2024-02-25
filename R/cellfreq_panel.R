@@ -27,27 +27,14 @@
 #' @export
 
 cellfreq_panel <- function(object,
-  cell_type_colname,
-  cell_type_name,
-  meta_group,
-  gene,
-  col_palette
+                           cell_type_colname,
+                           cell_type_name,
+                           meta_group,
+                           gene,
+                           col_palette,
+                           levels_idents
 ) {
 
-  # Convert to Seurat object
-  seurat_obj <- suppressMessages(.make_seurat(object = object))
-
-  # Check if 'cell_type_colname' exists
-  .is_celltype_colname(seurat_obj, cell_type_colname = cell_type_colname)
-
-  # Check if 'cell_type_name' exists
-  .is_cell_type_name(seurat_obj, cell_type_colname = cell_type_colname, cell_type_name = cell_type_name)
-
-  # Check if 'meta_group' exists
-  .is_meta_group(seurat_obj, meta_group = meta_group)
-
-  # Check if gene included in object
-  .is_gene(seurat_obj, gene = gene)
 
   # Table of cell counts/expression ratios
   Seurat::Idents(seurat_obj) <- cell_type_colname
@@ -85,6 +72,7 @@ cellfreq_panel <- function(object,
 
     cc_table$ratio <- cc_table$n_expressing / cc_table$n_cells # ratio
     cc_table[is.na(cc_table)] <- 0
+    names(cc_table)[names(cc_table) == 'ratio'] <- 'pct.expressed'
     #t1 <- ggpubr::ggtexttable(cc_table, rows = NULL)
 
     # Add quantiles for gene expression per meta_group
@@ -114,11 +102,11 @@ cellfreq_panel <- function(object,
       meta_group,
       "n_cells",
       "n_expressing(>0.25)",
-      "ratio",
-      "25%(quantile)",
-      "50%(quantile)",
-      "75%(quantile)",
-      "100%(quantile)"
+      "% expressed",
+      "25% (quantile)",
+      "50% (quantile)",
+      "75% (quantile)",
+      "100% (quantile)"
     )
 
     # Add titles andd footnote
@@ -133,13 +121,24 @@ cellfreq_panel <- function(object,
       strwrap(width = 80) %>%
       paste(collapse = "\n")
 
-    t1 <- ggpubr::ggtexttable(combined_cc_table, rows = NULL)
+    #increase the size of table
+    table_theme <- ggpubr::ttheme(
+      base_style = "default",
+      base_size = 20,
+      base_colour = "black",
+      padding = ggplot2::unit(c(6, 6), "mm"),
+      colnames.style = ggpubr::colnames_style(size = 20),
+      rownames.style = ggpubr::rownames_style(size = 20),
+      tbody.style = ggpubr::tbody_style(size = 20)
+    )
+
+    t1 <- ggpubr::ggtexttable(combined_cc_table, rows = NULL, theme = table_theme)
     t1 %>%
       ggpubr::tab_add_title(text = subtitle, face = "plain", size = 10) %>%
       ggpubr::tab_add_title(text = main_title, face = "bold", padding = unit(0.1, "line"))
 
   }
 
-  #return(not_expressed_features)
+  return(t1)
 
 }

@@ -37,8 +37,10 @@ create_gene_panel <- function(object,
                               cell_type_name,
                               cell_type_colname,
                               col_palette = NULL,
-                              group_order = NULL,
-                              output_dir = ".") {
+                              group_order = "Tableau",
+                              output_dir = getwd()) {
+
+
 
   # Convert to Seurat object
   seurat_obj <- suppressMessages(.make_seurat(object = object))
@@ -55,86 +57,57 @@ create_gene_panel <- function(object,
   # Check if gene included in object
   .is_gene(seurat_obj, gene = gene)
 
-  # Add trailing slash to output dir if missing
-  if (!grepl("/$", output_dir)) {
-      output_dir <- paste0(output_dir, "/")
-  }
-
-  # Retrieve group idents to visualize umaps/violinplots by
+  # retrieve group idents to visualize umaps/violinplots by
   Seurat::Idents(seurat_obj) <- meta_group
   levels_idents <- unique(seurat_obj[[meta_group]][, 1])
   levels_idents <- as.character(levels_idents)
 
-  # Loop through group idents for respective umaps
-  loop_idents <- function(x) {
-    obj_idents <- subset(seurat_obj, idents = x)
-    p1.d <- suppressMessages(Seurat::FeaturePlot(obj_idents, features = gene,  pt.size = 1, reduction = "umap") +
-                               viridis::scale_color_viridis(direction = -1) +
-                               ggplot2::theme(plot.title = ggplot2::element_text(size = 20),
-                                              axis.title.x = ggplot2::element_text(size = 20, face = "bold"),
-                                              axis.title.y = ggplot2::element_text(size = 20, face = "bold"),
-                                              axis.text = ggplot2::element_text(size = 20, face = "bold"),
-                                              axis.text.x = ggplot2::element_text(size = 20, face = "bold"),
-                                              axis.text.y = ggplot2::element_text(size = 20, face = "bold"),
-                                              legend.text = ggplot2::element_text(size = 16, face = "bold"),
-                                              legend.title = ggplot2::element_text(size = 16, face = "bold")
-                               ) +
-                               ggplot2::labs(title = paste(x, "_subset", sep = ""),x = " ", y = " ")
-                             )
-    
-    p1.d[[1]]$layers[[1]]$aes_params$alpha <- .5
-    p1.d.umap <- data.frame(obj_idents@reductions$umap@cell.embeddings)
-    Seurat::Idents(obj_idents) <- cell_type_colname
-    plot1 <- p1.d + ggforce::geom_mark_ellipse(ggplot2::aes(x = p1.d.umap$UMAP_1, y = p1.d.umap$UMAP_2,
-                                                   fill = Seurat::Idents(obj_idents),
-                                                   filter = Seurat::Idents(obj_idents) == cell_type_name
-                                                   ),show.legend = FALSE,
-                                               alpha = 0.1) + ggplot2::scale_fill_discrete(name = "Cell Type")
-    suppressMessages(plot1)
-  }
 
+  # ------------------- UMAP panel -------------------
 
-  if (is.null(group_order)) {
-    panels <- lapply(levels_idents, loop_idents)
-    panel_figure <- cowplot::plot_grid(plotlist = panels, ncol = length(levels_idents))
-    #create common x and y labels
-    y.grob <- grid::textGrob("UMAP_2",gp=grid::gpar(fontface="bold", col="black", fontsize=15), rot=90)
-    x.grob <- grid::textGrob("UMAP_1",gp=grid::gpar(fontface="bold", col="black", fontsize=15))
-    panel_figure <- gridExtra::grid.arrange(gridExtra::arrangeGrob(panel_figure, left = y.grob, bottom = x.grob))
-    
-  } else {
-    levels_idents <- levels_idents[order(match(levels_idents, group_order))]
-    panels <- lapply(levels_idents, loop_idents)
-    panel_figure <- cowplot::plot_grid(plotlist = panels, ncol = length(levels_idents))
-    #create common x and y labels
-    y.grob <- grid::textGrob("UMAP_2",gp=grid::gpar(fontface="bold", col="black", fontsize=15), rot=90)
-    x.grob <- grid::textGrob("UMAP_1",gp=grid::gpar(fontface="bold", col="black", fontsize=15))
-    panel_figure <- gridExtra::grid.arrange(gridExtra::arrangeGrob(panel_figure, left = y.grob, bottom = x.grob))
-    
-  }
+  message("Step 1 - UMAP plots")
 
+  panel_figure <- umap_panel(seurat_obj,
+                         cell_type_colname,
+                         cell_type_name,
+                         meta_group,
+                         gene,
+                         group_order,
+                         col_palette,
+                         levels_idents)
+
+  message("Step 2 - Violin plots")
 
   # Violin plot by meta_group
+  #col_palette <- "Tableau"
+  # TODO - add
+  plot2 <- violin_panel(seurat_obj,
+                               cell_type_colname,
+                               cell_type_name,
+                               meta_group,
+                               gene,
+                               col_palette,
+                               levels_idents)
 
-  select_col <-  discrete_col_palette(num_colors = length(levels_idents), palette = col_palette)
-  #max_value <- max(Seurat::GetAssayData(seurat_obj[["RNA"]])[gene, ], slot = "data")
-  max_value <- Seurat::VlnPlot(object = seurat_obj, features = gene, group.by = cell_type_colname)
-  max_value <- max_value$data
-  max_value <- max(max_value[,1])
-  plot2 <- suppressWarnings(Seurat::VlnPlot(object = seurat_obj, features = gene, group.by = cell_type_colname, split.by = meta_group, cols = select_col, pt.size = -1) +
-    #this is one-way ANOVA test, a significant p-value indicates that some of the group means are different, but we don’t know which pairs of groups are different.
-    ggpubr::stat_compare_means(method = "anova", label.y = max_value, label = "p.signif", size = 8) + # Add global p-value #currently this does not work on all plot, 
-    ggplot2::geom_violin(trim = FALSE, alph = 0.5, scale = "width", draw_quantiles = c(0.25, 0.5, 0.75)) +
-    ggplot2::theme(plot.title = ggplot2::element_text(size = 20),
-                   axis.title.x = ggplot2::element_text(size = 20, face = "bold"),
-                   axis.title.y = ggplot2::element_text(size = 20, face = "bold"),
-                   axis.text = ggplot2::element_text(size = 20, face = "bold"),
-                   axis.text.x = ggplot2::element_text(size = 20, face = "bold"),
-                   axis.text.y = ggplot2::element_text(size = 20, face = "bold"),
-                   legend.text = ggplot2::element_text(size = 16, face = "bold"),
-                   legend.title = ggplot2::element_text(size = 16, face = "bold")
-                   ) +
-    ggplot2::xlab(cell_type_colname))
+
+
+
+
+  if(FALSE){
+    message("Step 3 - Table")
+    panel_table <- cellfreq_panel(object,
+                                  cell_type_colname,
+                                  cell_type_name,
+                                  meta_group,
+                                  gene,
+                                  col_palette,
+                                  levels_idents)
+  }
+
+
+
+
+
 
 
 
@@ -155,6 +128,7 @@ create_gene_panel <- function(object,
 
   )
 
+  # TODO shouldn't this be tested earlier?
   if (is.null(selected_cells_expressed)) {
     message(paste0("No expression detected for: ", gene))
 
@@ -208,11 +182,23 @@ create_gene_panel <- function(object,
     )
 
     # create table
-    t1 <- ggpubr::ggtexttable(combined_cc_table, rows = NULL, theme = table_theme)
+    panel_table <- ggpubr::ggtexttable(combined_cc_table, rows = NULL, theme = table_theme)
+
+  }
+
+
+
+
+
+
+
+
+
+
 
 
     # Combine figures
-    figure  <- suppressWarnings(ggpubr::ggarrange(panel_figure, NULL, plot2, t1, widths = c(1, 0.1, 1, 1), heights = c(1.8, 0.1, 4, 1), ncol = 1, nrow = 4))
+    figure  <- suppressWarnings(ggpubr::ggarrange(panel_figure, NULL, plot2, panel_table, widths = c(1, 0.1, 1, 1), heights = c(1.8, 0.1, 4, 1), ncol = 1, nrow = 4))
     figure <- ggpubr::annotate_figure(figure,
                                       top = ggpubr::text_grob(paste0("Gene: ", gene, " / ", "Cell type: ", cell_type_name), face = "bold", size = 18),
                                       bottom = ggpubr::text_grob("Generated by scGenePanel (Shrestha S, et al, 2023).",
@@ -238,7 +224,7 @@ create_gene_panel <- function(object,
     ggplot2::ggsave(filename, width = 12, height = 7, scale = 2, dpi = 600, units = "in")
     message(paste0("Plot saved to: ", filename))
 
-  }
+
 
   return(figure)
 
