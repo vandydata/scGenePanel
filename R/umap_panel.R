@@ -49,8 +49,8 @@ umap_panel <- function(seurat_obj,
     plot1[[1]]$labels$colour <- "Expression"
     plot1[[1]]$labels$x <- ''
     plot1[[1]]$labels$y <- ''
-    plot1[[1]] + guides(fill = guide_legend(order = 1),
-                        colour = guide_legend(order = 2))
+    plot1[[1]] + ggplot2::guides(fill = ggplot2::guide_legend(order = 1),
+                        colour = ggplot2::guide_legend(order = 2))
 
     plot1 <- plot1 + ggplot2::theme(aspect.ratio=1)
     suppressMessages(plot1)
@@ -73,12 +73,12 @@ umap_panel <- function(seurat_obj,
   # Remove legend from all panels except the last one
   for(i in 1:length(panels)){
     if(i != length(levels_idents)){
-      panels[[i]] <- panels[[i]] + theme(legend.position = "none")
+      panels[[i]] <- panels[[i]] + ggplot2::theme(legend.position = "none")
     }
   }
 
   # Assemble multiplot panel
-  panel_figure <- cowplot::plot_grid(plotlist = panels, ncol = length(levels_idents))
+  panel_figure <- cowplot::plot_grid(plotlist = panels, ncol = length(levels_idents), align = "hv", rel_widths = rep(1, length(levels_idents)))
 
   #create common x and y labels
   y.grob <- grid::textGrob("UMAP_2",gp=grid::gpar(fontface="bold", col="black", fontsize=15), rot=90)
