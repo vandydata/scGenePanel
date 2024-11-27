@@ -21,7 +21,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.0
 Description: A package for creating a multi-panel view of a single gene within a selected cell population and variable trait, including UMAP embeddings, violin plots and expression metrics derived from single cell (or nucleus) gene expression data.
 Depends:
-    R (>= 3.5.0)
+    R (>= 4.0.0)
 Imports:
     Seurat (>= 4.1.1),
     dplyr,
@@ -43,7 +43,11 @@ Imports:
     BiocManager,
     SingleCellExperiment,
     formattable,
-    scCustomize
+    scCustomize,
+    patchwork,
+    grid,
+    gridExtra,
+    flextable
 Suggests: 
     knitr,
     rmarkdown,

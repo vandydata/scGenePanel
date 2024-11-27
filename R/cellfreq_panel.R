@@ -14,7 +14,6 @@
 #' @param col_palette Color palettes to choose for violinplot panel. Options
 #' are "tableu","varibow" or RColorBrewer qualitative variables like "Dark2",
 #' "Paired", "Set1" etc
-#' @param levels_idents The levels of the metadata column to split with
 #'
 #' @return ggpubr table
 #' @importFrom stats quantile
@@ -28,8 +27,7 @@ cellfreq_panel <- function(seurat_obj,
                            cell_type_name,
                            meta_group,
                            gene,
-                           col_palette,
-                           levels_idents
+                           col_palette
 ) {
 
 
@@ -45,14 +43,11 @@ cellfreq_panel <- function(seurat_obj,
 
   # if gene has no expression over 0.25, print message of "No detection"
   selected_cells_expressed <- tryCatch({
-    check <- Seurat::GetAssayData(selected_cluster_cells[["RNA"]])[gene, ] > 0.25
+    check <- Seurat::GetAssayData(selected_cluster_cells[["RNA"]])[gene, ] > 0.25 # TODO parametize this, and a default
     selected_cells_expressed <- selected_cluster_cells[, check]
-
   }, error = function(e) {
     selected_cells_expressed <- NULL
-  }
-
-  )
+  })
 
   if (is.null(selected_cells_expressed)) {
     message(paste0("No expression detected for: ", gene))
@@ -63,12 +58,14 @@ cellfreq_panel <- function(seurat_obj,
       dplyr::tally()     # tally cells expressing the gene
 
     # Merge cell frequency and expression tally
-    cc_table <- merge(cell_counts_tally, selected_cells_expressed_tally,
+    cc_table <- merge(cell_counts_tally,
+                      selected_cells_expressed_tally,
                       by = meta_group,
                       suffixes = c("_cells", "_expressing"),
                       all = TRUE)
 
     cc_table$ratio <- cc_table$n_expressing / cc_table$n_cells # ratio
+
     cc_table[is.na(cc_table)] <- 0
     names(cc_table)[names(cc_table) == 'ratio'] <- 'pct.expressed'
     #t1 <- ggpubr::ggtexttable(cc_table, rows = NULL)
@@ -77,8 +74,8 @@ cellfreq_panel <- function(seurat_obj,
     celltype <- NULL # need this to remove “no visible binding” note, peculiarity of using dplyr
     obj_meta <- seurat_obj@meta.data
     meta_subset <- obj_meta[, c(cell_type_colname, meta_group)]
-    names(meta_subset) <- c("celltype", "group")
-    meta_subset <- meta_subset %>% filter(celltype == cell_type_name)
+    names(meta_subset) <- c("celltype", "group") # TODO - I don't understand why this is necessary after setting the above
+    meta_subset <- meta_subset %>% dplyr::filter(celltype == cell_type_name)
 
     exp_orig <- Seurat::GetAssayData(selected_cluster_cells[["RNA"]])[gene, ]
     exp_orig <- as.data.frame(exp_orig)
@@ -93,47 +90,99 @@ cellfreq_panel <- function(seurat_obj,
       quantile,
       probs = seq(0, 1, 0.25)
     ))
-    result <- t(result)[, 2:5]
+    result <- round(t(result)[, 2:5], 2)
+
 
     combined_cc_table <- cbind(cc_table, result)
     names(combined_cc_table) <- c(
       meta_group,
       "n_cells",
-      "n_expressing(>0.25)",
+      "n_expressing (>0.25)",
       "% expressed",
-      "25% (quantile)",
-      "50% (quantile)",
-      "75% (quantile)",
-      "100% (quantile)"
+      "25%",
+      "50%",
+      "75%",
+      "100%"
     )
 
-    # Add titles and footnote
-    # :::::::::::::::::::::::::::::::::::::::::::::::::::
-    # Wrap subtitle into multiple lines using strwrap()
-    main_title <- paste0("Metrics of ", gene, " expression in ", cell_type_name, " cells per ", meta_group)
-    subtitle <- paste(
-      "n_cells = cell frequency per group",
-      "n_expressing = cells expression above 0.25",
-      "%expressed = n_expressing/n_cells*100", sep = "\n"
-    ) %>%
-      strwrap(width = 80) %>%
-      paste(collapse = "\n")
 
-    #increase the size of table
-    table_theme <- ggpubr::ttheme(
-      base_style = "default",
-      base_size = 20,
-      base_colour = "black",
-      padding = ggplot2::unit(c(6, 6), "mm"),
-      colnames.style = ggpubr::colnames_style(size = 20),
-      rownames.style = ggpubr::rownames_style(size = 20),
-      tbody.style = ggpubr::tbody_style(size = 20)
-    )
+    # round to one decimal point
+    combined_cc_table$`% expressed` <- round((combined_cc_table$`% expressed` * 100), 1)
 
-    t1 <- ggpubr::ggtexttable(combined_cc_table, rows = NULL, theme = table_theme)
-    t1 %>%
-      ggpubr::tab_add_title(text = subtitle, face = "plain", size = 10) %>%
-      ggpubr::tab_add_title(text = main_title, face = "bold", padding =  ggplot2::unit(0.1, "line"))
+    if(TRUE){
+
+      ft <- flextable::flextable(combined_cc_table)
+      ft <- add_header_row(ft,
+                           colwidths = c(1, 3, 4),
+                           values = c("", "Gene Expression", "Quantiles")
+      )
+      ft <- theme_vanilla(ft)
+
+      border <- fp_border_default()
+      ft <- vline(ft, j = c(meta_group, '% expressed'), border = border, part = "all")
+      ft <- fontsize(ft, size = 20, part = "header")
+      ft <- fontsize(ft, size = 18, part = "body")
+      ft <- fontsize(ft, size = 16, part = "footer")
+
+      ft <- footnote(ft,
+               i = 2, j = 2:4,
+               value = as_paragraph(
+                 c(
+                   "n_cells - number of cells in group",
+                   "n_expressing (>0.25%) - number of cells with expression value 0.25",
+                   "%expressed = (n_expressing / n_cells) * 100"
+                 )
+               ),
+               ref_symbols = c("a", "b", "c"),
+               part = "header"
+      )
+
+      ft <- footnote(ft,
+                     i = 1, j = 5,
+                     value = as_paragraph(
+                       c(
+                         "The quantiles provide a summary of the distribution of expression values within each group. For example, if you have expression values for different genes in different groups, the quantiles can give you an idea about the spread and central tendency of the expression values within each group."
+                       )
+                     ),
+                     ref_symbols = c("d"),
+                     part = "header"
+      )
+      ft <- color(ft, part = "footer", color = "#666666")
+      #ft <- set_caption(ft, caption = "Title goes here")
+      t1 <- gen_grob(ft)
+
+    }
+
+    if(FALSE){
+
+      # :::::::::::::::::::::::::::::::::::::::::::::::::::
+      # Wrap subtitle into multiple lines using strwrap()
+      main_title <- paste0("Metrics of ", gene, " expression in ", cell_type_name, " cells per ", meta_group)
+      subtitle <- paste(
+        "n_cells = cell frequency per group",
+        "n_expressing = cells expression above 0.25",
+        "%expressed = n_expressing/n_cells*100", sep = "\n"
+      ) %>%
+        strwrap(width = 80) %>%
+        paste(collapse = "\n")
+
+      #increase the size of table
+      table_theme <- ggpubr::ttheme(
+        base_style = "default",
+        base_size = 20,
+        base_colour = "black",
+        padding = ggplot2::unit(c(6, 6), "mm"),
+        colnames.style = ggpubr::colnames_style(size = 20),
+        rownames.style = ggpubr::rownames_style(size = 20),
+        tbody.style = ggpubr::tbody_style(size = 20)
+      )
+
+      t1 <- ggpubr::ggtexttable(combined_cc_table, rows = NULL, theme = table_theme)
+      t1 %>%
+        ggpubr::tab_add_title(text = subtitle, face = "plain", size = 10) %>%
+        ggpubr::tab_add_title(text = main_title, face = "bold", padding =  ggplot2::unit(0.1, "line"))
+
+    }
 
   }
 

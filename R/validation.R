@@ -8,7 +8,6 @@
 #' @importFrom methods is
 #' @noRd
 
-
 .make_seurat <- function(object) {
 
   if (class(x = object)[[1]] == "Seurat") {
@@ -60,8 +59,6 @@
 #' @return returns an error message if cell_type_colname does not exist
 #' @noRd
 
-
-
 .is_celltype_colname <- function(
   object, cell_type_colname
 ) {
@@ -69,14 +66,12 @@
   meta_col_names <- colnames(x = seurat_obj@meta.data)
   if (cell_type_colname %in% meta_col_names == "FALSE") {
     error_message <- paste(
-      "Entered 'cell_type_colname' was not found in metadata. ",
-      "Enter a cell type identity containing column name among the following:",
+      "Entered 'cell_type_colname' was not found in metadata.",
+      "Enter a cell type identity containing column name among the following:\n",
        paste(meta_col_names, collapse = ", "))
     stop(error_message)
   }
 }
-
-
 
 
 #' Check if cell type name exists
@@ -91,8 +86,6 @@
 #' @return returns an error message if cell type name does not exist
 #' @noRd
 
-
-
 .is_cell_type_name <- function(
   object, cell_type_name, cell_type_colname
 ) {
@@ -105,7 +98,6 @@
     stop(error_message)
   }
 }
-
 
 #' Check meta_group
 #'
@@ -140,7 +132,6 @@
 #' @return returns an error message if gene is not found in seurat object
 #' @noRd
 
-
 .is_gene <- function(
   object, gene
 ) {
@@ -150,4 +141,3 @@
     stop("Entered 'gene' in object not found")
   }
 }
-
