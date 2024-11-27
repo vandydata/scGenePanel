@@ -111,6 +111,11 @@ cellfreq_panel <- function(seurat_obj,
 
     if(TRUE){
 
+      subset <- combined_cc_table[, c( "25%", "50%", "75%", "100%")]
+      subset_min <- min(subset)
+      subset_max <- max(subset)
+
+
       set_flextable_defaults(
         #font.family = "Consolas",
         font.color = "#000000",
@@ -126,6 +131,7 @@ cellfreq_panel <- function(seurat_obj,
       ft <- font(ft, part = "all", fontname = "Consolas")
 
       border <- fp_border_default()
+
       ft <- vline(ft, j = c(meta_group, '% expressed'), border = border, part = "all")
 
       ft <- footnote(ft,
@@ -153,6 +159,18 @@ cellfreq_panel <- function(seurat_obj,
                      part = "header",
                      inline = TRUE
       )
+
+      colourer <- scales::col_numeric(
+        palette = c("#fcee98", "#da4362"),
+        domain = c(subset_min, subset_max)
+      )
+      ft <- bg(ft,
+                 j = c(
+                   "25%", "50%", "75%", "100%"
+                 ),
+                 bg = colourer, part = "body"
+      )
+
 
       ft <- fontsize(ft, size = 20, part = "header")
       ft <- fontsize(ft, size = 18, part = "body")
