@@ -102,10 +102,11 @@ create_gene_panel <- function(object,
       NULL,
       violin,
       NULL,
-      ggpubr::ggarrange(table, NULL, widths = c(1, 1)),
+      ggpubr::ggarrange(NULL, table, NULL, ncol=3, widths = c(1, 18, 1)),
       heights = c(1.8, 0.1, 3, 0.1, 1.5),
       ncol = 1,
       nrow = 5) )
+figure
 
   figure <- ggpubr::annotate_figure(figure,
                                     top = ggpubr::text_grob(paste0("Gene: ", gene, " | ", "Cell type: ", cell_type_name), face = "bold", size = 24),

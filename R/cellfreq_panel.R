@@ -111,78 +111,59 @@ cellfreq_panel <- function(seurat_obj,
 
     if(TRUE){
 
+      set_flextable_defaults(
+        #font.family = "Consolas",
+        font.color = "#000000",
+        border.color = "#cccccc"
+      )
+
       ft <- flextable::flextable(combined_cc_table)
       ft <- add_header_row(ft,
                            colwidths = c(1, 3, 4),
                            values = c("", "Gene Expression", "Quantiles")
       )
       ft <- theme_vanilla(ft)
+      ft <- font(ft, part = "all", fontname = "Consolas")
 
       border <- fp_border_default()
       ft <- vline(ft, j = c(meta_group, '% expressed'), border = border, part = "all")
-      ft <- fontsize(ft, size = 20, part = "header")
-      ft <- fontsize(ft, size = 18, part = "body")
-      ft <- fontsize(ft, size = 16, part = "footer")
 
       ft <- footnote(ft,
                i = 2, j = 2:4,
                value = as_paragraph(
                  c(
-                   "n_cells - number of cells in group",
-                   "n_expressing (>0.25%) - number of cells with expression value 0.25",
-                   "%expressed = (n_expressing / n_cells) * 100"
+                   "n_cells - Number of cells in group",
+                   "n_expressing (>0.25%) - Number of cells with expression value at least 0.25",
+                   "% expressed = (n_expressing / n_cells) * 100"
                  )
                ),
                ref_symbols = c("a", "b", "c"),
-               part = "header"
+               part = "header",
+               inline = TRUE
       )
 
       ft <- footnote(ft,
                      i = 1, j = 5,
                      value = as_paragraph(
                        c(
-                         "The quantiles provide a summary of the distribution of expression values within each group. For example, if you have expression values for different genes in different groups, the quantiles can give you an idea about the spread and central tendency of the expression values within each group."
+                         "Gene expression values per quantile for assessing distribution within each group."
                        )
                      ),
                      ref_symbols = c("d"),
-                     part = "header"
+                     part = "header",
+                     inline = TRUE
       )
-      ft <- color(ft, part = "footer", color = "#666666")
+
+      ft <- fontsize(ft, size = 20, part = "header")
+      ft <- fontsize(ft, size = 18, part = "body")
+      ft <- fontsize(ft, size = 18, part = "footer")
+
+
       #ft <- set_caption(ft, caption = "Title goes here")
       t1 <- gen_grob(ft)
 
     }
 
-    if(FALSE){
-
-      # :::::::::::::::::::::::::::::::::::::::::::::::::::
-      # Wrap subtitle into multiple lines using strwrap()
-      main_title <- paste0("Metrics of ", gene, " expression in ", cell_type_name, " cells per ", meta_group)
-      subtitle <- paste(
-        "n_cells = cell frequency per group",
-        "n_expressing = cells expression above 0.25",
-        "%expressed = n_expressing/n_cells*100", sep = "\n"
-      ) %>%
-        strwrap(width = 80) %>%
-        paste(collapse = "\n")
-
-      #increase the size of table
-      table_theme <- ggpubr::ttheme(
-        base_style = "default",
-        base_size = 20,
-        base_colour = "black",
-        padding = ggplot2::unit(c(6, 6), "mm"),
-        colnames.style = ggpubr::colnames_style(size = 20),
-        rownames.style = ggpubr::rownames_style(size = 20),
-        tbody.style = ggpubr::tbody_style(size = 20)
-      )
-
-      t1 <- ggpubr::ggtexttable(combined_cc_table, rows = NULL, theme = table_theme)
-      t1 %>%
-        ggpubr::tab_add_title(text = subtitle, face = "plain", size = 10) %>%
-        ggpubr::tab_add_title(text = main_title, face = "bold", padding =  ggplot2::unit(0.1, "line"))
-
-    }
 
   }
 
