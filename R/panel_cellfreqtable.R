@@ -20,6 +20,7 @@
 #' @importFrom dplyr filter mutate
 #' @importFrom magrittr %>%
 #' @importFrom methods as
+#' @import flextable
 #' @export
 
 cellfreq_panel <- function(seurat_obj,
@@ -116,7 +117,7 @@ cellfreq_panel <- function(seurat_obj,
       subset_max <- max(subset)
 
 
-      set_flextable_defaults(
+      flextable::set_flextable_defaults(
         #font.family = "Consolas",
         font.color = "#000000",
         border.color = "#cccccc"

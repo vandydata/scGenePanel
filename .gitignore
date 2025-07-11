@@ -7,3 +7,5 @@ inst/doc
 .idea
 .vscode
 vignettes/*.R
+dev/panc.filtered.celltypes.diet.Rds
+dev/panc_sub.Rds
