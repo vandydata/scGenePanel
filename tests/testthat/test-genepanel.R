@@ -58,7 +58,7 @@ test_that("create_gene_panel handles invalid cell type column", {
       cell_type_name = 'Beta',
       cell_type_colname = 'INVALID_COLUMN'
     ),
-    "not found in metadata"
+    "Cell type column.*not found in metadata"
   )
 })
 
@@ -71,7 +71,7 @@ test_that("create_gene_panel handles invalid cell type name", {
       cell_type_name = 'INVALID_CELL_TYPE',
       cell_type_colname = 'CellTypes'
     ),
-    "not found in metadata"
+    "Cell type.*not found in column"
   )
 })
 
@@ -84,7 +84,7 @@ test_that("create_gene_panel handles invalid meta group", {
       cell_type_name = 'Beta',
       cell_type_colname = 'CellTypes'
     ),
-    "not found in metadata"
+    "Metadata group.*not found in object metadata"
   )
 })
 
