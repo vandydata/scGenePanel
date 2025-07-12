@@ -1,6 +1,7 @@
 # scGenePanel
 
 [![R-CMD-check](https://github.com/vandydata/scGenePanel/workflows/R-CMD-check/badge.svg)](https://github.com/vandydata/scGenePanel/actions)
+[![Bioconductor candidate](https://img.shields.io/badge/Bioconductor-candidate-blue.svg)](https://bioconductor.org/packages/devel/bioc/)
 
 
 scGenePanel creates a multi-panel visualization for various gene expression metrics on user defined gene, sample group and cell types using single-cell RNAseq data.
