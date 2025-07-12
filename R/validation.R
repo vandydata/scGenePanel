@@ -8,16 +8,53 @@
 #' @importFrom methods is
 #' @noRd
 
+#' Check and Convert Seurat Object with Automatic Version Updating
+#'
+#' Convert SingleCellExperiment object to Seurat object and automatically
+#' update Seurat objects to current package version for compatibility
+#'
+#' @param object A Seurat or SingleCellExperiment object
+#' @return returns an error message if the object is not among the expected
+#'   input object types, or a properly versioned Seurat object
+#' @importFrom methods is
+#' @noRd
+
 .make_seurat <- function(object) {
 
+  # Handle Seurat objects
   if (class(x = object)[[1]] == "Seurat") {
+    # Check if Seurat object needs version updating
+    if ("version" %in% slotNames(object) && !is.null(object@version)) {
+      object_version <- package_version(object@version)
+      current_version <- packageVersion("Seurat")
+      
+      # If object version is older than current Seurat version, update it
+      if (object_version < current_version) {
+        message("Detected Seurat object version ", object_version, 
+                " (current: ", current_version, "). Updating object...")
+        
+        # Check if UpdateSeuratObject function exists
+        if (exists("UpdateSeuratObject", where = asNamespace("Seurat"))) {
+          tryCatch({
+            object <- UpdateSeuratObject(object)
+            message("Successfully updated Seurat object to version ", object@version)
+          }, error = function(e) {
+            warning("Could not update Seurat object: ", e$message, 
+                   "\nProceeding with original object, but compatibility issues may occur.")
+          })
+        } else {
+          warning("UpdateSeuratObject function not available. ",
+                 "Please update your Seurat installation.")
+        }
+      }
+    }
     return(object)
 
   } else if (is(object, "SingleCellExperiment")) {
     # Check if the count assay exists
     if (dim(SingleCellExperiment::counts(object))[1] == 0 || dim(SingleCellExperiment::counts(object))[2] == 0) {
       stop(paste0(
-        "counts assay is empty",
+        "counts assay is empty"
       ))
     }
 
@@ -26,21 +63,19 @@
 
     # Add normalized counts if it doesn't exist
     tryCatch({
-      if ("logcounts" %in% SingleCellExperiment::logcounts(object)) {
+      if ("logcounts" %in% SingleCellExperiment::assayNames(object)) {
         converted_obj <- Seurat::as.Seurat(object, counts = "counts", data = "logcounts")
       }
     }, error = function(e) {
       # if log counts does not exist, add log normalization
       converted_obj <- Seurat::NormalizeData(converted_obj)
-      print("logcounts assay is empty. log normalization added")
+      message("logcounts assay is empty. log normalization added")
     })
 
     # Add a compatible assay name "RNA"
-    #converted_obj <- suppressWarnings(RenameAssays(object = converted_obj, originalexp = 'RNA')) #errors out
     converted_obj@assays$RNA <- converted_obj@assays$originalexp
 
     return(converted_obj)
-
   }
 
   stop("entered 'object' is not a Seurat or SingleCellExperiment")
