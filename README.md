@@ -1,5 +1,8 @@
 # scGenePanel
 
+[![R-CMD-check](https://github.com/vandydata/scGenePanel/workflows/R-CMD-check/badge.svg)](https://github.com/vandydata/scGenePanel/actions)
+
+
 scGenePanel creates a multi-panel visualization for various gene expression metrics on user defined gene, sample group and cell types using single-cell RNAseq data.
 
 ## Features
