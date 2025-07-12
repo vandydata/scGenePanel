@@ -26,28 +26,39 @@ violin_panel <- function(seurat_obj,
                          gene,
                          col_palette,
                          levels_idents
-                         ) {
+) {
 
-  select_col <-  discrete_col_palette(num_colors = length(levels_idents), palette = col_palette)
-  #max_value <- max(Seurat::GetAssayData(seurat_obj[["RNA"]])[gene, ], slot = "data")
-  max_value <- Seurat::VlnPlot(object = seurat_obj, features = gene, group.by = cell_type_colname)
-  max_value <- max_value$data
-  max_value <- max(max_value[,1])
-  plot2 <- suppressWarnings(Seurat::VlnPlot(object = seurat_obj, features = gene, group.by = cell_type_colname, split.by = meta_group, cols = select_col, pt.size = -1) +
-                              #this is one-way ANOVA test, a significant p-value indicates that some of the group means are different, but we don’t know which pairs of groups are different.
-                              #ggpubr::stat_compare_means(method = "anova", label.y = max_value, label = "p.signif", size = 8) + # Add global p-value #currently this does not work on all plot
-                              # @JP yes, b/c it's not group-aware
-                              ggplot2::geom_violin(trim = FALSE, alph = 0.5, scale = "width", draw_quantiles = c(0.25, 0.5, 0.75)) +
-                              ggplot2::theme(plot.title = ggplot2::element_text(size = 20),
-                                             axis.title.x = ggplot2::element_text(size = 20, face = "bold"),
-                                             axis.title.y = ggplot2::element_text(size = 20, face = "bold"),
-                                             axis.text = ggplot2::element_text(size = 20, face = "bold"),
-                                             axis.text.x = ggplot2::element_text(size = 20, face = "bold"),
-                                             axis.text.y = ggplot2::element_text(size = 20, face = "bold"),
-                                             legend.text = ggplot2::element_text(size = 16, face = "bold"),
-                                             legend.title = ggplot2::element_text(size = 16, face = "bold")
-                              ) +
-                              ggplot2::xlab(cell_type_colname))
+  select_col <- discrete_col_palette(num_colors = length(levels_idents), palette = col_palette)
+
+  # Get the data from Seurat object
+  plot_data <- Seurat::FetchData(seurat_obj, vars = c(gene, cell_type_colname, meta_group))
+
+  # Rename columns for easier reference
+  colnames(plot_data) <- c("gene_expression", "cell_type", "meta_group")
+
+  # Create the plot from scratch
+  #this is one-way ANOVA test, a significant p-value indicates that some of the group means are different, but we don’t know which pairs of groups are different.
+  #ggpubr::stat_compare_means(method = "anova", label.y = max_value, label = "p.signif", size = 8) + # Add global p-value #currently this does not work on all plot
+  # @JP yes, b/c it's not group-aware
+                              
+  plot2 <- ggplot2::ggplot(plot_data, ggplot2::aes(x = cell_type,
+                                                   y = gene_expression,
+                                                   fill = meta_group)) +
+    ggplot2::geom_violin(trim = FALSE, alpha = 0.5, scale = "width",
+                         draw_quantiles = c(0.25, 0.5, 0.75)) +
+    ggplot2::scale_fill_manual(values = select_col) +
+    ggplot2::theme_classic() +
+    ggplot2::theme(plot.title = ggplot2::element_text(size = 20),
+                   axis.title.x = ggplot2::element_text(size = 20, face = "bold"),
+                   axis.title.y = ggplot2::element_text(size = 20, face = "bold"),
+                   axis.text = ggplot2::element_text(size = 20, face = "bold"),
+                   axis.text.x = ggplot2::element_text(size = 20, face = "bold"),
+                   axis.text.y = ggplot2::element_text(size = 20, face = "bold"),
+                   legend.text = ggplot2::element_text(size = 16, face = "bold"),
+                   legend.title = ggplot2::element_text(size = 16, face = "bold")) +
+    ggplot2::xlab(cell_type_colname) +
+    ggplot2::ylab(paste("Expression of", gene)) +
+    ggplot2::labs(fill = meta_group)
 
   return(plot2)
 }
