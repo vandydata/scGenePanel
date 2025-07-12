@@ -1,4 +1,4 @@
-# scGenePanel <a href="https://github.com/vandydata/scGenePanel"><img src="man/logo.svg" align="right" height="138"  alt="scGenePanel website"/></a>
+# scGenePanel <a href="https://github.com/vandydata/scGenePanel"><img src="dev/logo.svg" align="right" height="138"  alt="scGenePanel website"/></a>
 
 <!-- badges: start -->
 
