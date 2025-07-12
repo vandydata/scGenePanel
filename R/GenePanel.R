@@ -145,7 +145,7 @@ create_gene_panel <- function(object,
 
   # Cell frequency table
   message("Step 3 - Table")
-  table <- cellfreq_panel(object,
+  table <- cellfreq_panel(seurat_obj,
                                 cell_type_colname,
                                 cell_type_name,
                                 meta_group,
