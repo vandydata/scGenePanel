@@ -11,7 +11,8 @@
 #'   group, in one visual
 #'
 #'
-#' @param object A Seurat or SingleCellExperiment
+#' @param object A Seurat or SingleCellExperiment object. Seurat objects
+#'   will be automatically updated to the current package version if needed
 #' @param gene Name of gene to explore gene expression in UMAP, violin plot, and
 #'   cell frequency table
 #' @param meta_group The metadata column name of the variable to split the UMAP,

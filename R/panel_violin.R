@@ -129,7 +129,7 @@ violin_sig_panel <- function(seurat_obj,
   }
 
   cell_types <- unique(seurat_obj[[cell_type_colname]])
-  cell_types <- cell_types$CellTypes
+  cell_types <- cell_types[[cell_type_colname]]
   panels <- lapply(cell_types, loop_idents)
   #panels[[2]]
 
