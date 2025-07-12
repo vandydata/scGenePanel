@@ -4,6 +4,8 @@ scGenePanel creates a multi-panel visualization for various gene expression metr
 
 ## Features
 
+
+
 1. A multi-panel plot that contains:
    1. UMAP : Visualize cluster of cells, split by cell identity of interest and highlighted cell type of interest 
    2. Violin plot : Visualize gene expression counts, colored by cell identity of interest and split by cell type of interest 
@@ -29,5 +31,16 @@ From local Git clone
 install.packages("/path/to/scGenePanel", repos = NULL, type = "source")
 # with dependencies
 install.packages("/path/to/scGenePanel", repos = NULL, type = "source", dependencies = TRUE)
+```
+
+## Development
+
+```
+# at startup
+devtools::load_all() # from package dir, loads but doesn't install
+
+# after edits
+devtools::document()
+devtools::load_all()
 ```
 

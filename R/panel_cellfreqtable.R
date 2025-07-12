@@ -21,7 +21,8 @@
 #' @importFrom magrittr %>%
 #' @importFrom methods as
 #' @import flextable
-#' @export
+#' @keywords internal
+#' @noRd
 
 cellfreq_panel <- function(seurat_obj,
                            cell_type_colname,

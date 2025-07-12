@@ -18,7 +18,8 @@
 #' @importFrom dplyr filter mutate
 #' @importFrom magrittr %>%
 #' @importFrom methods as
-#' @export
+#' @keywords internal
+#' @noRd
 
 umap_panel <- function(seurat_obj,
                        cell_type_colname,
