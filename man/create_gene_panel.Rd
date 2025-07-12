@@ -18,7 +18,8 @@ create_gene_panel(
 )
 }
 \arguments{
-\item{object}{A Seurat or SingleCellExperiment}
+\item{object}{A Seurat or SingleCellExperiment object. Seurat objects
+will be automatically updated to the current package version if needed}
 
 \item{gene}{Name of gene to explore gene expression in UMAP, violin plot, and
 cell frequency table}
