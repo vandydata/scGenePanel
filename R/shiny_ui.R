@@ -38,20 +38,19 @@ create_genepanel_ui <- function(data) {
     titleWidth = "100%",
     tags$li(class = "dropdown",
             tags$style(".main-header {max-height: 200px}"),
-            tags$style(".main-header .logo {height: 100px}")
+            tags$style(".main-header .logo {height: 0}")
     )
   )
 
   anchor <- tags$header(
     tags$div(
 
-      tags$img(src = "www/logo.svg", height = "50px"),
-      tags$span("scGenePanel - multipanel plots for single cell expression data",
-                style = "color: #FFFFFF; font-size: 35px; font-weight: bold;")
+      tags$span("",
+                style = "color: #FFFFFF; ")
 
 
     ),
-    style = "padding: 20px;"
+    style = "height: 20px;"
   )
 
   header$children[[2]]$children <- tags$div(
@@ -126,6 +125,49 @@ create_genepanel_ui <- function(data) {
     # Body
     shinydashboard::dashboardBody(
       shinyjs::useShinyjs(),
+
+
+      # Mobile menu button
+      tags$button(
+        class = "mobile-menu-toggle",
+        onclick = "toggleMobileMenu();",
+        "☰"
+      ),
+
+      # Overlay for mobile menu
+      tags$div(
+        class = "sidebar-overlay",
+        onclick = "toggleMobileMenu();"
+      ),
+
+      # JavaScript for mobile menu functionality
+      tags$script(HTML("
+        function toggleMobileMenu() {
+          var sidebar = document.querySelector('.main-sidebar');
+          var overlay = document.querySelector('.sidebar-overlay');
+
+          if (sidebar.classList.contains('sidebar-open')) {
+            sidebar.classList.remove('sidebar-open');
+            overlay.classList.remove('show');
+          } else {
+            sidebar.classList.add('sidebar-open');
+            overlay.classList.add('show');
+          }
+        }
+
+        // Close menu when clicking on menu items
+        document.addEventListener('DOMContentLoaded', function() {
+          var menuItems = document.querySelectorAll('.sidebar-menu a');
+          menuItems.forEach(function(item) {
+            item.addEventListener('click', function() {
+              if (window.innerWidth <= 768) {
+                toggleMobileMenu();
+              }
+            });
+          });
+        });
+      ")),
+
       tags$head(
         tags$title("scGenePanel"),
         tags$style(HTML("
@@ -134,7 +176,7 @@ create_genepanel_ui <- function(data) {
           .skin-blue .main-sidebar { font-size: 18px; background-color: #2f2f2f; }
           .main-sidebar { font-size: 18px; }
           .skin-blue .main-sidebar .sidebar .sidebar-menu .active a{ background-color: #196797; }
-          .left-side, .main-sidebar { padding-top: 110px; }
+          .left-side, .main-sidebar { padding-top: 10px; }
           .loading-spinner { left:45% !important; }
           header { padding-top:20px 0 0 0 !important; }
           .full-panel-container { padding: 20px; background-color: white; }
@@ -144,6 +186,65 @@ create_genepanel_ui <- function(data) {
           /* hide header, adjust sidebar */
           header { display: none;}
           .main-sidebar { padding-top: 10px; }
+
+          /* Mobile menu toggle button */
+          .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            background: #2f2f2f;
+            color: white;
+            border: none;
+            padding: 10px 12px;
+            border-radius: 3px;
+            font-size: 18px;
+            cursor: pointer;
+          }
+
+          .mobile-menu-toggle:hover {
+            background: #196797;
+          }
+
+          /* Mobile responsiveness */
+          @media (max-width: 768px) {
+            .mobile-menu-toggle {
+              display: block;
+            }
+
+            .main-sidebar {
+              transform: translateX(-100%);
+              transition: transform 0.3s ease;
+              position: fixed;
+              height: 100vh;
+              z-index: 1000;
+            }
+
+            .main-sidebar.sidebar-open {
+              transform: translateX(0);
+            }
+
+            .content-wrapper {
+              margin-left: 0 !important;
+            }
+
+            /* Overlay for mobile menu */
+            .sidebar-overlay {
+              display: none;
+              position: fixed;
+              top: 0;
+              left: 0;
+              width: 100%;
+              height: 100%;
+              background: rgba(0,0,0,0.5);
+              z-index: 999;
+            }
+
+            .sidebar-overlay.show {
+              display: block;
+            }
+          }
         "))
       ),
 
