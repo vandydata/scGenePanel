@@ -1,5 +1,5 @@
 
-#' Discrete color paletters from multiple packages (varibow, Rcolorbrewer,
+#' Discrete color palettes from multiple packages (varibow, Rcolorbrewer,
 #' ggtheme)
 #' @param num_colors Number of colors to be generated.
 #' @param hex_cols hex code of the colors to be selected for violin plot

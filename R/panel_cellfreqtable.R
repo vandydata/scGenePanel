@@ -107,19 +107,16 @@ cellfreq_panel <- function(seurat_obj,
       "100%"
     )
 
-
     # round to one decimal point
     combined_cc_table$`% expressed` <- round((combined_cc_table$`% expressed` * 100), 1)
 
     if(TRUE){
 
-      subset <- combined_cc_table[, c( "25%", "50%", "75%", "100%")]
+      subset <- combined_cc_table[, c("25%", "50%", "75%", "100%")]
       subset_min <- min(subset)
       subset_max <- max(subset)
 
-
       flextable::set_flextable_defaults(
-        #font.family = "Consolas",
         font.color = "#000000",
         border.color = "#cccccc"
       )
@@ -130,7 +127,7 @@ cellfreq_panel <- function(seurat_obj,
                            values = c("", "Gene Expression", "Quantiles")
       )
       ft <- theme_vanilla(ft)
-      ft <- font(ft, part = "all", fontname = "Consolas")
+      ft <- font(ft, part = "all", fontname = "mono")
 
       border <- fp_border_default()
 

@@ -1,5 +1,9 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
-inst/extdata/*
 .github
+^doc$
+^Meta$
+^dev$
+.idea
+.vscode

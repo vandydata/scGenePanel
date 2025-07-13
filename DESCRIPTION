@@ -1,21 +1,21 @@
 Package: scGenePanel
 Title: Multi-panel visualization for single cell expression data
-Version: 0.0.0.9001
+Version: 0.99.0
 Authors@R: c(
     person(
-        given = "Shristi", 
-        family = "Shrestha", 
-        email = "shristi.shrestha.2@vanderbilt.edu", 
-        role = c("aut", "cre"),
+        given = "Shristi",
+        family = "Shrestha",
+        email = "shristi.shrestha.2@vanderbilt.edu",
+        role = c("aut"),
         comment = c(ORCID = "0000-0003-4519-1712")),
     person(
-        given = "Jean-Philippe", 
-        family = "Cartailler", 
-        email = "jp.cartailler@vanderbilt.edu", 
-        role = c("aut"),
+        given = "Jean-Philippe",
+        family = "Cartailler",
+        email = "jp.cartailler@vanderbilt.edu",
+        role = c("aut", "cre"),
         comment = c(ORCID = "0000-0002-0312-2391"))
     )
-License: AGPLv3 + file LICENSE
+License: GPL-3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
@@ -23,37 +23,34 @@ Description: A package for creating a multi-panel view of a single gene within a
 Depends:
     R (>= 4.0.0)
 Imports:
-    Seurat (>= 4.1.1),
-    dplyr,
-    ggpubr (>= 0.4.0.999),
-    magrittr (>= 2.0.3),
-    viridis,
-    ggplot2,
-    cowplot,
-    tidylog,
-    ggforce,
-    RColorBrewer,
-    ggthemes,
-    shiny,
     methods,
-    reader,
-    shinydashboard,
-    shinyjs,
-    dichromat,
-    BiocManager,
+    stats,
+    Seurat (>= 4.1.1),
     SingleCellExperiment,
-    formattable,
-    scCustomize,
+    SummarizedExperiment,
+    dplyr,
+    magrittr,
+    ggplot2,
+    ggpubr,
+    ggforce,
+    ggthemes,
+    ggsci,
+    cowplot,
     patchwork,
     grid,
     gridExtra,
-    flextable
-Suggests: 
+    flextable,
+    RColorBrewer,
+    scales,
+    scCustomize,
+    shiny
+Suggests:
     knitr,
     rmarkdown,
     BiocManager,
-    testthat (>= 3.0.0)
-biocViews: Software, GeneExpression, QualityControl, ShinyApps, SingleCell, Visualization, ReproducibleResearch, DifferentialExpression, DimensionReduction, RNASeq, Sequencing, Transcriptomics, Visualization
+    testthat (>= 3.0.0),
+    BiocStyle
+biocViews: Software, GeneExpression, QualityControl, ShinyApps, SingleCell, Visualization, ReproducibleResearch, DifferentialExpression, DimensionReduction, RNASeq, Sequencing, Transcriptomics
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 BugReports: https://github.com/vandydata/scGenePanel/issues

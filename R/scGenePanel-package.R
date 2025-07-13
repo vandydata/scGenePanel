@@ -24,7 +24,7 @@
 #' @section Getting Started:
 #' See \code{\link{create_gene_panel}} for detailed usage examples.
 #'
-#' @docType package
+#' "_PACKAGE".
 #' @name scGenePanel-package
 #' @aliases scGenePanel
 NULL

@@ -1,13 +1,3 @@
-#' Check Seurat Object
-#'
-#' Convert SingleCellExperiment object to Seurat object
-#'
-#' @param object A Seurat or SingleCellExperiment object
-#' @return returns an error message if the object is not among the expected
-#'   input object
-#' @importFrom methods is
-#' @noRd
-
 #' Check and Convert Seurat Object with Automatic Version Updating
 #'
 #' Convert SingleCellExperiment object to Seurat object and automatically
@@ -17,6 +7,9 @@
 #' @return returns an error message if the object is not among the expected
 #'   input object types, or a properly versioned Seurat object
 #' @importFrom methods is
+#' @importFrom methods slotNames
+#' @importFrom utils packageVersion combn
+#' @importFrom Seurat UpdateSeuratObject
 #' @noRd
 
 .make_seurat <- function(object) {
@@ -27,19 +20,19 @@
     if ("version" %in% slotNames(object) && !is.null(object@version)) {
       object_version <- package_version(object@version)
       current_version <- packageVersion("Seurat")
-      
+
       # If object version is older than current Seurat version, update it
       if (object_version < current_version) {
-        message("Detected Seurat object version ", object_version, 
+        message("Detected Seurat object version ", object_version,
                 " (current: ", current_version, "). Updating object...")
-        
+
         # Check if UpdateSeuratObject function exists
         if (exists("UpdateSeuratObject", where = asNamespace("Seurat"))) {
           tryCatch({
             object <- UpdateSeuratObject(object)
             message("Successfully updated Seurat object to version ", object@version)
           }, error = function(e) {
-            warning("Could not update Seurat object: ", e$message, 
+            warning("Could not update Seurat object: ", e$message,
                    "\nProceeding with original object, but compatibility issues may occur.")
           })
         } else {
@@ -94,23 +87,12 @@
 #' @return returns an error message if cell_type_colname does not exist
 #' @noRd
 
-#' Check if cell type metadata exists
-#'
-#' Check to see if cell type metadata column name exist in the seurat object
-#' with helpful error messages
-#'
-#' @param object A Seurat or SingleCellExperiment object
-#' @param cell_type_colname The metadata column name that contains the cell
-#' identity annotations
-#' @return returns an error message if cell_type_colname does not exist
-#' @noRd
-
 .is_celltype_colname <- function(
   object, cell_type_colname
 ) {
   seurat_obj <- .make_seurat(object)
   meta_col_names <- colnames(x = seurat_obj@meta.data)
-  
+
   if (!cell_type_colname %in% meta_col_names) {
     error_message <- paste0(
       "Cell type column '", cell_type_colname, "' not found in metadata.\n",
@@ -133,17 +115,6 @@
 #' @return returns an error message if cell type name does not exist
 #' @noRd
 
-#' Check if cell type name exists
-#'
-#' Check to see if cell type name exist in the seurat object with helpful suggestions
-#'
-#' @param object A Seurat or SingleCellExperiment object
-#' @param cell_type_name The cell type identity to highlight in UMAP
-#' @param cell_type_colname The metadata column name that contains the cell
-#'   identity annotations
-#' @return returns an error message if cell type name does not exist
-#' @noRd
-
 .is_cell_type_name <- function(
   object, cell_type_name, cell_type_colname
 ) {
@@ -154,11 +125,11 @@
     stop(paste0("Please specify a cell_type_name. Available options: ",
                 paste(available_types, collapse = ", ")), call. = FALSE)
   }
-  
+
   seurat_obj <- .make_seurat(object)
   meta <- seurat_obj@meta.data
   cell_type_column <- meta[, cell_type_colname]
-  
+
   if (!cell_type_name %in% cell_type_column) {
     available_types <- unique(meta[, cell_type_colname])
     error_message <- paste0(
@@ -180,23 +151,12 @@
 #' @return returns an error message if meta_group does not exist
 #' @noRd
 
-#' Check meta_group
-#'
-#' Check if 'meta_group' exists with helpful error messages
-#'
-#' @param object A Seurat or SingleCellExperiment object
-#' @param meta_group The metadata column name of the variable to split the UMAP,
-#' violinplot and cell frequency table by. for example, to split by disease
-#' condition
-#' @return returns an error message if meta_group does not exist
-#' @noRd
-
 .is_meta_group <- function(
   object, meta_group
 ) {
   seurat_obj <- .make_seurat(object)
   meta_col_names <- colnames(x = seurat_obj@meta.data)
-  
+
   if (!meta_group %in% meta_col_names) {
     error_message <- paste0(
       "Metadata group '", meta_group, "' not found in object metadata.\n",
@@ -204,11 +164,11 @@
     )
     stop(error_message, call. = FALSE)
   }
-  
+
   # Additional check: warn if meta_group has only one unique value
   meta_values <- unique(seurat_obj@meta.data[[meta_group]])
   if (length(meta_values) == 1) {
-    warning("Meta group '", meta_group, "' has only one unique value (", 
+    warning("Meta group '", meta_group, "' has only one unique value (",
             meta_values, "). Plots may not be meaningful.", call. = FALSE)
   }
 }
@@ -249,23 +209,23 @@
 ) {
   seurat_obj <- .make_seurat(object)
   meta_data <- seurat_obj@meta.data
-  
+
   # Create cross-tabulation of cell types and meta groups
   cell_counts <- table(meta_data[[cell_type_colname]], meta_data[[meta_group]])
-  
+
   # Check for groups with too few cells
   low_count_groups <- which(cell_counts < min_cells, arr.ind = TRUE)
-  
+
   if (nrow(low_count_groups) > 0) {
     low_groups <- paste(
-      rownames(cell_counts)[low_count_groups[,1]], 
+      rownames(cell_counts)[low_count_groups[,1]],
       "in",
       colnames(cell_counts)[low_count_groups[,2]],
       collapse = ", "
     )
     warning(
-      "Some groups have very few cells (< ", min_cells, "): ", low_groups, 
-      ". Results may not be meaningful.", 
+      "Some groups have very few cells (< ", min_cells, "): ", low_groups,
+      ". Results may not be meaningful.",
       call. = FALSE
     )
   }

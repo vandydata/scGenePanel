@@ -1,29 +1,33 @@
 ---
-title: "scGenePanel"
-date: 'Compiled: `r format(Sys.Date(), "%B %d, %Y")`'
-output: rmarkdown::html_vignette
+title: "Getting Started with scGenePanel"
+author:
+- name: Shristi Shrestha
+  affiliation: Vanderbilt University
+  email: shristi.shrestha.2@vanderbilt.edu
+- name: Jean-Philippe Cartailler
+  affiliation: Vanderbilt University
+  email: jp.cartailler@vanderbilt.edu
+package: scGenePanel
+date: "`r Sys.Date()`"
+output:
+  BiocStyle::html_document:
+    toc: true
+    toc_float: true
 vignette: >
-  %\VignetteIndexEntry{scGenePanel}
+  %\VignetteIndexEntry{Getting Started with scGenePanel}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 7,
+  fig.height = 5
+)
 
-library(dplyr)
-library(formattable)
-library(htmlwidgets)
-library(knitr)
-library(kableExtra)
-library(stringr)
-library(magick)
-
-add_image <- function(filepath, size = 1000){
-  image_read(filepath) %>% 
-    image_scale(str_extract(size, "[0-9]+"))
-}
-  
 ```
 
 Source: `vignettes/scGenePanel.Rmd`
@@ -42,7 +46,7 @@ scGenePanel is a tool to visualize single-cell RNA-seq gene expression data. Whi
 * Order of cell identity of interest can be changed via group_order parameter
 * Shiny version to explore gene expression data interactively
 
-# Installation
+## Installation
 
 From Github repository (once publicly available)
 
@@ -59,7 +63,12 @@ install.packages("scGenePanel", repos = NULL, type = "source")
 install.packages("scGenePanel", repos = NULL, type = "source", dependencies = TRUE)
 ```
 
-# Loading data
+```{r}
+library(scGenePanel)
+library(BiocStyle)
+```
+
+## Loading data
 
 scGenePanel works natively with any pre-processed Seurat and SingleCellExperiment objects. For this vignette, the dataset used (`human_pancreas-islets_seurat.Rds`) is publicly available at [github](https://github.com/vandydata/CDS-datasets/tree/main/scRNA-Seq). This Seurat object contains single cell RNAseq data of human pancreatic islets from five healthy donors published in Shrestha et al., JCI Insight (2021) that has been <u>downsampled to 500 cells</u>. Key annotations included in the metadata are:
 * `CellTypes` - cell types annotations
@@ -67,39 +76,36 @@ scGenePanel works natively with any pre-processed Seurat and SingleCellExperimen
 
 If interested, the complete dataset (X cells) is available in [zenodo](https://zenodo.org/record/7626110).
 
-```{r eval=F, echo=T}
-library(scGenePanel)
-data <- readRDS(url("https://github.com/vandydata/CDS-datasets/raw/main/scRNA-Seq/human_pancreas-islets_seurat.Rds"))
+```{r}
+data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
 ```
 
 
-# Visualization
+## Visualization
+```{r}
+library(Seurat)
+Idents(data) <- "CellTypes"
+#head(Idents(data))
+
+data <- subset(x = data, idents = c("Alpha", "Beta", "Delta"))
+#data <- subset(x = data, subset = Age %in% c("14y", "39y", "66y"))
+```
+
 
 `create_gene_panel()` loads the multi-panel visual for the gene of interest among the cell identity of interest entered by parameter `meta_group` and cell type of interest entered by parameter `cell_typ_name`.
 
 ```{r eval=F, echo=T}
+
 create_gene_panel(
     object = data,
     gene = "INS",
     meta_group = "Age",
     cell_type_name = "Beta",
     cell_type_colname = "CellTypes",
-    col.palette = "Tableau",
+    col_palette = "Tableau",
     group_order = NULL,
     output_dir = ""
   )
-```
-
-```{r, echo = FALSE, fig.retina = 1, dpi = 128}
-add_image('genePanel__INS_Beta2.png')
-```
-
-# Explore via shiny app
-
-To run the scGenePanel visual via shiny, simply run script below.
-
-```{r eval=F, echo=T}
-shiny::runApp("inst/shiny/genepanel")
 ```
 
 

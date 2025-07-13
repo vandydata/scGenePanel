@@ -1,10 +1,11 @@
-# Load test data
-test_data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
 
 # Basic functionality tests
 test_that("create_gene_panel works with valid Seurat input", {
   library(scGenePanel)
-  
+
+  # Load test data
+  test_data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
+
   result <- create_gene_panel(
     object = test_data,
     gene = 'INS',
@@ -14,14 +15,14 @@ test_that("create_gene_panel works with valid Seurat input", {
     col_palette = 'Dark2',
     output_dir = tempdir()
   )
-  
+
   expect_s3_class(result, 'ggplot')
 })
 
 test_that("create_gene_panel works with SingleCellExperiment input", {
   library(scGenePanel)
   sce_data <- readRDS(system.file("extdata", "sce_object.Rds", package="scGenePanel"))
-  
+
   result <- create_gene_panel(
     object = sce_data,
     gene = 'INS',
@@ -31,12 +32,13 @@ test_that("create_gene_panel works with SingleCellExperiment input", {
     col_palette = 'Dark2',
     output_dir = tempdir()
   )
-  
+
   expect_s3_class(result, 'ggplot')
 })
 
 # Error handling tests
 test_that("create_gene_panel handles missing gene error", {
+  test_data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
   expect_error(
     create_gene_panel(
       object = test_data,
@@ -50,6 +52,7 @@ test_that("create_gene_panel handles missing gene error", {
 })
 
 test_that("create_gene_panel handles invalid cell type column", {
+  test_data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
   expect_error(
     create_gene_panel(
       object = test_data,
@@ -63,6 +66,8 @@ test_that("create_gene_panel handles invalid cell type column", {
 })
 
 test_that("create_gene_panel handles invalid cell type name", {
+  test_data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
+
   expect_error(
     create_gene_panel(
       object = test_data,
@@ -76,6 +81,8 @@ test_that("create_gene_panel handles invalid cell type name", {
 })
 
 test_that("create_gene_panel handles invalid meta group", {
+  test_data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
+
   expect_error(
     create_gene_panel(
       object = test_data,
@@ -89,6 +96,8 @@ test_that("create_gene_panel handles invalid meta group", {
 })
 
 test_that("create_gene_panel handles invalid object type", {
+  test_data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
+
   expect_error(
     create_gene_panel(
       object = data.frame(x = 1:10, y = 1:10),  # Invalid object type
@@ -103,6 +112,8 @@ test_that("create_gene_panel handles invalid object type", {
 
 # Parameter validation tests
 test_that("create_gene_panel validates required parameters", {
+  test_data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
+
   expect_error(
     create_gene_panel(
       object = test_data
@@ -115,7 +126,8 @@ test_that("create_gene_panel validates required parameters", {
 # Edge case tests
 test_that("create_gene_panel works with different color palettes", {
   palettes_to_test <- c('Set1', 'Set2', 'Set3', 'Dark2', 'Paired')
-  
+  test_data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
+
   for(pal in palettes_to_test) {
     result <- create_gene_panel(
       object = test_data,
@@ -133,7 +145,8 @@ test_that("create_gene_panel works with different color palettes", {
 test_that("create_gene_panel works with different genes", {
   genes_to_test <- c('INS', 'GCG', 'SST')  # Different pancreatic markers
   cell_types <- c('Beta', 'Alpha', 'Delta')
-  
+  test_data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
+
   for(i in seq_along(genes_to_test)) {
     result <- create_gene_panel(
       object = test_data,
@@ -148,6 +161,7 @@ test_that("create_gene_panel works with different genes", {
 })
 
 test_that("create_gene_panel handles custom group ordering", {
+  test_data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
   result <- create_gene_panel(
     object = test_data,
     gene = 'INS',

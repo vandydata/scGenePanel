@@ -18,6 +18,8 @@
 #' @importFrom magrittr %>%
 #' @importFrom methods as
 #' @keywords internal
+#' @importFrom utils combn
+#' @importFrom stats median
 #' @noRd
 
 violin_panel <- function(seurat_obj,
@@ -41,7 +43,7 @@ violin_panel <- function(seurat_obj,
   #this is one-way ANOVA test, a significant p-value indicates that some of the group means are different, but we don’t know which pairs of groups are different.
   #ggpubr::stat_compare_means(method = "anova", label.y = max_value, label = "p.signif", size = 8) + # Add global p-value #currently this does not work on all plot
   # @JP yes, b/c it's not group-aware
-                              
+
   plot2 <- ggplot2::ggplot(plot_data, ggplot2::aes(x = cell_type,
                                                    y = gene_expression,
                                                    fill = meta_group)) +
