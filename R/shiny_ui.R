@@ -38,35 +38,54 @@ create_genepanel_ui <- function(data) {
     header,
     title = "scGenePanel : Visuals for Single Cell RNA-seq Data",
 
-    # Sidebar
-    shinydashboard::dashboardSidebar(width = 400,
-      sidebarMenu(
-        id = "tabs",
-        menuItem("Home", tabName = "home", selected = T),
-        menuItem(startExpanded = TRUE,
-          selectizeInput(inputId = "Gene",
-                         label = "Enter Official Gene Symbol",
-                         choices = rownames(data),
-                         selected = "INS",
-                         options = list(maxOptions = 100))),
-        textInput(inputId = "cell_type_name", label = "Enter name of cell type", value = "Beta"),
-        textInput(inputId = "cell_type_colname", label = "Enter column name of the cell type annotation", value = "CellTypes"),
-        textInput(inputId = "meta_group", label = "Enter group name", value = "Source"),
-        menuItem(startExpanded = TRUE,
-                 selectizeInput(inputId = "color",
-                                label = "Enter color palette",
-                                choices = c("Set1","Set2","Set3","Paired","Dark2","Accent"),
-                                selected = "Set3")),
-        br(),
-        tags$hr(),
-        tags$h4("Views:", style = "color: white; margin-left: 15px;"),
-        menuItem("🏠 Home", tabName = "home"),
-        menuItem("🎯 Full Panel", tabName = "fullpanel", badgeLabel = "MAIN", badgeColor = "green"),
-        menuItem("🗺️ UMAP Only", tabName = "umap"),
-        menuItem("🎻 Violin Only", tabName = "vlnplot"),
-        menuItem("📊 Table Only", tabName = "table")
+# Sidebar
+shinydashboard::dashboardSidebar(width = 400,
+  sidebarMenu(
+    id = "tabs",
+    menuItem("Home", tabName = "home", selected = TRUE),
+    # Use fluidRow and column for better alignment of inputs
+    fluidRow(
+      column(12,
+             selectizeInput(inputId = "Gene",
+                            label = "Enter Official Gene Symbol",
+                            choices = rownames(data),
+                            selected = "INS",
+                            options = list(maxOptions = 100))
       )
     ),
+    fluidRow(
+      column(12,
+             textInput(inputId = "cell_type_name", label = "Enter name of cell type", value = "Beta")
+      )
+    ),
+    fluidRow(
+      column(12,
+             textInput(inputId = "cell_type_colname", label = "Enter column name of the cell type annotation", value = "CellTypes")
+      )
+    ),
+    fluidRow(
+      column(12,
+             textInput(inputId = "meta_group", label = "Enter group name", value = "Source")
+      )
+    ),
+    fluidRow(
+      column(12,
+             selectizeInput(inputId = "color",
+                            label = "Enter color palette",
+                            choices = c("Set1","Set2","Set3","Paired","Dark2","Accent"),
+                            selected = "Set3")
+      )
+    ),
+    br(),
+    tags$hr(),
+    tags$h4("Views:", style = "color: white; margin-left: 15px;"),
+    menuItem("🏠 Home", tabName = "home"),
+    menuItem("🎯 Full Panel", tabName = "fullpanel", badgeLabel = "MAIN", badgeColor = "green"),
+    menuItem("🗺️ UMAP Only", tabName = "umap"),
+    menuItem("🎻 Violin Only", tabName = "vlnplot"),
+    menuItem("📊 Table Only", tabName = "table")
+  )
+),
 
     # Body
     shinydashboard::dashboardBody(
