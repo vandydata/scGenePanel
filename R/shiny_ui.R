@@ -42,48 +42,47 @@ create_genepanel_ui <- function(data) {
 shinydashboard::dashboardSidebar(width = 400,
   sidebarMenu(
     id = "tabs",
-    menuItem("Home", tabName = "home", selected = TRUE),
+    menuItem("🏡 Home", tabName = "home", selected = TRUE),
+    tags$hr(),
+    tags$h3("Step 1 - Configure:", style = "color: white; margin-left: 15px;"),
     # Use fluidRow and column for better alignment of inputs
     fluidRow(
       column(12,
              selectizeInput(inputId = "Gene",
-                            label = "Enter Official Gene Symbol",
+                            label = "Gene of interest",
                             choices = rownames(data),
                             selected = "INS",
-                            options = list(maxOptions = 100))
+                            options = list(maxOptions = 20))
       )
     ),
     fluidRow(
       column(12,
-             textInput(inputId = "cell_type_name", label = "Enter name of cell type", value = "Beta")
+             textInput(inputId = "cell_type_name", label = "Cell type", value = "Beta")
       )
     ),
     fluidRow(
       column(12,
-             textInput(inputId = "cell_type_colname", label = "Enter column name of the cell type annotation", value = "CellTypes")
+             textInput(inputId = "cell_type_colname", label = "Metadata column name of cell type annotation to use", value = "CellTypes")
       )
     ),
     fluidRow(
       column(12,
-             textInput(inputId = "meta_group", label = "Enter group name", value = "Source")
+             textInput(inputId = "meta_group", label = "Group - metadata column name for trait to explore", value = "Source")
       )
     ),
     fluidRow(
       column(12,
              selectizeInput(inputId = "color",
-                            label = "Enter color palette",
+                            label = "Color palette",
                             choices = c("Set1","Set2","Set3","Paired","Dark2","Accent"),
                             selected = "Set3")
       )
     ),
-    br(),
-    tags$hr(),
-    tags$h4("Views:", style = "color: white; margin-left: 15px;"),
-    menuItem("🏠 Home", tabName = "home"),
-    menuItem("🎯 Full Panel", tabName = "fullpanel", badgeLabel = "MAIN", badgeColor = "green"),
-    menuItem("🗺️ UMAP Only", tabName = "umap"),
-    menuItem("🎻 Violin Only", tabName = "vlnplot"),
-    menuItem("📊 Table Only", tabName = "table")
+    tags$h3("Step 2 - Choose a plot type:", style = "color: white; margin-left: 15px;"),
+    menuItem("🎯 Multi-Panel (UMAP + Violin + Table)", tabName = "fullpanel", badgeLabel = "MAIN", badgeColor = "green"),
+    menuItem("🗺️ UMAP plot", tabName = "umap"),
+    menuItem("🎻 Violin plot", tabName = "vlnplot"),
+    menuItem("📊 Table plot", tabName = "table")
   )
 ),
 
@@ -116,18 +115,23 @@ shinydashboard::dashboardSidebar(width = 400,
               tags$h4("This app provides interactive access to single cell RNA-Seq data visualization using the original scGenePanel functions."),
               tags$p("Features:"),
               tags$ul(
-                tags$li("🎯 ", tags$strong("Full Panel View"), " - Complete integrated visualization (UMAP + Violin + Table)"),
-                tags$li("🗺️ ", tags$strong("UMAP View"), " - Dimensionality reduction plots"),
-                tags$li("🎻 ", tags$strong("Violin View"), " - Expression distribution plots"),
-                tags$li("📊 ", tags$strong("Table View"), " - Cell frequency and expression statistics")
+                tags$li("🎯 ", tags$strong("Multi-Panel (UMAP + Violin + Table"), " - Complete integrated multi-panel visualization"),
+                tags$li("🗺️ ", tags$strong("UMAP View"), " - Only ", tags$code("gene"), " expression feature plot of UMAP embedding"),
+                tags$li("🎻 ", tags$strong("Violin View"), " - Only violin plots to assess ", tags$code("gene"), " expression distribution across ", tags$code("groups"), ""),
+                tags$li("📊 ", tags$strong("Table View"), " - Only cell frequency and expression statistics of selected ", tags$code("gene"), " in selected ", tags$code("groups"), "")
               ),
               tags$br(),
               tags$div(
                 style = "background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 20px;",
                 tags$h5("Quick Start:"),
-                tags$p("1. Select a gene (e.g., INS, GCG, SST)"),
-                tags$p("2. Choose cell type (e.g., Beta, Alpha, Delta)"),
-                tags$p("3. Click on ", tags$strong("Full Panel"), " tab for complete visualization")
+                tags$ol(
+                  tags$li("Select a ", tags$code("gene"), " of interest. Type or scroll the drop-down list to find it.(e.g., INS, GCG, SST)"),
+                  tags$li("Select the ", tags$code("cell type"), " (e.g., Beta, Alpha, Delta) - this must be present in item #3 below"),
+                  tags$li("Select the object's metadata column name for the  ", tags$code("cell type annotation"), "to use. For example, it could be 'celltypes' or 'celltype' - there is no standard but you must choose one that exists in the object."),
+                  tags$li("Select a ", tags$code("trait or variable"), " of interest in the object's metadata to split the data by. For example, 'age' or 'source'"),
+                  tags$li("Select a color palette (optional)"),
+                  tags$li("Click on the plot type desired"),
+              ),
               )
             )
           )
