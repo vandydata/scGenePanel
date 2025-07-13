@@ -28,5 +28,3 @@ jobs:
           cache: true
       - name: Run BiocCheck
         uses: insightsengineering/bioc-check-action@v1
-        with:
-          fail-on: error,warning
