@@ -39,16 +39,20 @@ create_genepanel_server <- function(data) {
       if(input$cell_type_colname %in% colnames(data@meta.data)) {
         cell_types <- unique(data@meta.data[[input$cell_type_colname]])
         # Remove NA values and sort alphabetically
-        #cell_types <- sort(cell_types[!is.na(cell_types)])
-        cell_types <- cell_types[!is.na(cell_types)]
-        cell_types <- sort(as.character(cell_types))
+        cell_types <- sort(cell_types[!is.na(cell_types)])
         return(cell_types)
       }
       return(NULL)
     })
 
+    # Reactive value to track if dropdowns are synchronized
+    values <- reactiveValues(dropdowns_synced = TRUE)
+
     # Observer to update cell type choices when metadata column changes
     observeEvent(input$cell_type_colname, {
+      # Mark dropdowns as not synced
+      values$dropdowns_synced <- FALSE
+
       cell_types <- get_cell_types()
 
       if(!is.null(cell_types)) {
@@ -83,9 +87,55 @@ create_genepanel_server <- function(data) {
       }
     })
 
+    # Observer to mark dropdowns as synced when cell type is updated
+    observeEvent(input$cell_type_name, {
+      if(!is.null(input$cell_type_name) && input$cell_type_name != "") {
+        values$dropdowns_synced <- TRUE
+      }
+    })
+
+    # Validation function to check if inputs are ready for plotting
+    inputs_valid <- reactive({
+      req(input$cell_type_colname, input$cell_type_name)
+
+      # Check if dropdowns are synced
+      if(!values$dropdowns_synced) {
+        return(FALSE)
+      }
+
+      # Check if selected cell type exists in the selected metadata column
+      if(input$cell_type_colname %in% colnames(data@meta.data)) {
+        available_types <- unique(data@meta.data[[input$cell_type_colname]])
+        available_types <- available_types[!is.na(available_types)]
+        return(input$cell_type_name %in% as.character(available_types))
+      }
+
+      return(FALSE)
+    })
+
+    # Initialize cell type dropdown on app start
+    observe({
+      # Only run once when app starts
+      if(is.null(input$cell_type_name)) {
+        cell_types <- get_cell_types()
+
+        if(!is.null(cell_types)) {
+          default_selection <- if("Beta" %in% cell_types) "Beta" else cell_types[1]
+
+          updateSelectizeInput(
+            session,
+            "cell_type_name",
+            choices = cell_types,
+            selected = default_selection
+          )
+        }
+      }
+    })
+
     # Full Panel Integration
     output$fullPanel <- renderPlot({
       req(input$Gene, input$cell_type_name, input$meta_group, input$cell_type_colname, input$color)
+      req(inputs_valid())
 
       tryCatch({
         # Get the levels for the metadata group
@@ -162,6 +212,7 @@ create_genepanel_server <- function(data) {
     # Individual UMAP plot
     output$plot1 <- renderPlot({
       req(input$Gene, input$cell_type_name, input$meta_group, input$cell_type_colname, input$color)
+      req(inputs_valid())
 
       tryCatch({
         levels_idents <- unique(data[[input$meta_group]][, 1])
@@ -185,6 +236,7 @@ create_genepanel_server <- function(data) {
     # Individual Violin plot
     output$plot2 <- renderPlot({
       req(input$Gene, input$cell_type_name, input$meta_group, input$cell_type_colname, input$color)
+      req(inputs_valid())
 
       tryCatch({
         levels_idents <- unique(data[[input$meta_group]][, 1])
@@ -209,6 +261,7 @@ create_genepanel_server <- function(data) {
     # Individual Table
     output$plot3 <- renderPlot({
       req(input$Gene, input$cell_type_name, input$meta_group, input$cell_type_colname, input$color)
+      req(inputs_valid())
 
       tryCatch({
         table_result <- cellfreq_panel(seurat_obj = data,
