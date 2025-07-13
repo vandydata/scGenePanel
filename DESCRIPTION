@@ -43,7 +43,10 @@ Imports:
     RColorBrewer,
     scales,
     scCustomize,
-    shiny
+    shiny,
+    shinydashboard,
+    shinyjs,
+    shinyWidgets
 Suggests:
     knitr,
     rmarkdown,

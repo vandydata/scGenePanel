@@ -122,20 +122,20 @@ cellfreq_panel <- function(seurat_obj,
       )
 
       ft <- flextable::flextable(combined_cc_table)
-      ft <- add_header_row(ft,
+      ft <- flextable::add_header_row(ft,
                            colwidths = c(1, 3, 4),
                            values = c("", "Gene Expression", "Quantiles")
       )
-      ft <- theme_vanilla(ft)
-      ft <- font(ft, part = "all", fontname = "mono")
+      ft <- flextable::theme_vanilla(ft)
+      ft <- flextable::font(ft, part = "all", fontname = "mono")
 
-      border <- fp_border_default()
+      border <- flextable::fp_border_default()
 
-      ft <- vline(ft, j = c(meta_group, '% expressed'), border = border, part = "all")
+      ft <- flextable::vline(ft, j = c(meta_group, '% expressed'), border = border, part = "all")
 
-      ft <- footnote(ft,
+      ft <- flextable::footnote(ft,
                i = 2, j = 2:4,
-               value = as_paragraph(
+               value = flextable::as_paragraph(
                  c(
                    "n_cells - Number of cells in group",
                    "n_expressing (>0.25%) - Number of cells with expression value at least 0.25",
@@ -147,9 +147,9 @@ cellfreq_panel <- function(seurat_obj,
                inline = TRUE
       )
 
-      ft <- footnote(ft,
+      ft <- flextable::footnote(ft,
                      i = 1, j = 5,
-                     value = as_paragraph(
+                     value = flextable::as_paragraph(
                        c(
                          "Gene expression values per quantile for assessing distribution within each group."
                        )
@@ -163,7 +163,7 @@ cellfreq_panel <- function(seurat_obj,
         palette = c("#fcee98", "#da4362"),
         domain = c(subset_min, subset_max)
       )
-      ft <- bg(ft,
+      ft <- flextable::bg(ft,
                  j = c(
                    "25%", "50%", "75%", "100%"
                  ),
@@ -171,13 +171,13 @@ cellfreq_panel <- function(seurat_obj,
       )
 
 
-      ft <- fontsize(ft, size = 20, part = "header")
-      ft <- fontsize(ft, size = 18, part = "body")
-      ft <- fontsize(ft, size = 18, part = "footer")
+      ft <- flextable::fontsize(ft, size = 20, part = "header")
+      ft <- flextable::fontsize(ft, size = 18, part = "body")
+      ft <- flextable::fontsize(ft, size = 18, part = "footer")
 
 
       #ft <- set_caption(ft, caption = "Title goes here")
-      t1 <- gen_grob(ft)
+      t1 <- flextable::gen_grob(ft)
 
     }
 
