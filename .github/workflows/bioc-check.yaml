@@ -28,5 +28,11 @@ jobs:
           cache: true
       - name: Run BiocCheck
         uses: insightsengineering/bioc-check-action@v1
+      - name: Upload BiocCheck results
+        uses: actions/upload-artifact@v4
+        if: always()
         with:
-          fail-on: error,warning
+          name: bioccheck-results
+          path: |
+            scGenePanel.BiocCheck/
+            result.txt
