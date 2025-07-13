@@ -29,7 +29,7 @@ jobs:
       - name: Run BiocCheck
         uses: insightsengineering/bioc-check-action@v1
       - name: Upload BiocCheck results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: bioccheck-results
