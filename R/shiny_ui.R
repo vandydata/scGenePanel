@@ -69,9 +69,12 @@ create_genepanel_ui <- function(data) {
                                          column(12,
                                                 selectizeInput(inputId = "Gene",
                                                                label = "Gene of interest",
-                                                               choices = rownames(data),
-                                                               selected = "INS",
-                                                               options = list(maxOptions = 20))
+                                                               choices = NULL,
+                                                               selected = NULL,
+                                                               options = list(
+                                                                 placeholder = "Type to search genes...",
+                                                                 maxOptions = 50
+                                                               ))
                                          )
                                        ),
                                        fluidRow(

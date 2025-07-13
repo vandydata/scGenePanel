@@ -1,34 +1,42 @@
-
 #' Create the Shiny server for scGenePanel
 #'
 #' @param data A Seurat object containing the single-cell data
 #' @return A Shiny server function
 #' @keywords internal
-#' @importFrom shiny renderText renderPlot req
+#' @importFrom shiny renderText renderPlot req updateSelectizeInput observe
 #' @importFrom ggplot2 ggplot theme_void annotation_custom xlim ylim theme element_rect margin annotate
 #' @importFrom ggpubr ggarrange annotate_figure text_grob rremove
 #' @importFrom grid annotation_custom
 #' @noRd
 
 create_genepanel_server <- function(data) {
-  
+
   server <- function(input, output, session) {
-    
+
+    # Fast gene search - only this part is changed
+    updateSelectizeInput(
+      session = session,
+      inputId = "Gene",
+      choices = rownames(data),
+      selected = "INS",
+      server = TRUE
+    )
+
     # Dynamic title for full panel
     output$panelTitle <- renderText({
       req(input$Gene, input$cell_type_name)
       paste0(input$Gene, " expression in ", input$cell_type_name, " cells")
     })
-    
+
     # Full Panel Integration (using original create_gene_panel logic)
     output$fullPanel <- renderPlot({
       req(input$Gene, input$cell_type_name, input$meta_group, input$cell_type_colname, input$color)
-      
+
       tryCatch({
         # Get the levels for the metadata group (like in original function)
         levels_idents <- unique(data[[input$meta_group]][, 1])
         levels_idents <- as.character(levels_idents)
-        
+
         # Generate all three components using ORIGINAL functions
         message("Generating UMAP panel...")
         umap <- umap_panel(seurat_obj = data,
@@ -37,7 +45,7 @@ create_genepanel_server <- function(data) {
                            meta_group = input$meta_group,
                            gene = input$Gene,
                            levels_idents = levels_idents)
-        
+
         message("Generating violin panel...")
         violin <- violin_sig_panel(seurat_obj = data,
                                    cell_type_colname = input$cell_type_colname,
@@ -46,7 +54,7 @@ create_genepanel_server <- function(data) {
                                    gene = input$Gene,
                                    col_palette = input$color,
                                    levels_idents = levels_idents)
-        
+
         message("Generating cell frequency table...")
         table <- cellfreq_panel(seurat_obj = data,
                                 cell_type_colname = input$cell_type_colname,
@@ -54,7 +62,7 @@ create_genepanel_server <- function(data) {
                                 meta_group = input$meta_group,
                                 gene = input$Gene,
                                 col_palette = input$color)
-        
+
         message("Combining panels...")
         # Combine figures EXACTLY like the original create_gene_panel function
         figure <- suppressWarnings(
@@ -68,11 +76,11 @@ create_genepanel_server <- function(data) {
             ncol = 1,
             nrow = 5)
         )
-        
+
         # Add annotations EXACTLY like the original function
         figure <- ggpubr::annotate_figure(figure,
                                           top = ggpubr::text_grob(
-                                            label = paste0(input$Gene, " expression in ", input$cell_type_name, " cells"), 
+                                            label = paste0(input$Gene, " expression in ", input$cell_type_name, " cells"),
                                             face = "bold", size = 20
                                           ),
                                           bottom = ggpubr::text_grob(
@@ -82,30 +90,30 @@ create_genepanel_server <- function(data) {
                                             face = "italic",
                                             size = 12)
         )
-        
+
         figure <- figure + ggpubr::rremove("grid")
-        
+
         message("Full panel generated successfully!")
         return(figure)
-        
+
       }, error = function(e) {
         message("Error in full panel: ", e$message)
-        ggplot2::ggplot() + 
-          ggplot2::theme_void() + 
-          ggplot2::annotate("text", x = 0.5, y = 0.5, 
-                   label = paste("Error generating full panel:", e$message), 
+        ggplot2::ggplot() +
+          ggplot2::theme_void() +
+          ggplot2::annotate("text", x = 0.5, y = 0.5,
+                   label = paste("Error generating full panel:", e$message),
                    size = 5, color = "red")
       })
     }, height = 800, width = 1000)
-    
+
     # Individual UMAP plot using ORIGINAL function
     output$plot1 <- renderPlot({
       req(input$Gene, input$cell_type_name, input$meta_group, input$cell_type_colname, input$color)
-      
+
       tryCatch({
         levels_idents <- unique(data[[input$meta_group]][, 1])
         levels_idents <- as.character(levels_idents)
-        
+
         umap_panel(seurat_obj = data,
                    cell_type_colname = input$cell_type_colname,
                    cell_type_name = input$cell_type_name,
@@ -113,22 +121,22 @@ create_genepanel_server <- function(data) {
                    gene = input$Gene,
                    levels_idents = levels_idents)
       }, error = function(e) {
-        ggplot2::ggplot() + 
-          ggplot2::theme_void() + 
-          ggplot2::annotate("text", x = 0.5, y = 0.5, 
-                   label = paste("Error:", e$message), 
+        ggplot2::ggplot() +
+          ggplot2::theme_void() +
+          ggplot2::annotate("text", x = 0.5, y = 0.5,
+                   label = paste("Error:", e$message),
                    size = 5, color = "red")
       })
     }, height = 600, width = 800)
-    
+
     # Individual Violin plot using ORIGINAL function
     output$plot2 <- renderPlot({
       req(input$Gene, input$cell_type_name, input$meta_group, input$cell_type_colname, input$color)
-      
+
       tryCatch({
         levels_idents <- unique(data[[input$meta_group]][, 1])
         levels_idents <- as.character(levels_idents)
-        
+
         violin_sig_panel(seurat_obj = data,
                          cell_type_colname = input$cell_type_colname,
                          cell_type_name = input$cell_type_name,
@@ -137,18 +145,18 @@ create_genepanel_server <- function(data) {
                          col_palette = input$color,
                          levels_idents = levels_idents)
       }, error = function(e) {
-        ggplot2::ggplot() + 
-          ggplot2::theme_void() + 
-          ggplot2::annotate("text", x = 0.5, y = 0.5, 
-                   label = paste("Error:", e$message), 
+        ggplot2::ggplot() +
+          ggplot2::theme_void() +
+          ggplot2::annotate("text", x = 0.5, y = 0.5,
+                   label = paste("Error:", e$message),
                    size = 5, color = "red")
       })
     }, height = 500, width = 1000)
-    
+
     # Individual Table using ORIGINAL function
     output$plot3 <- renderPlot({
       req(input$Gene, input$cell_type_name, input$meta_group, input$cell_type_colname, input$color)
-      
+
       tryCatch({
         table_result <- cellfreq_panel(seurat_obj = data,
                                       cell_type_colname = input$cell_type_colname,
@@ -156,11 +164,11 @@ create_genepanel_server <- function(data) {
                                       meta_group = input$meta_group,
                                       gene = input$Gene,
                                       col_palette = input$color)
-        
+
         # Convert grob to a plot that Shiny can render
         if (!is.null(table_result) && inherits(table_result, "grob")) {
           # Use ggplot to create a blank canvas and add the grob with full width
-          p <- ggplot2::ggplot() + 
+          p <- ggplot2::ggplot() +
             ggplot2::theme_void() +
             ggplot2::theme(
               plot.margin = ggplot2::margin(20, 20, 20, 20),  # Add some margin
@@ -171,24 +179,23 @@ create_genepanel_server <- function(data) {
           return(p)
         } else {
           # Fallback plot
-          ggplot2::ggplot() + 
-            ggplot2::theme_void() + 
-            ggplot2::annotate("text", x = 0.5, y = 0.5, 
-                     label = "No expression data found for this combination", 
+          ggplot2::ggplot() +
+            ggplot2::theme_void() +
+            ggplot2::annotate("text", x = 0.5, y = 0.5,
+                     label = "No expression data found for this combination",
                      size = 6, color = "gray50")
         }
-        
+
       }, error = function(e) {
         # Error plot
-        ggplot2::ggplot() + 
-          ggplot2::theme_void() + 
-          ggplot2::annotate("text", x = 0.5, y = 0.5, 
-                   label = paste("Error:", e$message), 
+        ggplot2::ggplot() +
+          ggplot2::theme_void() +
+          ggplot2::annotate("text", x = 0.5, y = 0.5,
+                   label = paste("Error:", e$message),
                    size = 5, color = "red")
       })
     }, height = 600)
   }
-  
+
   return(server)
 }
-
