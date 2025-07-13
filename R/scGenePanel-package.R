@@ -24,7 +24,6 @@
 #' @section Getting Started:
 #' See \code{\link{create_gene_panel}} for detailed usage examples.
 #'
-#' "_PACKAGE".
-#' @name scGenePanel-package
-#' @aliases scGenePanel
-NULL
+#' @return This is package documentation and does not return a value.
+#' @keywords internal
+"_PACKAGE"

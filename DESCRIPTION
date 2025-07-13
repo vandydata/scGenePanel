@@ -50,7 +50,7 @@ Suggests:
     BiocManager,
     testthat (>= 3.0.0),
     BiocStyle
-biocViews: Software, GeneExpression, QualityControl, ShinyApps, SingleCell, Visualization, ReproducibleResearch, DifferentialExpression, DimensionReduction, RNASeq, Sequencing, Transcriptomics
+biocViews: Software, GeneExpression, SingleCell, Visualization, DimensionReduction, Transcriptomics
 Config/testthat/edition: 3
 VignetteBuilder: knitr
 BugReports: https://github.com/vandydata/scGenePanel/issues

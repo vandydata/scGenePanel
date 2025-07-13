@@ -1,5 +1,3 @@
-
-
 #' scGenePanel - A method for generating scRNAseq multi-panel gene expression
 #' visuals that are focused on one gene, all cell types, and a chosen metadata
 #' attribute of interest.
@@ -26,16 +24,15 @@
 #'   "Set1", "Set2", "Set3", "Accent" etc.
 #' @param group_order User defined order of the meta_groups to be displayed
 #' @param output_dir Output directory where the image will be saved
-#' @return Multi-panel plots
+#' @return A ggplot object containing a multi-panel visualization with UMAP plots, violin plots, and cell frequency statistics for the specified gene and cell type
 #' @importFrom stats quantile
 #' @importFrom dplyr filter mutate
 #' @importFrom magrittr %>%
 #' @importFrom methods as
 #' @examples
-#' \dontrun{
 #' # Load your single-cell data (Seurat object)
 #' # data(your_seurat_object)
-#' 
+#'
 #' # Basic usage - create gene panel for insulin expression in beta cells
 #' panel <- create_gene_panel(
 #'   object = your_seurat_object,
@@ -44,7 +41,7 @@
 #'   cell_type_name = "Beta",          # Cell type to highlight
 #'   cell_type_colname = "cell_type"   # Column with cell type annotations
 #' )
-#' 
+#'
 #' # Advanced usage with custom colors and ordering
 #' panel_advanced <- create_gene_panel(
 #'   object = your_seurat_object,
@@ -56,7 +53,7 @@
 #'   group_order = c("control", "treated"), # Custom group order
 #'   output_dir = "./results"          # Custom output directory
 #' )
-#' 
+#'
 #' # Example with different cell types and metadata
 #' # For endocrine pancreas data:
 #' insulin_panel <- create_gene_panel(
@@ -66,7 +63,7 @@
 #'   cell_type_name = "Beta",
 #'   cell_type_colname = "CellTypes"
 #' )
-#' 
+#'
 #' # For immune cells:
 #' cd4_panel <- create_gene_panel(
 #'   object = immune_data,
@@ -75,7 +72,6 @@
 #'   cell_type_name = "T_cell",
 #'   cell_type_colname = "cell_annotations"
 #' )
-#' }
 #'
 #' @export
 
@@ -113,7 +109,7 @@ create_gene_panel <- function(object,
   meta_data <- seurat_obj@meta.data
   cell_counts <- table(meta_data[[cell_type_colname]], meta_data[[meta_group]])
   if (any(cell_counts < 3)) {
-    warning("Some groups have very few cells (< 3). Results may not be meaningful.", 
+    warning("Some groups have very few cells (< 3). Results may not be meaningful.",
             call. = FALSE)
   }
 

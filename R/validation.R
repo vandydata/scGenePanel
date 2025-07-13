@@ -15,7 +15,7 @@
 .make_seurat <- function(object) {
 
   # Handle Seurat objects
-  if (class(x = object)[[1]] == "Seurat") {
+  if (inherits(object, "Seurat")) {
     # Check if Seurat object needs version updating
     if ("version" %in% slotNames(object) && !is.null(object@version)) {
       object_version <- package_version(object@version)
