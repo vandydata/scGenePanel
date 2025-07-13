@@ -2,8 +2,12 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/vandydata/scGenePanel/workflows/R-CMD-check/badge.svg)](https://github.com/vandydata/scGenePanel/actions)
+[![R-CMD-check](https://github.com/vandydata/scGenePanel/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/vandydata/scGenePanel/actions/workflows/R-CMD-check.yaml)
+[![BiocCheck](https://github.com/vandydata/scGenePanel/actions/workflows/bioc-check.yaml/badge.svg)](https://github.com/vandydata/scGenePanel/actions/workflows/bioc-check.yaml)
 [![Bioconductor candidate](https://img.shields.io/badge/Bioconductor-candidate-blue.svg)](https://bioconductor.org/packages/devel/bioc/)
+[![License: GPL-3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+
+Multi-panel visualization for single cell expression data
 
 <!-- badges: end -->
 
@@ -14,12 +18,12 @@ scGenePanel creates a multi-panel visualization for various gene expression metr
 ## Features
 
 1. A multi-panel plot that contains:
-   1. UMAP : Visualize cluster of cells, split by cell identity of interest and highlighted cell type of interest 
-   2. Violin plot : Visualize gene expression counts, colored by cell identity of interest and split by cell type of interest 
+   1. UMAP : Visualize cluster of cells, split by cell identity of interest and highlighted cell type of interest
+   2. Violin plot : Visualize gene expression counts, colored by cell identity of interest and split by cell type of interest
    3. Tabular plot : Quantify cell counts, cell frequency ratio and quantiles of gene expression counts per cell identity of interest
 2. Accepts two commonly used input data object (Seurat, SingleCellExperiment) via `object `parameter
 3. "Tableau" or "RColorBrewer" discrete qualitative color palettes options available via `col.palette` parameter
-4. Order of cell identity of interest can be changes via `group_order` parameter 
+4. Order of cell identity of interest can be changes via `group_order` parameter
 5. Shiny version to explore gene expression data interactively
 
 
@@ -50,4 +54,3 @@ devtools::load_all() # from package dir, loads but doesn't install
 devtools::document()
 devtools::load_all()
 ```
-
