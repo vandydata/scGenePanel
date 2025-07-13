@@ -13,11 +13,13 @@ create_genepanel_server <- function(data) {
 
   server <- function(input, output, session) {
 
+    addResourcePath("www", file.path(getwd(), "www"))
+
     # Fast gene search - only this part is changed
     updateSelectizeInput(
       session = session,
       inputId = "Gene",
-      choices = rownames(data),
+      choices = sort(rownames(data)),
       selected = "INS",
       server = TRUE
     )

@@ -43,8 +43,15 @@ create_genepanel_ui <- function(data) {
   )
 
   anchor <- tags$header(
-    "scGenePanel : Visuals for Single Cell RNA-seq Data",
-    style = "color: #FFFFFF; float:center; font-size: 35px; padding:20px; font-weight: bold"
+    tags$div(
+
+      tags$img(src = "www/logo.svg", height = "50px"),
+      tags$span("scGenePanel - multipanel plots for single cell expression data",
+                style = "color: #FFFFFF; font-size: 35px; font-weight: bold;")
+
+
+    ),
+    style = "padding: 20px;"
   )
 
   header$children[[2]]$children <- tags$div(
@@ -55,11 +62,19 @@ create_genepanel_ui <- function(data) {
   # UI
   ui <- shinydashboard::dashboardPage(
     header,
-    title = "scGenePanel : Visuals for Single Cell RNA-seq Data",
+    title = "scGenePanel - multipanel plots for single cell expression data",
 
     # Sidebar
-    shinydashboard::dashboardSidebar(width = 400,
-                                     sidebarMenu(
+    shinydashboard::dashboardSidebar(width = 325,
+                                        sidebarMenu(
+                                        tags$div(
+                                        style = "text-align: center; padding-bottom: 10px;",
+                                        tags$a(
+                                        href = "#",
+                                        onclick = "document.querySelector('a[data-value=\"home\"]').click();",
+                                        tags$img(src = "www/logo.svg", height = "150px")
+                                        )
+                                        ),
                                        id = "tabs",
                                        menuItem("🏡 Home", tabName = "home", selected = TRUE),
                                        tags$hr(),
@@ -68,7 +83,7 @@ create_genepanel_ui <- function(data) {
                                        fluidRow(
                                          column(12,
                                                 selectizeInput(inputId = "Gene",
-                                                               label = "Gene of interest",
+                                                               label = HTML("Gene of interest"),
                                                                choices = NULL,
                                                                selected = NULL,
                                                                options = list(
@@ -79,12 +94,12 @@ create_genepanel_ui <- function(data) {
                                        ),
                                        fluidRow(
                                          column(12,
-                                                textInput(inputId = "cell_type_name", label = "Cell type", value = "Beta")
+                                                textInput(inputId = "cell_type_name", label =  "Cell type", value = "Beta")
                                          )
                                        ),
                                        fluidRow(
                                          column(12,
-                                                textInput(inputId = "cell_type_colname", label = "Metadata column name of cell type annotation to use", value = "CellTypes")
+                                                textInput(inputId = "cell_type_colname", label =  "Metadata name for cell type annotation", value = "CellTypes")
                                          )
                                        ),
                                        fluidRow(
@@ -101,7 +116,7 @@ create_genepanel_ui <- function(data) {
                                          )
                                        ),
                                        tags$h3("Step 2 - Choose a plot type:", style = "color: white; margin-left: 15px;"),
-                                       menuItem("🎯 Multi-Panel (UMAP + Violin + Table)", tabName = "fullpanel", badgeLabel = "MAIN", badgeColor = "green"),
+                                       menuItem("🎯 Multi-Panel", tabName = "fullpanel", badgeLabel = "UMAP + Violin + Table", badgeColor = "fuchsia"),
                                        menuItem("🗺️ UMAP plot", tabName = "umap"),
                                        menuItem("🎻 Violin plot", tabName = "vlnplot"),
                                        menuItem("📊 Table plot", tabName = "table")
@@ -114,20 +129,21 @@ create_genepanel_ui <- function(data) {
       tags$head(
         tags$title("scGenePanel"),
         tags$style(HTML("
-          .skin-blue .main-header .logo { background-color: #79A8B7; }
+          .skin-blue .main-header .logo { background-color: #196797; }
           .content-wrapper, .right-side { background-color: #FFFFFF; }
-          .skin-blue .main-sidebar { font-size: 18px; background-color: #333333; }
+          .skin-blue .main-sidebar { font-size: 18px; background-color: #2f2f2f; }
           .main-sidebar { font-size: 18px; }
-          .skin-blue .main-sidebar .sidebar .sidebar-menu .active a{ background-color: #006683; }
+          .skin-blue .main-sidebar .sidebar .sidebar-menu .active a{ background-color: #196797; }
           .left-side, .main-sidebar { padding-top: 110px; }
           .loading-spinner { left:45% !important; }
           header { padding-top:20px 0 0 0 !important; }
           .full-panel-container { padding: 20px; background-color: white; }
           .panel-title { text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 20px; color: #333; }
-          .metadata-section { background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 20px; border: 1px solid #e9ecef; }
-          .metadata-columns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 15px; }
-          .metadata-columns ul { list-style-type: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
-          .metadata-columns li { margin-bottom: 5px; }
+          code { color: #dd1c77; background-color: #ffffcc; font-family: monospace;}
+
+          /* hide header, adjust sidebar */
+          header { display: none;}
+          .main-sidebar { padding-top: 10px; }
         "))
       ),
 
@@ -135,11 +151,13 @@ create_genepanel_ui <- function(data) {
         # Home tab
         tabItem(tabName = "home",
                 fluidPage(
+
                   verticalLayout(
-                    tags$h2("Welcome to scGenePanel Interactive Viewer!"),
+
+                    tags$h2("Welcome to scGenePanel Interactive Viewer!", style = "float:left"),
                     hr(),
                     tags$p("This app provides interactive access to single cell RNA-Seq data visualization using the original scGenePanel functions. See ", tags$a(href="github.com/vandydata/scGenePanel", "scGenePanel"), " for more details."),
-                    style = "background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 10px;",
+                    #style = "background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 10px;",
                     tags$h3("Features:"),
                     tags$ul(
                       tags$li("🎯 ", tags$strong("Multi-Panel (UMAP + Violin + Table"), " - Complete integrated multi-panel visualization"),
@@ -147,13 +165,19 @@ create_genepanel_ui <- function(data) {
                       tags$li("🎻 ", tags$strong("Violin View"), " - Only violin plots to assess ", tags$code("gene"), " expression distribution across ", tags$code("groups"), ""),
                       tags$li("📊 ", tags$strong("Table View"), " - Only cell frequency and expression statistics of selected ", tags$code("gene"), " in selected ", tags$code("groups"), "")
                     ),
+
+                    tags$h3("Example output"),
+                    tags$p("Background goes here..."),
+
+                    tags$img(src = "www/scGenePanel__ATF4_Beta_Age.jpg", width = "50%"),
+
                     tags$br(),
                     tags$div(
-                      style = "background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 10px;",
+                      #style = "background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 10px;",
                       tags$h3("Quick start"),
                       tags$ol(
-                        tags$li("Select a ", tags$code("gene"), " of interest. Type or scroll the drop-down list to find it.(e.g., INS, GCG, SST)"),
-                        tags$li("Select the ", tags$code("cell type"), " (e.g., Beta, Alpha, Delta) - this must be present in item #3 below"),
+                        tags$li("Select a ", tags$code("gene"), " of interest. ", tags$strong("Type"), " your gene of interet to find it (e.g. INS or GCG)"),
+                        tags$li("Select the ", tags$code("cell type"), " (e.g., Beta or Alpha) - this must be present in item #3 below"),
                         tags$li("Select the object's metadata column name for the  ", tags$code("cell type annotation"), "to use. For example, it could be 'celltypes' or 'celltype' - there is no standard but you must choose one that exists in the object."),
                         tags$li("Select a ", tags$code("trait or variable"), " of interest in the object's metadata to split the data by. For example, 'age' or 'source'"),
                         tags$li("Select a color palette (optional)"),
@@ -161,11 +185,11 @@ create_genepanel_ui <- function(data) {
                       )
                     ),
 
-                    # New metadata section
+                    # Metadata section
                     tags$div(
                       class = "metadata-section",
                       # Add helpful note
-                      tags$h3("Available metadata columns", style = "color: #495057; margin-bottom: 15px;"),
+                      tags$h3("Available metadata columns"),
                       tags$p("We extracted all metadata columns from the loaded object."),
 
                       # Show highlighted potential cell type columns if any exist
@@ -200,6 +224,9 @@ create_genepanel_ui <- function(data) {
 
 
                     )
+
+
+
                   )
                 )
         ),
