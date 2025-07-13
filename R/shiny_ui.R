@@ -13,8 +13,26 @@
 
 create_genepanel_ui <- function(data) {
 
-  # Get metadata column names
-  meta_cols <- colnames(data@meta.data)
+  # Get metadata column names, filtering for categorical variables only
+  meta_cols_all <- colnames(data@meta.data)
+  meta_cols <- meta_cols_all[sapply(data@meta.data, function(x) {
+    # Keep factors, characters, and logicals
+    if(is.factor(x) || is.character(x) || is.logical(x)) {
+      return(TRUE)
+    }
+    # For integers, check if they have 10 or fewer unique values (likely categorical)
+    if(is.integer(x)) {
+      return(length(unique(x[!is.na(x)])) <= 10)
+    }
+    # Exclude all other types (numeric, etc.)
+    return(FALSE)
+  })]
+
+  # If no categorical columns found, fall back to all columns
+  if(length(meta_cols) == 0) {
+    meta_cols <- meta_cols_all
+  }
+  meta_cols <- sort(meta_cols)
 
   # Identify potential cell type columns (containing "cluster" or "cell")
   potential_celltype_cols <- meta_cols[grepl("cluster|cell", meta_cols, ignore.case = TRUE)]
@@ -44,11 +62,8 @@ create_genepanel_ui <- function(data) {
 
   anchor <- tags$header(
     tags$div(
-
       tags$span("",
                 style = "color: #FFFFFF; ")
-
-
     ),
     style = "height: 20px;"
   )
@@ -62,7 +77,6 @@ create_genepanel_ui <- function(data) {
   ui <- shinydashboard::dashboardPage(
     header,
     title = "scGenePanel - multipanel plots for single cell expression data",
-
     # Sidebar
     shinydashboard::dashboardSidebar(width = 325,
                                         sidebarMenu(
@@ -93,17 +107,39 @@ create_genepanel_ui <- function(data) {
                                        ),
                                        fluidRow(
                                          column(12,
-                                                textInput(inputId = "cell_type_name", label =  "Cell type", value = "Beta")
+                                                selectizeInput(inputId = "cell_type_colname",
+                                                               label = "Metadata name for cell type annotation",
+                                                               choices = meta_cols,
+                                                               selected = if("CellTypes" %in% meta_cols) "CellTypes" else meta_cols[1],
+                                                               options = list(
+                                                                 placeholder = "Select metadata column...",
+                                                                 maxOptions = 50
+                                                               ))
+                                         )
+                                       ),
+
+                                       fluidRow(
+                                         column(12,
+                                                selectizeInput(inputId = "cell_type_name",
+                                                               label = "Cell type",
+                                                               choices = NULL,  # Will be populated by server
+                                                               selected = NULL,
+                                                               options = list(
+                                                                 placeholder = "Select cell type...",
+                                                                 maxOptions = 50
+                                                               ))
                                          )
                                        ),
                                        fluidRow(
                                          column(12,
-                                                textInput(inputId = "cell_type_colname", label =  "Metadata name for cell type annotation", value = "CellTypes")
-                                         )
-                                       ),
-                                       fluidRow(
-                                         column(12,
-                                                textInput(inputId = "meta_group", label = "Group - metadata column name for trait to explore", value = "Source")
+                                                selectizeInput(inputId = "meta_group",
+                                                               label = "Group - metadata column name for trait to explore",
+                                                               choices = meta_cols,
+                                                               selected = if("Source" %in% meta_cols) "Source" else meta_cols[1],
+                                                               options = list(
+                                                                 placeholder = "Select metadata column...",
+                                                                 maxOptions = 50
+                                                               ))
                                          )
                                        ),
                                        fluidRow(
@@ -126,7 +162,6 @@ create_genepanel_ui <- function(data) {
     shinydashboard::dashboardBody(
       shinyjs::useShinyjs(),
 
-
       # Mobile menu button
       tags$button(
         class = "mobile-menu-toggle",
@@ -134,13 +169,13 @@ create_genepanel_ui <- function(data) {
         "☰"
       ),
 
-      # Overlay for mobile menu
+      # Overlay for mobile
       tags$div(
         class = "sidebar-overlay",
         onclick = "toggleMobileMenu();"
       ),
 
-      # JavaScript for mobile menu functionality
+      # JavaScript for mobile functionality
       tags$script(HTML("
         function toggleMobileMenu() {
           var sidebar = document.querySelector('.main-sidebar');
@@ -249,7 +284,6 @@ create_genepanel_ui <- function(data) {
       ),
 
       tabItems(
-        # Home tab
         tabItem(tabName = "home",
                 fluidPage(
 
@@ -258,7 +292,6 @@ create_genepanel_ui <- function(data) {
                     tags$h2("Welcome to scGenePanel Interactive Viewer!", style = "float:left"),
                     hr(),
                     tags$p("This app provides interactive access to single cell RNA-Seq data visualization using the original scGenePanel functions. See ", tags$a(href="github.com/vandydata/scGenePanel", "scGenePanel"), " for more details."),
-                    #style = "background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 10px;",
                     tags$h3("Features:"),
                     tags$ul(
                       tags$li("🎯 ", tags$strong("Multi-Panel (UMAP + Violin + Table"), " - Complete integrated multi-panel visualization"),
@@ -266,36 +299,29 @@ create_genepanel_ui <- function(data) {
                       tags$li("🎻 ", tags$strong("Violin View"), " - Only violin plots to assess ", tags$code("gene"), " expression distribution across ", tags$code("groups"), ""),
                       tags$li("📊 ", tags$strong("Table View"), " - Only cell frequency and expression statistics of selected ", tags$code("gene"), " in selected ", tags$code("groups"), "")
                     ),
-
                     tags$h3("Example output"),
                     tags$p("Background goes here..."),
-
                     tags$img(src = "www/scGenePanel__ATF4_Beta_Age.jpg", width = "50%"),
-
                     tags$br(),
                     tags$div(
-                      #style = "background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-top: 10px;",
                       tags$h3("Quick start"),
                       tags$ol(
                         tags$li("Select a ", tags$code("gene"), " of interest. ", tags$strong("Type"), " your gene of interet to find it (e.g. INS or GCG)"),
-                        tags$li("Select the ", tags$code("cell type"), " (e.g., Beta or Alpha) - this must be present in item #3 below"),
                         tags$li("Select the object's metadata column name for the  ", tags$code("cell type annotation"), "to use. For example, it could be 'celltypes' or 'celltype' - there is no standard but you must choose one that exists in the object."),
+                        tags$li("Select the ", tags$code("cell type"), " (e.g., Beta or Alpha) - this must be present in item #2 below"),
                         tags$li("Select a ", tags$code("trait or variable"), " of interest in the object's metadata to split the data by. For example, 'age' or 'source'"),
                         tags$li("Select a color palette (optional)"),
                         tags$li("Click on the plot type desired"),
                       )
                     ),
-
                     # Metadata section
                     tags$div(
                       class = "metadata-section",
                       # Add helpful note
                       tags$h3("Available metadata columns"),
                       tags$p("We extracted all metadata columns from the loaded object."),
-
                       # Show highlighted potential cell type columns if any exist
                       if (length(potential_celltype_cols) > 0) {
-
                         tags$div(
                           tags$p(
                             tags$strong("💡 Candidate cell type columns: "),
@@ -313,7 +339,6 @@ create_genepanel_ui <- function(data) {
                       } else {
                         tags$div()
                       },
-
                       # Show all metadata columns
                       tags$strong("All Metadata Columns:"),
                       tags$div(
@@ -322,12 +347,7 @@ create_genepanel_ui <- function(data) {
                           create_metadata_display(meta_cols, potential_celltype_cols)
                         )
                       )
-
-
                     )
-
-
-
                   )
                 )
         ),

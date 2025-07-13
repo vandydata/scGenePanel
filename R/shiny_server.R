@@ -15,7 +15,7 @@ create_genepanel_server <- function(data) {
 
     addResourcePath("www", file.path(getwd(), "www"))
 
-    # Fast gene search - only this part is changed
+    # Fast gene search
     updateSelectizeInput(
       session = session,
       inputId = "Gene",
@@ -30,16 +30,68 @@ create_genepanel_server <- function(data) {
       paste0(input$Gene, " expression in ", input$cell_type_name, " cells")
     })
 
-    # Full Panel Integration (using original create_gene_panel logic)
+
+    # Reactive expression to get unique cell types from selected column
+    get_cell_types <- reactive({
+      req(input$cell_type_colname)
+
+      # Get the selected metadata column
+      if(input$cell_type_colname %in% colnames(data@meta.data)) {
+        cell_types <- unique(data@meta.data[[input$cell_type_colname]])
+        # Remove NA values and sort alphabetically
+        #cell_types <- sort(cell_types[!is.na(cell_types)])
+        cell_types <- cell_types[!is.na(cell_types)]
+        cell_types <- sort(as.character(cell_types))
+        return(cell_types)
+      }
+      return(NULL)
+    })
+
+    # Observer to update cell type choices when metadata column changes
+    observeEvent(input$cell_type_colname, {
+      cell_types <- get_cell_types()
+
+      if(!is.null(cell_types)) {
+        # Set default to "Beta" if it exists, otherwise first option
+        default_selection <- if("Beta" %in% cell_types) "Beta" else cell_types[1]
+
+        updateSelectizeInput(
+          session,
+          "cell_type_name",
+          choices = cell_types,
+          selected = default_selection
+        )
+      }
+    })
+
+    # Initialize cell type dropdown on app start
+    observe({
+      # Only run once when app starts
+      if(is.null(input$cell_type_name)) {
+        cell_types <- get_cell_types()
+
+        if(!is.null(cell_types)) {
+          default_selection <- if("Beta" %in% cell_types) "Beta" else cell_types[1]
+
+          updateSelectizeInput(
+            session,
+            "cell_type_name",
+            choices = cell_types,
+            selected = default_selection
+          )
+        }
+      }
+    })
+
+    # Full Panel Integration
     output$fullPanel <- renderPlot({
       req(input$Gene, input$cell_type_name, input$meta_group, input$cell_type_colname, input$color)
 
       tryCatch({
-        # Get the levels for the metadata group (like in original function)
+        # Get the levels for the metadata group
         levels_idents <- unique(data[[input$meta_group]][, 1])
         levels_idents <- as.character(levels_idents)
 
-        # Generate all three components using ORIGINAL functions
         message("Generating UMAP panel...")
         umap <- umap_panel(seurat_obj = data,
                            cell_type_colname = input$cell_type_colname,
@@ -66,7 +118,7 @@ create_genepanel_server <- function(data) {
                                 col_palette = input$color)
 
         message("Combining panels...")
-        # Combine figures EXACTLY like the original create_gene_panel function
+
         figure <- suppressWarnings(
           ggpubr::ggarrange(
             umap,
@@ -79,7 +131,6 @@ create_genepanel_server <- function(data) {
             nrow = 5)
         )
 
-        # Add annotations EXACTLY like the original function
         figure <- ggpubr::annotate_figure(figure,
                                           top = ggpubr::text_grob(
                                             label = paste0(input$Gene, " expression in ", input$cell_type_name, " cells"),
@@ -108,7 +159,7 @@ create_genepanel_server <- function(data) {
       })
     }, height = 800, width = 1000)
 
-    # Individual UMAP plot using ORIGINAL function
+    # Individual UMAP plot
     output$plot1 <- renderPlot({
       req(input$Gene, input$cell_type_name, input$meta_group, input$cell_type_colname, input$color)
 
@@ -131,7 +182,7 @@ create_genepanel_server <- function(data) {
       })
     }, height = 600, width = 800)
 
-    # Individual Violin plot using ORIGINAL function
+    # Individual Violin plot
     output$plot2 <- renderPlot({
       req(input$Gene, input$cell_type_name, input$meta_group, input$cell_type_colname, input$color)
 
@@ -155,7 +206,7 @@ create_genepanel_server <- function(data) {
       })
     }, height = 500, width = 1000)
 
-    # Individual Table using ORIGINAL function
+    # Individual Table
     output$plot3 <- renderPlot({
       req(input$Gene, input$cell_type_name, input$meta_group, input$cell_type_colname, input$color)
 
@@ -169,18 +220,16 @@ create_genepanel_server <- function(data) {
 
         # Convert grob to a plot that Shiny can render
         if (!is.null(table_result) && inherits(table_result, "grob")) {
-          # Use ggplot to create a blank canvas and add the grob with full width
           p <- ggplot2::ggplot() +
             ggplot2::theme_void() +
             ggplot2::theme(
-              plot.margin = ggplot2::margin(20, 20, 20, 20),  # Add some margin
+              plot.margin = ggplot2::margin(20, 20, 20, 20),
               panel.background = ggplot2::element_rect(fill = "white", color = NA)
             ) +
             ggplot2::annotation_custom(table_result, xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf) +
-            ggplot2::xlim(0, 1) + ggplot2::ylim(0, 1)  # Set explicit limits for full stretching
+            ggplot2::xlim(0, 1) + ggplot2::ylim(0, 1)  # explicit limits for full stretching
           return(p)
         } else {
-          # Fallback plot
           ggplot2::ggplot() +
             ggplot2::theme_void() +
             ggplot2::annotate("text", x = 0.5, y = 0.5,
