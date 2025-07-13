@@ -2,10 +2,8 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/vandydata/scGenePanel/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/vandydata/scGenePanel/actions/workflows/R-CMD-check.yaml)
-[![BiocCheck](https://github.com/vandydata/scGenePanel/actions/workflows/bioc-check.yaml/badge.svg)](https://github.com/vandydata/scGenePanel/actions/workflows/bioc-check.yaml)
 [![Bioconductor candidate](https://img.shields.io/badge/Bioconductor-candidate-blue.svg)](https://bioconductor.org/packages/devel/bioc/)
-[![License: GPL-3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![License: AGPLv3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://www.gnu.org/licenses/agpl-3.0)
 
 Multi-panel visualization for single cell expression data
 
