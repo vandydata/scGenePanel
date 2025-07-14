@@ -68,7 +68,7 @@ create_genepanel_server <- function(data) {
 
       if(!is.null(cell_types)) {
         # Set default to "Beta" if it exists, otherwise first option
-        default_selection <- if("Beta" %in% cell_types) "Beta" else cell_types[1]
+        default_selection <- if("celltypes" %in% cell_types) "celltypes" else cell_types[1]
 
         updateSelectizeInput(
           session,

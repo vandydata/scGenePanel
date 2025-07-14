@@ -83,7 +83,7 @@ create_gene_panel <- function(object,
                               meta_group,
                               cell_type_name,
                               cell_type_colname,
-                              dim_red = "UMAP",
+                              dim_red = "umap",
                               col_palette = "Tableau",
                               group_order = NULL,
                               output_dir = getwd()) {

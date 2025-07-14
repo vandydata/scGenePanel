@@ -32,6 +32,10 @@ create_genepanel_ui <- function(data) {
     return(FALSE)
   })]
 
+  # Get dimred embeddings from data object
+  embeddings <- names(data@reductions)
+
+
   # If no categorical columns found, fall back to all columns
   if(length(meta_cols) == 0) {
     meta_cols <- meta_cols_all
@@ -185,6 +189,18 @@ create_genepanel_ui <- function(data) {
                                                                ))
                                          )
                                        ),
+       fluidRow(
+         column(12,
+                selectizeInput(inputId = "dim_red",
+                               label = "Dimension reduction embedding",
+                               choices = embeddings,
+                               selected = if("umap" %in% embeddings) "umap" else embeddings[1],
+                               options = list(
+                                 placeholder = "Select embedding...",
+                                 maxOptions = 50
+                               ))
+         )
+       ),
                                        fluidRow(
                                          column(12,
                                                 selectizeInput(inputId = "color",
