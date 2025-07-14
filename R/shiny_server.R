@@ -144,7 +144,8 @@ create_genepanel_server <- function(data) {
     })
 
     # Full Panel Integration
-    output$fullPanel <- renderPlot({
+    # Reactive expression to generate the full panel figure
+    generate_full_figure <- reactive({
       req(input$Gene, input$cell_type_name, input$meta_group, input$cell_type_colname, input$color)
       req(inputs_valid())
 
@@ -218,10 +219,15 @@ create_genepanel_server <- function(data) {
                    label = paste("Error generating full panel:", e$message),
                    size = 5, color = "red")
       })
+    })
+
+    output$fullPanel <- renderPlot({
+      generate_full_figure()
     }, height = 800, width = 1000)
 
     # Individual UMAP plot
-    output$plot1 <- renderPlot({
+    generate_umap_plot <- reactive({
+
       req(input$Gene, input$cell_type_name, input$meta_group, input$cell_type_colname, input$color)
       req(inputs_valid())
 
@@ -242,10 +248,14 @@ create_genepanel_server <- function(data) {
                    label = paste("Error:", e$message),
                    size = 5, color = "red")
       })
+    })
+
+    output$plot1 <- renderPlot({
+      generate_umap_plot()
     }, height = 600, width = 800)
 
     # Individual Violin plot
-    output$plot2 <- renderPlot({
+    generate_violin_plot <- reactive({
       req(input$Gene, input$cell_type_name, input$meta_group, input$cell_type_colname, input$color)
       req(inputs_valid())
 
@@ -267,10 +277,14 @@ create_genepanel_server <- function(data) {
                    label = paste("Error:", e$message),
                    size = 5, color = "red")
       })
+    })
+
+    output$plot2 <- renderPlot({
+      generate_violin_plot()
     }, height = 500, width = 1000)
 
     # Individual Table
-    output$plot3 <- renderPlot({
+    generate_table_plot <- reactive({
       req(input$Gene, input$cell_type_name, input$meta_group, input$cell_type_colname, input$color)
       req(inputs_valid())
 
@@ -309,7 +323,100 @@ create_genepanel_server <- function(data) {
                    label = paste("Error:", e$message),
                    size = 5, color = "red")
       })
-    }, height = 600)
+    })
+
+    output$plot3 <- renderPlot({
+      generate_table_plot()
+    }, height = 600, width = 1000)
+
+    # Download handlers
+    # Full Panel downloads
+    output$downloadFullPNG <- downloadHandler(
+      filename = function() {
+        paste0("scGenePanel_", input$Gene, "_", input$cell_type_name, "_", Sys.Date(), ".png")
+      },
+      content = function(file) {
+        figure <- generate_full_figure()
+        ggplot2::ggsave(file, plot = figure, device = "png", width = 12, height = 10, dpi = 300, bg = "white")
+      }
+    )
+
+    output$downloadFullPDF <- downloadHandler(
+      filename = function() {
+        paste0("scGenePanel_", input$Gene, "_", input$cell_type_name, "_", Sys.Date(), ".pdf")
+      },
+      content = function(file) {
+        figure <- generate_full_figure()
+        ggplot2::ggsave(file, plot = figure, device = cairo_pdf,
+                        width = 12, height = 10, units = "in")
+      }
+    )
+
+    # UMAP downloads
+    output$downloadUmapPNG <- downloadHandler(
+      filename = function() {
+        paste0("UMAP_", input$Gene, "_", input$cell_type_name, "_", Sys.Date(), ".png")
+      },
+      content = function(file) {
+        plot <- generate_umap_plot()
+        ggplot2::ggsave(file, plot = plot, device = "png", width = 10, height = 8, dpi = 300, bg = "white")
+      }
+    )
+
+    output$downloadUmapPDF <- downloadHandler(
+      filename = function() {
+        paste0("UMAP_", input$Gene, "_", input$cell_type_name, "_", Sys.Date(), ".pdf")
+      },
+      content = function(file) {
+        figure <- generate_umap_plot()
+        ggplot2::ggsave(file, plot = figure, device = cairo_pdf,
+                        width = 10, height = 8, units = "in")
+      }
+    )
+
+    # Violin plot downloads
+    output$downloadViolinPNG <- downloadHandler(
+      filename = function() {
+        paste0("Violin_", input$Gene, "_", input$cell_type_name, "_", Sys.Date(), ".png")
+      },
+      content = function(file) {
+        plot <- generate_violin_plot()
+        ggplot2::ggsave(file, plot = plot, device = "png", width = 12, height = 6, dpi = 300, bg = "white")
+      }
+    )
+
+    output$downloadViolinPDF <- downloadHandler(
+      filename = function() {
+        paste0("Violin_", input$Gene, "_", input$cell_type_name, "_", Sys.Date(), ".pdf")
+      },
+      content = function(file) {
+        figure <- generate_violin_plot()
+        ggplot2::ggsave(file, plot = figure, device = cairo_pdf,
+                        width = 12, height = 6, units = "in")
+      }
+    )
+
+    # Table plot downloads
+    output$downloadTablePNG <- downloadHandler(
+      filename = function() {
+        paste0("Table_", input$Gene, "_", input$cell_type_name, "_", Sys.Date(), ".png")
+      },
+      content = function(file) {
+        plot <- generate_table_plot()
+        ggplot2::ggsave(file, plot = plot, device = "png", width = 10, height = 6, dpi = 300, bg = "white")
+      }
+    )
+
+    output$downloadTablePDF <- downloadHandler(
+      filename = function() {
+        paste0("Table_", input$Gene, "_", input$cell_type_name, "_", Sys.Date(), ".pdf")
+      },
+      content = function(file) {
+        figure <- generate_table_plot()
+        ggplot2::ggsave(file, plot = figure, device = cairo_pdf,
+                        width = 10, height = 6, units = "in")
+      }
+    )
   }
 
   return(server)
