@@ -125,24 +125,7 @@ create_genepanel_server <- function(data) {
       return(FALSE)
     })
 
-    # Initialize cell type dropdown on app start
-    observe({
-      # Only run once when app starts
-      if(is.null(input$cell_type_name)) {
-        cell_types <- get_cell_types()
 
-        if(!is.null(cell_types)) {
-          default_selection <- if("Beta" %in% cell_types) "Beta" else cell_types[1]
-
-          updateSelectizeInput(
-            session,
-            "cell_type_name",
-            choices = cell_types,
-            selected = default_selection
-          )
-        }
-      }
-    })
 
     # Full Panel Integration
     # Reactive expression to generate the full panel figure
@@ -163,6 +146,7 @@ create_genepanel_server <- function(data) {
                            cell_type_name = input$cell_type_name,
                            meta_group = input$meta_group,
                            gene = input$Gene,
+                           dim_red = input$dim_red,
                            levels_idents = levels_idents)
 
         message("Generating violin panel...")
@@ -243,6 +227,7 @@ create_genepanel_server <- function(data) {
                    cell_type_name = input$cell_type_name,
                    meta_group = input$meta_group,
                    gene = input$Gene,
+                   dim_red = input$dim_red,
                    levels_idents = levels_idents)
       }, error = function(e) {
         ggplot2::ggplot() +

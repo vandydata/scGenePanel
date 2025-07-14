@@ -126,69 +126,69 @@ create_genepanel_ui <- function(data) {
     title = "scGenePanel - multipanel plots for single cell expression data",
     # Sidebar
     shinydashboard::dashboardSidebar(width = 325,
-                                        sidebarMenu(
-                                        tags$div(
-                                        style = "text-align: center; padding-bottom: 10px;",
-                                        tags$a(
-                                        href = "#",
-                                        onclick = "document.querySelector('a[data-value=\"home\"]').click();",
-                                        tags$img(src = "www/logo.svg", height = "150px")
-                                        )
-                                        ),
-                                       id = "tabs",
-                                       menuItem("🏡 Home", tabName = "home", selected = TRUE),
-                                       tags$hr(),
-                                       tags$h3("Step 1 - Configure:", style = "color: white; margin-left: 15px;"),
-                                       # Use fluidRow and column for better alignment of inputs
-                                       fluidRow(
-                                         column(12,
-                                                selectizeInput(inputId = "Gene",
-                                                               label = HTML("Gene of interest"),
-                                                               choices = NULL,
-                                                               selected = NULL,
-                                                               options = list(
-                                                                 placeholder = "Type to search genes...",
-                                                                 maxOptions = 50
-                                                               ))
-                                         )
-                                       ),
-                                       fluidRow(
-                                         column(12,
-                                                selectizeInput(inputId = "cell_type_colname",
-                                                               label = "Metadata name for cell type annotation",
-                                                               choices = meta_cols,
-                                                               selected = if("CellTypes" %in% meta_cols) "CellTypes" else meta_cols[1],
-                                                               options = list(
-                                                                 placeholder = "Select metadata column...",
-                                                                 maxOptions = 50
-                                                               ))
-                                         )
-                                       ),
+      sidebarMenu(
+        tags$div(
+        style = "text-align: center; padding-bottom: 10px;",
+        tags$a(
+        href = "#",
+        onclick = "document.querySelector('a[data-value=\"home\"]').click();",
+        tags$img(src = "www/logo.svg", height = "150px")
+        )
+        ),
+       id = "tabs",
+       menuItem("🏡 Home", tabName = "home", selected = TRUE),
+       tags$hr(),
+       tags$h3("Step 1 - Configure:", style = "color: white; margin-left: 15px;"),
+       # Use fluidRow and column for better alignment of inputs
+       fluidRow(
+         column(12,
+                selectizeInput(inputId = "Gene",
+                               label = HTML("Gene of interest"),
+                               choices = NULL,
+                               selected = NULL,
+                               options = list(
+                                 placeholder = "Type to search genes...",
+                                 maxOptions = 50
+                               ))
+         )
+       ),
+       fluidRow(
+         column(12,
+                selectizeInput(inputId = "cell_type_colname",
+                               label = "Metadata name for cell type annotation",
+                               choices = meta_cols,
+                               selected = if("CellTypes" %in% meta_cols) "CellTypes" else meta_cols[1],
+                               options = list(
+                                 placeholder = "Select metadata column...",
+                                 maxOptions = 50
+                               ))
+         )
+       ),
 
-                                       fluidRow(
-                                         column(12,
-                                                selectizeInput(inputId = "cell_type_name",
-                                                               label = "Cell type (# of cells)",
-                                                               choices = NULL,  # Will be populated by server
-                                                               selected = NULL,
-                                                               options = list(
-                                                                 placeholder = "Select cell type...",
-                                                                 maxOptions = 50
-                                                               ))
-                                         )
-                                       ),
-                                       fluidRow(
-                                         column(12,
-                                                selectizeInput(inputId = "meta_group",
-                                                               label = "Group - metadata column name for trait to explore",
-                                                               choices = meta_cols,
-                                                               selected = if("Source" %in% meta_cols) "Source" else meta_cols[1],
-                                                               options = list(
-                                                                 placeholder = "Select metadata column...",
-                                                                 maxOptions = 50
-                                                               ))
-                                         )
-                                       ),
+       fluidRow(
+         column(12,
+                selectizeInput(inputId = "cell_type_name",
+                               label = "Cell type (# of cells)",
+                               choices = NULL,  # Will be populated by server
+                               selected = NULL,
+                               options = list(
+                                 placeholder = "Select cell type...",
+                                 maxOptions = 50
+                               ))
+         )
+       ),
+       fluidRow(
+         column(12,
+                selectizeInput(inputId = "meta_group",
+                               label = "Group - metadata column name for trait to explore",
+                               choices = meta_cols,
+                               selected = if("Source" %in% meta_cols) "Source" else meta_cols[1],
+                               options = list(
+                                 placeholder = "Select metadata column...",
+                                 maxOptions = 50
+                               ))
+         )
+       ),
        fluidRow(
          column(12,
                 selectizeInput(inputId = "dim_red",
@@ -201,20 +201,20 @@ create_genepanel_ui <- function(data) {
                                ))
          )
        ),
-                                       fluidRow(
-                                         column(12,
-                                                selectizeInput(inputId = "color",
-                                                               label = "Color palette",
-                                                                choices = c("Accent","Dark2","default","Paired","Pastel1","Pastel2","Set1","Set2","Set3","Tableau"),
-                                                                selected = "Set1")
-                                         )
-                                       ),
-                                       tags$h3("Step 2 - Choose a plot type:", style = "color: white; margin-left: 15px;"),
-                                       menuItem("🎯 Multi-Panel", tabName = "fullpanel", badgeLabel = "UMAP + Violin + Table", badgeColor = "fuchsia"),
-                                       menuItem("🗺️ UMAP plot", tabName = "umap"),
-                                       menuItem("🎻 Violin plot", tabName = "vlnplot"),
-                                       menuItem("📊 Table plot", tabName = "table")
-                                     )
+       fluidRow(
+         column(12,
+                selectizeInput(inputId = "color",
+                               label = "Color palette",
+                                choices = c("Accent","Dark2","default","Paired","Pastel1","Pastel2","Set1","Set2","Set3","Tableau"),
+                                selected = "Set1")
+         )
+       ),
+       tags$h3("Step 2 - Choose a plot type:", style = "color: white; margin-left: 15px;"),
+       menuItem("🎯 Multi-Panel", tabName = "fullpanel", badgeLabel = "UMAP + Violin + Table", badgeColor = "fuchsia"),
+       menuItem("🗺️ UMAP plot", tabName = "umap"),
+       menuItem("🎻 Violin plot", tabName = "vlnplot"),
+       menuItem("📊 Table plot", tabName = "table")
+     )
     ),
 
     # Body
