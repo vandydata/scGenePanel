@@ -26,6 +26,7 @@ umap_panel <- function(seurat_obj,
                        cell_type_name,
                        meta_group,
                        gene,
+                       dim_red,
                        levels_idents,
                        group_order = NULL) {
 
@@ -37,11 +38,12 @@ umap_panel <- function(seurat_obj,
                                ggplot2::labs(title = x))
     p1.d[[1]]$layers[[1]]$aes_params$alpha <- .5
 
-    p1.d.umap <- data.frame(obj_idents@reductions$umap@cell.embeddings)
+    p1.d.dim_red <- data.frame(obj_idents@reductions[[dim_red]]@cell.embeddings)
     Seurat::Idents(obj_idents) <- cell_type_colname
     plot1 <- p1.d + ggforce::geom_mark_ellipse(
                     ggplot2::aes(
-                      x = p1.d.umap$UMAP_1, y = p1.d.umap$UMAP_2,
+                      #x = p1.d.dim_red$UMAP_1, y = p1.d.dim_red$UMAP_2,
+                      x = p1.d.dim_red[[colnames(p1.d.dim_red)[1]]], y = p1.d.dim_red[[colnames(p1.d.dim_red)[2]]],
                       fill = Seurat::Idents(obj_idents),
                       filter = Seurat::Idents(obj_idents) == cell_type_name
                     ),
@@ -71,16 +73,6 @@ umap_panel <- function(seurat_obj,
   }
 
   panel_figure <- patchwork::wrap_plots(panels, ncol = length(panels))
-
-
-
-  # Assemble multiplot panel
-  #panel_figure <- cowplot::plot_grid(plotlist = panels, ncol = length(levels_idents)) # nolint: line_length_linter.
-
-  #create common x and y labels
-  #y.grob <- grid::textGrob("UMAP_2", gp=grid::gpar(fontface="bold", col="black", fontsize=15), rot=90)
-  #x.grob <- grid::textGrob("UMAP_1", gp=grid::gpar(fontface="bold", col="black", fontsize=15))
-  #panel_figure <- gridExtra::grid.arrange(gridExtra::arrangeGrob(panel_figure, left = y.grob, bottom = x.grob))
 
   return(panel_figure)
 

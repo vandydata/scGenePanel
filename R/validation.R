@@ -230,3 +230,22 @@
     )
   }
 }
+
+
+#' Check if dimension reduction embedding exists
+#'
+#' Check if the specified dimension reduction embedding exists in the Seurat object
+#' @param object A Seurat or SingleCellExperiment object
+#' @param dim_red The name of the dimension reduction embedding to check
+#' @return returns an error message if the specified dimension reduction does not exist
+#' #' @noRd
+.check_if_dim_red_exists <- function(
+  object, dim_red
+) {
+  seurat_obj <- .make_seurat(object)
+
+  if (!dim_red %in% names(seurat_obj@reductions)) {
+    stop(paste0("Dimension reduction '", dim_red, "' not found in the object.\n",
+                "Available reductions: ", paste(names(seurat_obj@reductions), collapse = ", ")), call. = FALSE)
+  }
+}

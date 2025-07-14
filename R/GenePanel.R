@@ -39,7 +39,8 @@
 #'   gene = "INS",                    # Gene of interest
 #'   meta_group = "condition",         # Metadata column to group by
 #'   cell_type_name = "Beta",          # Cell type to highlight
-#'   cell_type_colname = "cell_type"   # Column with cell type annotations
+#'   cell_type_colname = "cell_type",   # Column with cell type annotations
+#'   dim_red = "t-SNE"
 #' )
 #'
 #' # Advanced usage with custom colors and ordering
@@ -61,7 +62,8 @@
 #'   gene = "INS",
 #'   meta_group = "donor_id",
 #'   cell_type_name = "Beta",
-#'   cell_type_colname = "CellTypes"
+#'   cell_type_colname = "CellTypes",
+#'   dim_red = "harmony"
 #' )
 #'
 #' # For immune cells:
@@ -81,6 +83,7 @@ create_gene_panel <- function(object,
                               meta_group,
                               cell_type_name,
                               cell_type_colname,
+                              dim_red = "UMAP",
                               col_palette = "Tableau",
                               group_order = NULL,
                               output_dir = getwd()) {
@@ -104,15 +107,16 @@ create_gene_panel <- function(object,
   # Check cell count adequacy for meaningful analysis
   .check_cell_counts(seurat_obj, meta_group = meta_group, cell_type_colname = cell_type_colname)
 
+  # Check if dimension reduction embedding exists
+  .check_if_dim_red_exists(seurat_obj, dim_red = dim_red)
 
   # Check if there are enough cells for meaningful analysis
   meta_data <- seurat_obj@meta.data
   cell_counts <- table(meta_data[[cell_type_colname]], meta_data[[meta_group]])
-  if (any(cell_counts < 3)) {
-    warning("Some groups have very few cells (< 3). Results may not be meaningful.",
+  if (any(cell_counts < 10)) {
+    warning("Some groups have very few cells (< 10). Results may not be meaningful.",
             call. = FALSE)
   }
-
 
   # Retrieve group idents to visualize with
   Seurat::Idents(seurat_obj) <- meta_group
@@ -127,6 +131,7 @@ create_gene_panel <- function(object,
                          cell_type_name,
                          meta_group,
                          gene,
+                         dim_red,
                          levels_idents,
                          group_order
                          )
@@ -189,28 +194,29 @@ create_gene_panel <- function(object,
     warning(paste0("Cell type name contains whitespace characters. Replacing with '_'."))
   }
 
-  filename <- paste0(output_dir, "/scGenePanel__", gene, "_", cell_type_name_clean, "_", meta_group, ".png")
+  filename_partial <- paste0(output_dir, "/scGenePanel__", gene, "_", cell_type_name_clean, "_", meta_group, "_", dim_red)
 
   # Check the operating system and dir slashes
   if (.Platform$OS.type == "unix") {
     # Convert backslashes to forward slashes
-    filename <- gsub("\\\\", "/", filename)
+    filename_partial <- gsub("\\\\", "/", filename_partial)
   } else if (.Platform$OS.type == "windows") {
     # Convert forward slashes to backslashes
-    filename <- gsub("/", "\\\\", filename)
+    filename_partial <- gsub("/", "\\\\", filename_partial)
   } else {
-    # Handle other operating systems if needed
     cat("Unsupported operating system, path slashed may be wrong")
   }
 
   figure <- figure + ggpubr::rremove("grid")
 
   # Export figure
+  filename <- paste0(filename_partial , ".png")
   ggplot2::ggsave(filename, plot = figure, width = 12, height = 7, scale = 2, dpi = 600, units = "in", limitsize = FALSE, bg = "white")
   message(paste0("Step 5 - Plot saved: ", filename))
 
-
+  filename <- paste0(filename_partial , ".pdf")
+  ggplot2::ggsave(filename, plot = figure, width = 12, height = 7, scale = 2, dpi = 600, units = "in", limitsize = FALSE, bg = "white", device = cairo_pdf)
+  message(paste0("Step 5 - Plot saved: ", filename))
 
   return(figure)
-
 }
