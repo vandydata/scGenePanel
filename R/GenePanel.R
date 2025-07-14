@@ -91,26 +91,28 @@ create_gene_panel <- function(object,
   # Convert to Seurat object
   seurat_obj <- suppressMessages(.make_seurat(object = object))
 
-  # Check for and clean NAs in key metadata columns
-  seurat_obj <- .validate_and_clean_nas(seurat_obj, cell_type_colname = cell_type_colname, meta_group = meta_group)
+  # Check if gene included in object
+  .is_gene(seurat_obj, gene = gene)
 
   # Check if 'cell_type_colname' exists
-  .is_celltype_colname(seurat_obj, cell_type_colname = cell_type_colname)
+  .is_cell_type_colname(seurat_obj, cell_type_colname = cell_type_colname)
 
   # Check if 'cell_type_name' exists
   .is_cell_type_name(seurat_obj, cell_type_colname = cell_type_colname, cell_type_name = cell_type_name)
 
+
   # Check if 'meta_group' exists
   .is_meta_group(seurat_obj, meta_group = meta_group)
 
-  # Check if gene included in object
-  .is_gene(seurat_obj, gene = gene)
-
-  # Check cell count adequacy for meaningful analysis
-  .check_cell_counts(seurat_obj, meta_group = meta_group, cell_type_colname = cell_type_colname)
-
   # Check if dimension reduction embedding exists
   .check_if_dim_red_exists(seurat_obj, dim_red = dim_red)
+
+    # Check cell count adequacy for meaningful analysis
+  .check_cell_counts(seurat_obj, meta_group = meta_group, cell_type_colname = cell_type_colname)
+
+  # Check for and clean NAs in key metadata columns
+  seurat_obj <- .validate_and_clean_nas(seurat_obj, cell_type_colname = cell_type_colname, meta_group = meta_group)
+
 
   # Check if there are enough cells for meaningful analysis
   meta_data <- seurat_obj@meta.data

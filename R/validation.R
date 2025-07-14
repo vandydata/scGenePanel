@@ -17,6 +17,7 @@
   # Handle Seurat objects
   if (inherits(object, "Seurat")) {
     # Check if Seurat object needs version updating
+    print("in make_seurat1")
     if ("version" %in% slotNames(object) && !is.null(object@version)) {
       object_version <- package_version(object@version)
       current_version <- packageVersion("Seurat")
@@ -41,6 +42,7 @@
         }
       }
     }
+    print("in make_seurat2")
     return(object)
 
   } else if (is(object, "SingleCellExperiment")) {
@@ -81,17 +83,20 @@
 #' Check to see if cell type metadata column name exist in the seurat object,
 #'   if not returns an error
 #'
-#' @param object A Seurat or SingleCellExperiment object
+#' @param object A Seurat object
 #' @param cell_type_colname The metadata column name that contains the cell
 #' identity annotations
 #' @return returns an error message if cell_type_colname does not exist
 #' @noRd
 
-.is_celltype_colname <- function(
-  object, cell_type_colname
-) {
-  seurat_obj <- .make_seurat(object)
+.is_cell_type_colname <- function(seurat_obj, cell_type_colname) {
+
   meta_col_names <- colnames(x = seurat_obj@meta.data)
+
+    if (missing(cell_type_colname) || is.null(cell_type_colname) || cell_type_colname == "") {
+      stop(paste0("Please specify a cell_type_colname. Available options: ",
+          paste(meta_col_names, collapse = ", ")), call. = FALSE)
+    }
 
   if (!cell_type_colname %in% meta_col_names) {
     error_message <- paste0(
@@ -115,18 +120,15 @@
 #' @return returns an error message if cell type name does not exist
 #' @noRd
 
-.is_cell_type_name <- function(
-  object, cell_type_name, cell_type_colname
-) {
+.is_cell_type_name <- function(seurat_obj, cell_type_name, cell_type_colname) {
+
   # Check for missing or empty cell_type_name
   if (missing(cell_type_name) || is.null(cell_type_name) || cell_type_name == "") {
-    seurat_obj <- .make_seurat(object)
     available_types <- unique(seurat_obj@meta.data[[cell_type_colname]])
-    stop(paste0("Please specify a cell_type_name. Available options: ",
+    stop(paste0("Please specify the column cell types are stored in. Available columns: ",
                 paste(available_types, collapse = ", ")), call. = FALSE)
   }
 
-  seurat_obj <- .make_seurat(object)
   meta <- seurat_obj@meta.data
   cell_type_column <- meta[, cell_type_colname]
 
@@ -144,17 +146,20 @@
 #'
 #' Check if 'meta_group' exists
 #'
-#' @param object A Seurat or SingleCellExperiment object
+#' @param object A Seurat object
 #' @param meta_group The metadata column name of the variable to split the UMAP,
 #' violinplot and cell frequency table by. for example, to split by disease
 #' condition
 #' @return returns an error message if meta_group does not exist
 #' @noRd
 
-.is_meta_group <- function(
-  object, meta_group
-) {
-  seurat_obj <- .make_seurat(object)
+.is_meta_group <- function(seurat_obj, meta_group = "") {
+
+  if (missing(meta_group) || is.null(meta_group) || meta_group == "") {
+    stop(paste0("Please specify a metadata group for splitting. Available columns: ",
+                paste(colnames(seurat_obj@meta.data), collapse = ", ")), call. = FALSE)
+  }
+
   meta_col_names <- colnames(x = seurat_obj@meta.data)
 
   if (!meta_group %in% meta_col_names) {
@@ -178,15 +183,13 @@
 #'
 #' Check if gene included in object
 #'
-#' @param object A Seurat or SingleCellExperiment object
-#' @param gene name of gene
+#' @param object A Seurat object
+#' @param gene Name of gene
 #' @return returns an error message if gene is not found in seurat object
 #' @noRd
 
-.is_gene <- function(
-  object, gene
-) {
-  seurat_obj <- .make_seurat(object)
+.is_gene <- function(seurat_obj, gene) {
+
   gene_names <- rownames(seurat_obj)
   if (gene %in% gene_names == "FALSE") {
     stop(paste0("Gene '", gene, "' not found in the object.\nUse rownames(your_object) to see all ", length(gene_names), " available genes."), call. = FALSE)
@@ -197,17 +200,14 @@
 #'
 #' Check if there are enough cells in each group for meaningful analysis
 #'
-#' @param object A Seurat or SingleCellExperiment object
+#' @param object A Seurat object
 #' @param meta_group The metadata column to group by
 #' @param cell_type_colname The cell type column
 #' @param min_cells Minimum number of cells required per group (default: 3)
 #' @return warning if any groups have too few cells
 #' @noRd
 
-.check_cell_counts <- function(
-  object, meta_group, cell_type_colname, min_cells = 3
-) {
-  seurat_obj <- .make_seurat(object)
+.check_cell_counts <- function(seurat_obj, meta_group, cell_type_colname, min_cells = 3) {
   meta_data <- seurat_obj@meta.data
 
   # Create cross-tabulation of cell types and meta groups
@@ -235,14 +235,11 @@
 #' Check if dimension reduction embedding exists
 #'
 #' Check if the specified dimension reduction embedding exists in the Seurat object
-#' @param object A Seurat or SingleCellExperiment object
+#' @param object A Seurat object
 #' @param dim_red The name of the dimension reduction embedding to check
 #' @return returns an error message if the specified dimension reduction does not exist
 #' #' @noRd
-.check_if_dim_red_exists <- function(
-  object, dim_red
-) {
-  seurat_obj <- .make_seurat(object)
+.check_if_dim_red_exists <- function(seurat_obj, dim_red) {
 
   if (!dim_red %in% names(seurat_obj@reductions)) {
     stop(paste0("Dimension reduction '", dim_red, "' not found in the object.\n",
@@ -255,39 +252,36 @@
 #' Check if there are NAs in cell_type_colname and meta_group columns.
 #' If found, subset the object to remove cells with NAs in either column.
 #'
-#' @param object A Seurat or SingleCellExperiment object
+#' @param object A Seurat object
 #' @param cell_type_colname The metadata column name that contains cell type annotations
 #' @param meta_group The metadata column name to group by
 #' @return A cleaned Seurat object with cells containing NAs removed, or original object if no NAs found
 #' @noRd
 
-.validate_and_clean_nas <- function(
-  object, cell_type_colname, meta_group
-) {
-  seurat_obj <- .make_seurat(object)
-  
+.validate_and_clean_nas <- function(seurat_obj, cell_type_colname, meta_group) {
+
   # Check for NAs in cell_type_colname
   na_celltype <- is.na(seurat_obj@meta.data[[cell_type_colname]])
   n_na_celltype <- sum(na_celltype)
-  
+
   # Check for NAs in meta_group
   na_metagroup <- is.na(seurat_obj@meta.data[[meta_group]])
   n_na_metagroup <- sum(na_metagroup)
-  
+
   # Check for NAs in either column
   na_either <- na_celltype | na_metagroup
   n_na_total <- sum(na_either)
-  
+
   if(n_na_total > 0) {
     message("Found ", n_na_total, " cells with NAs:")
     message("  - ", n_na_celltype, " cells with NA in '", cell_type_colname, "'")
     message("  - ", n_na_metagroup, " cells with NA in '", meta_group, "'")
     message("Removing cells with NAs from analysis...")
-    
+
     # Subset to remove cells with NAs in either column
     cells_to_keep <- !na_either
     cleaned_obj <- seurat_obj[, cells_to_keep]
-    
+
     message("After cleaning: ", ncol(cleaned_obj), " cells remaining (removed ", n_na_total, " cells)")
     return(cleaned_obj)
   } else {
