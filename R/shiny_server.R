@@ -6,8 +6,7 @@
 #' @importFrom shiny renderText renderPlot req updateSelectizeInput observe
 #' @importFrom ggplot2 ggplot theme_void annotation_custom xlim ylim theme element_rect margin annotate
 #' @importFrom ggpubr ggarrange annotate_figure text_grob rremove
-#' @importFrom grid annotation_custom
-#' @noRd
+#' @importFrom ggplot2 annotation_custom
 
 create_genepanel_server <- function(data) {
 

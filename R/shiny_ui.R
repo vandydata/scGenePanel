@@ -3,14 +3,11 @@
 #' @param data A Seurat object used to populate gene choices
 #' @return A Shiny UI object
 #' @keywords internal
-#' @importFrom shiny dashboardPage dashboardHeader dashboardSidebar dashboardBody
-#' @importFrom shiny sidebarMenu menuItem selectizeInput textInput tabItems tabItem
-#' @importFrom shiny fluidPage verticalLayout plotOutput tags HTML
 #' @importFrom shinydashboard dashboardPage dashboardHeader dashboardSidebar dashboardBody
+#' @importFrom shinydashboard sidebarMenu menuItem tabItems tabItem
+#' @importFrom shiny fluidPage verticalLayout plotOutput tags HTML
 #' @importFrom shinyjs useShinyjs
 #' @importFrom shinyWidgets addSpinner
-#' @noRd
-#'
 
 create_genepanel_ui <- function(data) {
 
@@ -59,10 +56,7 @@ create_genepanel_ui <- function(data) {
     return(col_items)
   }
 
-  #' Create color palette preview section
-  #' @keywords internal
-  #' @importFrom shiny tags
-  #' @noRd
+  # Create color palette preview section
   create_color_palette_section <- function() {
 
     # Color palette data
@@ -132,7 +126,7 @@ create_genepanel_ui <- function(data) {
         tags$a(
         href = "#",
         onclick = "document.querySelector('a[data-value=\"home\"]').click();",
-        tags$img(src = "www/logo.svg", height = "150px")
+        tags$img(src = "inst/www/logo.svg", height = "150px")
         )
         ),
        id = "tabs",
@@ -210,10 +204,10 @@ create_genepanel_ui <- function(data) {
          )
        ),
        tags$h3("Step 2 - Choose a plot type:", style = "color: white; margin-left: 15px;"),
-       menuItem("🎯 Multi-Panel", tabName = "fullpanel", badgeLabel = "UMAP + Violin + Table", badgeColor = "fuchsia"),
-       menuItem("🗺️ UMAP plot", tabName = "umap"),
-       menuItem("🎻 Violin plot", tabName = "vlnplot"),
-       menuItem("📊 Table plot", tabName = "table")
+       menuItem("Multi-Panel", tabName = "fullpanel", badgeLabel = "UMAP + Violin + Table", badgeColor = "fuchsia"),
+       menuItem("UMAP plot", tabName = "umap"),
+       menuItem("Violin plot", tabName = "vlnplot"),
+       menuItem("Table plot", tabName = "table")
      )
     ),
 
@@ -320,10 +314,10 @@ create_genepanel_ui <- function(data) {
                              tags$div(
                                class = "panel-description",
                                tags$ul(
-                                 tags$li("🎯 ", tags$strong("Multi-Panel (UMAP + Violin + Table"), " - Complete integrated multi-panel visualization"),
-                                 tags$li("🗺️ ", tags$strong("UMAP View"), " - Only ", tags$code("gene"), " expression feature plot of UMAP embedding"),
-                                 tags$li("🎻 ", tags$strong("Violin View"), " - Only violin plots to assess ", tags$code("gene"), " expression distribution across ", tags$code("groups"), ""),
-                                 tags$li("📊 ", tags$strong("Table View"), " - Only cell frequency and expression statistics of selected ", tags$code("gene"), " in selected ", tags$code("groups"), ""),
+                                 tags$li("", tags$strong("Multi-Panel (UMAP + Violin + Table"), " - Complete integrated multi-panel visualization"),
+                                 tags$li("", tags$strong("UMAP View"), " - Only ", tags$code("gene"), " expression feature plot of UMAP embedding"),
+                                 tags$li("", tags$strong("Violin View"), " - Only violin plots to assess ", tags$code("gene"), " expression distribution across ", tags$code("groups"), ""),
+                                 tags$li("", tags$strong("Table View"), " - Only cell frequency and expression statistics of selected ", tags$code("gene"), " in selected ", tags$code("groups"), ""),
                                  tags$li("See ", tags$a(href="https://github.com/vandydata/scGenePanel", "scGenePanel GitHub Page"), " for more details.")
                                ),
                              ),
@@ -339,8 +333,8 @@ create_genepanel_ui <- function(data) {
                       column(6,
                              tags$div(
                                class = "panel-image",
-                               tags$a(href = "www/scGenePanel__ATF4_Beta_Age.jpg", target = "_blank",
-                                      tags$img(src = "www/scGenePanel__ATF4_Beta_Age.jpg", width = "80%", style = "cursor: pointer; border: 2px solid #ddd; border-radius: 5px; hover: border-color: #007bff;")),
+                               tags$a(href = "inst/www/scGenePanel__ATF4_Beta_Age.jpg", target = "_blank",
+                                      tags$img(src = "inst/www/scGenePanel__ATF4_Beta_Age.jpg", width = "80%", style = "cursor: pointer; border: 2px solid #ddd; border-radius: 5px; hover: border-color: #007bff;")),
                              )
                       )
                     ),
