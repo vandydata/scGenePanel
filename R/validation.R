@@ -249,3 +249,49 @@
                 "Available reductions: ", paste(names(seurat_obj@reductions), collapse = ", ")), call. = FALSE)
   }
 }
+
+#' Check for and handle NAs in key metadata columns
+#'
+#' Check if there are NAs in cell_type_colname and meta_group columns.
+#' If found, subset the object to remove cells with NAs in either column.
+#'
+#' @param object A Seurat or SingleCellExperiment object
+#' @param cell_type_colname The metadata column name that contains cell type annotations
+#' @param meta_group The metadata column name to group by
+#' @return A cleaned Seurat object with cells containing NAs removed, or original object if no NAs found
+#' @noRd
+
+.validate_and_clean_nas <- function(
+  object, cell_type_colname, meta_group
+) {
+  seurat_obj <- .make_seurat(object)
+  
+  # Check for NAs in cell_type_colname
+  na_celltype <- is.na(seurat_obj@meta.data[[cell_type_colname]])
+  n_na_celltype <- sum(na_celltype)
+  
+  # Check for NAs in meta_group
+  na_metagroup <- is.na(seurat_obj@meta.data[[meta_group]])
+  n_na_metagroup <- sum(na_metagroup)
+  
+  # Check for NAs in either column
+  na_either <- na_celltype | na_metagroup
+  n_na_total <- sum(na_either)
+  
+  if(n_na_total > 0) {
+    message("Found ", n_na_total, " cells with NAs:")
+    message("  - ", n_na_celltype, " cells with NA in '", cell_type_colname, "'")
+    message("  - ", n_na_metagroup, " cells with NA in '", meta_group, "'")
+    message("Removing cells with NAs from analysis...")
+    
+    # Subset to remove cells with NAs in either column
+    cells_to_keep <- !na_either
+    cleaned_obj <- seurat_obj[, cells_to_keep]
+    
+    message("After cleaning: ", ncol(cleaned_obj), " cells remaining (removed ", n_na_total, " cells)")
+    return(cleaned_obj)
+  } else {
+    message("No NAs found in '", cell_type_colname, "' or '", meta_group, "' columns")
+    return(seurat_obj)
+  }
+}

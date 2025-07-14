@@ -88,9 +88,11 @@ create_gene_panel <- function(object,
                               group_order = NULL,
                               output_dir = getwd()) {
 
-
   # Convert to Seurat object
   seurat_obj <- suppressMessages(.make_seurat(object = object))
+
+  # Check for and clean NAs in key metadata columns
+  seurat_obj <- .validate_and_clean_nas(seurat_obj, cell_type_colname = cell_type_colname, meta_group = meta_group)
 
   # Check if 'cell_type_colname' exists
   .is_celltype_colname(seurat_obj, cell_type_colname = cell_type_colname)

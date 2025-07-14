@@ -98,6 +98,7 @@ create_genepanel_server <- function(data) {
       }
     })
 
+
     # Observer to mark dropdowns as synced when cell type is updated
     observeEvent(input$cell_type_name, {
       if(!is.null(input$cell_type_name) && input$cell_type_name != "") {
@@ -151,6 +152,8 @@ create_genepanel_server <- function(data) {
 
       tryCatch({
         # Get the levels for the metadata group
+        data <- .validate_and_clean_nas(data, input$cell_type_colname, input$meta_group)
+
         levels_idents <- unique(data[[input$meta_group]][, 1])
         levels_idents <- as.character(levels_idents)
 
