@@ -10,8 +10,12 @@
 #' @importFrom shinyjs useShinyjs
 #' @importFrom shinyWidgets addSpinner
 #' @noRd
+#'
 
 create_genepanel_ui <- function(data) {
+
+  # get filenmae of the object, to be used in metadata display block
+  object_name <- attr(data, "object_name") %||% "Unknown Dataset"
 
   # Get metadata column names, filtering for categorical variables only
   meta_cols_all <- colnames(data@meta.data)
@@ -49,6 +53,45 @@ create_genepanel_ui <- function(data) {
       }
     })
     return(col_items)
+  }
+
+  #' Create color palette preview section
+  #' @keywords internal
+  #' @importFrom shiny tags
+  #' @noRd
+  create_color_palette_section <- function() {
+
+    # Color palette data
+    palettes <- list(
+      "Accent" = c("#7FC97F", "#BEAED4", "#FDC086", "#FFFF99", "#386CB0", "#F0027F"),
+      "Dark2" = c("#1B9E77", "#D95F02", "#7570B3", "#E7298A", "#66A61E", "#E6AB02"),
+      "default" = c("#FF0000FF", "#FF9900FF", "#FFCC00FF", "#00FF00FF", "#6699FFFF", "#CC33FFFF"),
+      "Paired" = c("#A6CEE3", "#1F78B4", "#B2DF8A", "#33A02C", "#FB9A99", "#E31A1C"),
+      "Pastel1" = c("#FBB4AE", "#B3CDE3", "#CCEBC5", "#DECBE4", "#FED9A6", "#FFFFCC"),
+      "Pastel2" = c("#B3E2CD", "#FDCDAC", "#CBD5E8", "#F4CAE4", "#E6F5C9", "#FFF2AE"),
+      "Set1" = c("#E41A1C", "#377EB8", "#4DAF4A", "#984EA3", "#FF7F00", "#FFFF33"),
+      "Set2" = c("#66C2A5", "#FC8D62", "#8DA0CB", "#E78AC3", "#A6D854", "#FFD92F"),
+      "Set3" = c("#8DD3C7", "#FFFFB3", "#BEBADA", "#FB8072", "#80B1D3", "#FDB462"),
+      "Tableau" = c("#4E79A7", "#A0CBE8", "#F28E2B", "#FFBE7D", "#59A14F", "#8CD17D")
+    )
+
+    # Helper function to create a single palette row
+    create_palette_row <- function(name, colors) {
+      color_swatches <- lapply(colors, function(color) {
+        tags$div(class = "color-swatch", style = paste0("background-color: ", color, ";"))
+      })
+
+      tags$div(
+        class = "palette-row",
+        tags$span(paste0(name, ":"), class = "palette-name"),
+        tags$div(class = "palette-swatches", color_swatches)
+      )
+    }
+
+    # Create all palette rows
+    palette_rows <- mapply(create_palette_row, names(palettes), palettes, SIMPLIFY = FALSE)
+
+    return(palette_rows)
   }
 
   # Header
@@ -146,8 +189,8 @@ create_genepanel_ui <- function(data) {
                                          column(12,
                                                 selectizeInput(inputId = "color",
                                                                label = "Color palette",
-                                                               choices = c("Set1","Set2","Set3","Paired","Dark2","Accent"),
-                                                               selected = "Set3")
+                                                                choices = c("Accent","Dark2","default","Paired","Pastel1","Pastel2","Set1","Set2","Set3","Tableau"),
+                                                                selected = "Set1")
                                          )
                                        ),
                                        tags$h3("Step 2 - Choose a plot type:", style = "color: white; margin-left: 15px;"),
@@ -217,68 +260,31 @@ create_genepanel_ui <- function(data) {
           .full-panel-container { padding: 20px; background-color: white; }
           .panel-title { text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 20px; color: #333; }
           code { color: #dd1c77; background-color: #ffffcc; font-family: monospace;}
-
+          .metadata-section { background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #ddd; }
           /* hide header, adjust sidebar */
           header { display: none;}
           .main-sidebar { padding-top: 10px; }
 
           /* Mobile menu toggle button */
-          .mobile-menu-toggle {
-            display: none;
-            position: fixed;
-            top: 15px;
-            left: 15px;
-            z-index: 1001;
-            background: #2f2f2f;
-            color: white;
-            border: none;
-            padding: 10px 12px;
-            border-radius: 3px;
-            font-size: 18px;
-            cursor: pointer;
+          .mobile-menu-toggle { display: none; position: fixed; top: 15px; left: 15px; z-index: 1001; background: #2f2f2f; color: white; border: none; padding: 10px 12px; border-radius: 3px; font-size: 18px; cursor: pointer;
           }
-
-          .mobile-menu-toggle:hover {
-            background: #196797;
-          }
+          .mobile-menu-toggle:hover { background: #196797; }
 
           /* Mobile responsiveness */
           @media (max-width: 768px) {
-            .mobile-menu-toggle {
-              display: block;
-            }
-
-            .main-sidebar {
-              transform: translateX(-100%);
-              transition: transform 0.3s ease;
-              position: fixed;
-              height: 100vh;
-              z-index: 1000;
-            }
-
-            .main-sidebar.sidebar-open {
-              transform: translateX(0);
-            }
-
-            .content-wrapper {
-              margin-left: 0 !important;
-            }
-
+            .mobile-menu-toggle {display: block; }
+            .main-sidebar { transform: translateX(-100%); transition: transform 0.3s ease; position: fixed; height: 100vh; z-index: 1000; }
+            .main-sidebar.sidebar-open { transform: translateX(0); }
+            .content-wrapper { margin-left: 0 !important; }
             /* Overlay for mobile menu */
-            .sidebar-overlay {
-              display: none;
-              position: fixed;
-              top: 0;
-              left: 0;
-              width: 100%;
-              height: 100%;
-              background: rgba(0,0,0,0.5);
-              z-index: 999;
-            }
-
-            .sidebar-overlay.show {
-              display: block;
-            }
+            .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;}
+            .sidebar-overlay.show { display: block; }
+          }
+          /* Color Palette Preview Styles */
+          .palette-row { margin-bottom: 8px; display: flex; align-items: center; }
+          .palette-name { font-weight: bold; margin-right: 10px; display: inline-block; width: 80px; font-size: 14px; }
+          .palette-swatches { display: flex; gap: 2px; }
+          .color-swatch { width: 30px; height: 20px; border-radius: 2px; transition: transform 0.2s ease;
           }
         "))
       ),
@@ -291,18 +297,39 @@ create_genepanel_ui <- function(data) {
 
                     tags$h2("Welcome to scGenePanel Interactive Viewer!", style = "float:left"),
                     hr(),
-                    tags$p("This app provides interactive access to single cell RNA-Seq data visualization using the original scGenePanel functions. See ", tags$a(href="github.com/vandydata/scGenePanel", "scGenePanel"), " for more details."),
-                    tags$h3("Features:"),
-                    tags$ul(
-                      tags$li("🎯 ", tags$strong("Multi-Panel (UMAP + Violin + Table"), " - Complete integrated multi-panel visualization"),
-                      tags$li("🗺️ ", tags$strong("UMAP View"), " - Only ", tags$code("gene"), " expression feature plot of UMAP embedding"),
-                      tags$li("🎻 ", tags$strong("Violin View"), " - Only violin plots to assess ", tags$code("gene"), " expression distribution across ", tags$code("groups"), ""),
-                      tags$li("📊 ", tags$strong("Table View"), " - Only cell frequency and expression statistics of selected ", tags$code("gene"), " in selected ", tags$code("groups"), "")
+                    tags$p("Quickly explore gene expression data interactively, focusing on specific genes across different cell types and experimental conditions. Generate a publication-ready figure that includes gene expression UMAP projections, violin plots, and summary statistics."),
+
+                    fluidRow(
+                      column(6,
+                             tags$div(
+                               class = "panel-description",
+                               tags$ul(
+                                 tags$li("🎯 ", tags$strong("Multi-Panel (UMAP + Violin + Table"), " - Complete integrated multi-panel visualization"),
+                                 tags$li("🗺️ ", tags$strong("UMAP View"), " - Only ", tags$code("gene"), " expression feature plot of UMAP embedding"),
+                                 tags$li("🎻 ", tags$strong("Violin View"), " - Only violin plots to assess ", tags$code("gene"), " expression distribution across ", tags$code("groups"), ""),
+                                 tags$li("📊 ", tags$strong("Table View"), " - Only cell frequency and expression statistics of selected ", tags$code("gene"), " in selected ", tags$code("groups"), ""),
+                                 tags$li("See ", tags$a(href="https://github.com/vandydata/scGenePanel", "scGenePanel GitHub Page"), " for more details.")
+                               ),
+                             ),
+                             tags$div(
+                               tags$h3("How to cite"),
+                               tags$p("If you use this app in your research, please cite:"),
+                               tags$blockquote(
+                                 tags$p("Shrestha, R., et al. (2025). scGenePanel..."),
+                                 style = "font-style: italic; margin-left: 20px; border-left: 4px solid #ddd; padding-left: 20px;"
+                               )
+                             )
+                      ),
+                      column(6,
+                             tags$div(
+                               class = "panel-image",
+                               tags$a(href = "www/scGenePanel__ATF4_Beta_Age.jpg", target = "_blank",
+                                      tags$img(src = "www/scGenePanel__ATF4_Beta_Age.jpg", width = "80%", style = "cursor: pointer; border: 2px solid #ddd; border-radius: 5px; hover: border-color: #007bff;")),
+                             )
+                      )
                     ),
-                    tags$h3("Example output"),
-                    tags$p("Background goes here..."),
-                    tags$img(src = "www/scGenePanel__ATF4_Beta_Age.jpg", width = "50%"),
-                    tags$br(),
+
+
                     tags$div(
                       tags$h3("Quick start"),
                       tags$ol(
@@ -314,39 +341,54 @@ create_genepanel_ui <- function(data) {
                         tags$li("Click on the plot type desired"),
                       )
                     ),
-                    # Metadata section
-                    tags$div(
+
+                    fluidRow(
                       class = "metadata-section",
-                      # Add helpful note
-                      tags$h3("Available metadata columns"),
-                      tags$p("We extracted all metadata columns from the loaded object."),
-                      # Show highlighted potential cell type columns if any exist
-                      if (length(potential_celltype_cols) > 0) {
-                        tags$div(
-                          tags$p(
-                            tags$strong("💡 Candidate cell type columns: "),
-                            "Columns highlighted in yellow are likely cell type annotations. You may want to use one of these for the 'Metadata column name of cell type annotation' field above."
-                          ),
-                          tags$ul(
-                            style = "margin-bottom: 15px;",
-                            lapply(potential_celltype_cols, function(col) {
-                              tags$li(
-                                tags$code(col, style = "background-color: #ffffcc; padding: 4px 8px; border-radius: 3px; font-weight: bold;"),
-                              )
-                            })
-                          )
-                        )
-                      } else {
-                        tags$div()
-                      },
-                      # Show all metadata columns
-                      tags$strong("All Metadata Columns:"),
-                      tags$div(
-                        class = "metadata-columns",
-                        tags$ul(
-                          create_metadata_display(meta_cols, potential_celltype_cols)
-                        )
+                      column(6,
+                             tags$div(
+
+                               tags$h3("Available metadata columns"),
+                             tags$p("We extracted all metadata columns from the loaded object: ", tags$code(object_name), "."),
+                             # Show highlighted potential cell type columns if any exist
+                             if (length(potential_celltype_cols) > 0) {
+                               tags$div(
+                                 tags$p(
+                                   tags$strong("💡 Candidate cell type columns: "),
+                                   "Columns highlighted in yellow are likely cell type annotations. You may want to use one of these for the 'Metadata column name of cell type annotation' field above."
+                                 ),
+                                 tags$ul(
+                                   style = "margin-bottom: 15px;",
+                                   lapply(potential_celltype_cols, function(col) {
+                                     tags$li(
+                                       tags$code(col, style = "background-color: #ffffcc; padding: 4px 8px; border-radius: 3px; font-weight: bold;"),
+                                     )
+                                   })
+                                 )
+                               )
+                             } else {
+                               tags$div()
+                             },
+                             # Show all metadata columns
+                             tags$strong("All Metadata Columns:"),
+                             tags$div(
+                               class = "metadata-columns",
+                               tags$ul(
+                                 create_metadata_display(meta_cols, potential_celltype_cols)
+                               )
+                             )
+                           )
+                      ),
+                      column(6,
+                             tags$h3("Available color palettes"),
+                             tags$p("Preview of all available color palettes for plots:"),
+
+
+                             create_color_palette_section()
+                             # Accent palette
+
                       )
+
+
                     )
                   )
                 )
