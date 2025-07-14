@@ -30,51 +30,41 @@
 #' @importFrom magrittr %>%
 #' @importFrom methods as
 #' @examples
-#' # Load your single-cell data (Seurat object)
-#' # data(your_seurat_object)
+#' # Load example pancreatic islet data from package
+#' example_file <- system.file("extdata", "human_panc_islets.Rds", package = "scGenePanel")
+#' human_panc_islets <- readRDS(example_file)
 #'
 #' # Basic usage - create gene panel for insulin expression in beta cells
 #' panel <- create_gene_panel(
-#'   object = your_seurat_object,
-#'   gene = "INS",                    # Gene of interest
-#'   meta_group = "condition",         # Metadata column to group by
-#'   cell_type_name = "Beta",          # Cell type to highlight
-#'   cell_type_colname = "cell_type",   # Column with cell type annotations
-#'   dim_red = "t-SNE"
+#'   object = human_panc_islets,
+#'   gene = "INS",                      # Insulin gene
+#'   meta_group = "Age",                # Group by age (14y, 39y, 50y, 59y, 66y)
+#'   cell_type_name = "Beta",           # Highlight beta cells
+#'   cell_type_colname = "CellTypes"    # Cell type column
 #' )
 #'
+#' \donttest{
 #' # Advanced usage with custom colors and ordering
 #' panel_advanced <- create_gene_panel(
-#'   object = your_seurat_object,
-#'   gene = "GCG",                    # Glucagon for alpha cells
-#'   meta_group = "treatment",
-#'   cell_type_name = "Alpha",
-#'   cell_type_colname = "cell_type",
-#'   col_palette = "Set2",             # Custom color palette
-#'   group_order = c("control", "treated"), # Custom group order
-#'   output_dir = "./results"          # Custom output directory
-#' )
-#'
-#' # Example with different cell types and metadata
-#' # For endocrine pancreas data:
-#' insulin_panel <- create_gene_panel(
-#'   object = pancreas_data,
-#'   gene = "INS",
-#'   meta_group = "donor_id",
-#'   cell_type_name = "Beta",
+#'   object = human_panc_islets,
+#'   gene = "GCG",                      # Glucagon for alpha cells
+#'   meta_group = "Sex",                # Group by sex (F/M)
+#'   cell_type_name = "Alpha",          # Highlight alpha cells
 #'   cell_type_colname = "CellTypes",
-#'   dim_red = "harmony"
+#'   col_palette = "Set2",              # Custom color palette
+#'   group_order = c("F", "M"),         # Custom group order
+#'   output_dir = tempdir()             # Save to temp directory
 #' )
 #'
-#' # For immune cells:
-#' cd4_panel <- create_gene_panel(
-#'   object = immune_data,
-#'   gene = "CD4",
-#'   meta_group = "disease_status",
-#'   cell_type_name = "T_cell",
-#'   cell_type_colname = "cell_annotations"
+#' # Example with different cell type and gene
+#' somatostatin_panel <- create_gene_panel(
+#'   object = human_panc_islets,
+#'   gene = "SST",                      # Somatostatin for delta cells
+#'   meta_group = "Batch",              # Group by batch
+#'   cell_type_name = "Delta",          # Highlight delta cells
+#'   cell_type_colname = "CellTypes"
 #' )
-#'
+#' }
 #' @export
 
 
