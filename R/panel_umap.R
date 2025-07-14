@@ -34,11 +34,18 @@ umap_panel <- function(seurat_obj,
   loop_idents <- function(x) {
     Seurat::Idents(seurat_obj) <- meta_group
     obj_idents <- subset(seurat_obj, idents = x)
-    p1.d <- suppressMessages(scCustomize::FeaturePlot_scCustom(obj_idents, features = gene,  pt.size = 1) +
-                               ggplot2::labs(title = x))
+
+    p1.d <- suppressMessages(scCustomize::FeaturePlot_scCustom(
+      obj_idents,
+      reduction = dim_red,
+      features = gene,
+      pt.size = 1) + ggplot2::labs(title = x))
+
     p1.d[[1]]$layers[[1]]$aes_params$alpha <- .5
 
     p1.d.dim_red <- data.frame(obj_idents@reductions[[dim_red]]@cell.embeddings)
+
+
     Seurat::Idents(obj_idents) <- cell_type_colname
     plot1 <- p1.d + ggforce::geom_mark_ellipse(
                     ggplot2::aes(
@@ -62,6 +69,7 @@ umap_panel <- function(seurat_obj,
   if (!is.null(group_order)) {
     levels_idents <- levels_idents[order(match(levels_idents, group_order))]
   }
+
   panels <- lapply(levels_idents, loop_idents)
 
   # Remove legend from all panels except the last one
