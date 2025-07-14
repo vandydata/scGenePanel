@@ -121,7 +121,7 @@ create_genepanel_ui <- function(data) {
                                        fluidRow(
                                          column(12,
                                                 selectizeInput(inputId = "cell_type_name",
-                                                               label = "Cell type",
+                                                               label = "Cell type (# of cells)",
                                                                choices = NULL,  # Will be populated by server
                                                                selected = NULL,
                                                                options = list(

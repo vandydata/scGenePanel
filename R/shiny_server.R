@@ -30,16 +30,27 @@ create_genepanel_server <- function(data) {
       paste0(input$Gene, " expression in ", input$cell_type_name, " cells")
     })
 
-
-    # Reactive expression to get unique cell types from selected column
+    # Reactive expression to get unique cell types from selected column with counts
     get_cell_types <- reactive({
       req(input$cell_type_colname)
 
       # Get the selected metadata column
       if(input$cell_type_colname %in% colnames(data@meta.data)) {
-        cell_types <- unique(data@meta.data[[input$cell_type_colname]])
-        # Remove NA values and sort alphabetically
-        cell_types <- sort(cell_types[!is.na(cell_types)])
+        cell_type_data <- data@meta.data[[input$cell_type_colname]]
+
+        # Remove NA values and get counts
+        cell_type_data <- cell_type_data[!is.na(cell_type_data)]
+        cell_type_counts <- table(cell_type_data)
+
+        # Sort alphabetically by cell type name
+        cell_type_counts <- cell_type_counts[order(names(cell_type_counts))]
+
+        # Create formatted labels with counts
+        cell_type_labels <- paste0(names(cell_type_counts), " (", cell_type_counts, ")")
+
+        # Create named vector for selectizeInput (values are the actual cell types, labels show counts)
+        cell_types <- setNames(names(cell_type_counts), cell_type_labels)
+
         return(cell_types)
       }
       return(NULL)
