@@ -19,6 +19,7 @@
 #' @param cell_type_name The cell type identity to highlight in UMAP
 #' @param cell_type_colname The metadata column name that contains the cell
 #'   identity annotations
+#' @param dim_red Dimension reduction embedding to use
 #' @param col_palette Color palettes to choose for violinplot panel. Options
 #'   are "Tableau" or RColorBrewer qualitative variables like "Dark2", "Paired",
 #'   "Set1", "Set2", "Set3", "Accent" etc.

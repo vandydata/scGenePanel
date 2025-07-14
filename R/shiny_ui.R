@@ -130,7 +130,7 @@ create_genepanel_ui <- function(data) {
         )
         ),
        id = "tabs",
-       menuItem("🏡 Home", tabName = "home", selected = TRUE),
+       menuItem("\\U0001F3E1 Home", tabName = "home", selected = TRUE),
        tags$hr(),
        tags$h3("Step 1 - Configure:", style = "color: white; margin-left: 15px;"),
        # Use fluidRow and column for better alignment of inputs
@@ -219,7 +219,7 @@ create_genepanel_ui <- function(data) {
       tags$button(
         class = "mobile-menu-toggle",
         onclick = "toggleMobileMenu();",
-        "☰"
+        icon("bars")
       ),
 
       # Overlay for mobile
@@ -363,7 +363,7 @@ create_genepanel_ui <- function(data) {
                              if (length(potential_celltype_cols) > 0) {
                                tags$div(
                                  tags$p(
-                                   tags$strong("💡 Candidate cell type columns: "),
+                                   tags$strong("\\U0001F4A1 Candidate cell type columns: "),
                                    "Columns highlighted in yellow are likely cell type annotations. You may want to use one of these for the 'Metadata column name of cell type annotation' field above."
                                  ),
                                  tags$ul(

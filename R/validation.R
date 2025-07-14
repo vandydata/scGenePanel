@@ -10,6 +10,7 @@
 #' @importFrom methods slotNames
 #' @importFrom utils packageVersion combn
 #' @importFrom Seurat UpdateSeuratObject
+#' @importFrom SummarizedExperiment assayNames
 #' @noRd
 
 .make_seurat <- function(object) {
@@ -58,7 +59,7 @@
 
     # Add normalized counts if it doesn't exist
     tryCatch({
-      if ("logcounts" %in% SingleCellExperiment::assayNames(object)) {
+      if ("logcounts" %in% SummarizedExperiment::assayNames(object)) {
         converted_obj <- Seurat::as.Seurat(object, counts = "counts", data = "logcounts")
       }
     }, error = function(e) {
@@ -83,7 +84,7 @@
 #' Check to see if cell type metadata column name exist in the seurat object,
 #'   if not returns an error
 #'
-#' @param object A Seurat object
+#' @param seurat_obj A Seurat object
 #' @param cell_type_colname The metadata column name that contains the cell
 #' identity annotations
 #' @return returns an error message if cell_type_colname does not exist
@@ -113,7 +114,7 @@
 #' Check to see if cell type  name exist in the seurat object, if not returns an
 #'   error
 #'
-#' @param object A Seurat or SingleCellExperiment object
+#' @param seurat_obj A Seurat object
 #' @param cell_type_name The cell type identity to highlight in UMAP
 #' @param cell_type_colname The metadata column name that contains the cell
 #'   identity annotations
@@ -146,7 +147,7 @@
 #'
 #' Check if 'meta_group' exists
 #'
-#' @param object A Seurat object
+#' @param seurat_obj A Seurat object
 #' @param meta_group The metadata column name of the variable to split the UMAP,
 #' violinplot and cell frequency table by. for example, to split by disease
 #' condition
@@ -183,7 +184,7 @@
 #'
 #' Check if gene included in object
 #'
-#' @param object A Seurat object
+#' @param seurat_obj A Seurat object
 #' @param gene Name of gene
 #' @return returns an error message if gene is not found in seurat object
 #' @noRd
@@ -235,7 +236,7 @@
 #' Check if dimension reduction embedding exists
 #'
 #' Check if the specified dimension reduction embedding exists in the Seurat object
-#' @param object A Seurat object
+#' @param seurat_obj A Seurat object
 #' @param dim_red The name of the dimension reduction embedding to check
 #' @return returns an error message if the specified dimension reduction does not exist
 #' #' @noRd
@@ -252,7 +253,7 @@
 #' Check if there are NAs in cell_type_colname and meta_group columns.
 #' If found, subset the object to remove cells with NAs in either column.
 #'
-#' @param object A Seurat object
+#' @param seurat_obj A Seurat object
 #' @param cell_type_colname The metadata column name that contains cell type annotations
 #' @param meta_group The metadata column name to group by
 #' @return A cleaned Seurat object with cells containing NAs removed, or original object if no NAs found

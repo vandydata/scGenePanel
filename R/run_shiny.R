@@ -5,7 +5,6 @@
 #' gene expression data with dynamic parameter selection.
 #'
 #' @param object A Seurat or SingleCellExperiment object. If NULL, loads example data
-#' @param ... Additional parameters passed to the Shiny application
 #'
 #' @return Invisibly returns NULL. Function is called for its side effect of launching the Shiny application.
 #'
