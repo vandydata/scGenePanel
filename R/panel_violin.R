@@ -90,7 +90,7 @@ violin_sig_panel <- function(seurat_obj,
 
     #p <- suppressWarnings(Seurat::VlnPlot(object = obj_idents, features = gene, split.by = meta_group, cols = select_col, pt.size = -1))
 
-    p <- scCustomize::VlnPlot_scCustom(seurat_object = obj_idents, features = gene, group.by = meta_group, pt.size = 0)
+    p <- scCustomize::VlnPlot_scCustom(seurat_object = obj_idents, features = gene, group.by = meta_group, pt.size = 0, colors_use = select_col)
 
     #p$data
 
