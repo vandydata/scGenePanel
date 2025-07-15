@@ -12,7 +12,7 @@ create_genepanel_server <- function(data) {
 
   server <- function(input, output, session) {
 
-    addResourcePath("www", file.path(getwd(), "www"))
+    addResourcePath("inst/www", file.path(getwd(), "inst/www"))
 
     # Fast gene search
     updateSelectizeInput(

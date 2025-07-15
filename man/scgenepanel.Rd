@@ -45,7 +45,9 @@ are "Tableau" or RColorBrewer qualitative variables like "Dark2", "Paired",
 \item{output_dir}{Output directory where the image will be saved}
 }
 \value{
-A ggplot object containing a multi-panel visualization with UMAP plots, violin plots, and cell frequency statistics for the specified gene and cell type
+A ggplot object containing a multi-panel visualization with UMAP
+plots, violin plots, and cell frequency statistics for the specified gene
+and cell type
 }
 \description{
 \code{scgenepanel} exports a multi-panel scRNAseq gene expression plots of
@@ -56,7 +58,10 @@ group, in one visual
 }
 \examples{
 # Load example pancreatic islet data from package
-example_file <- system.file("extdata", "human_panc_islets.Rds", package = "scGenePanel")
+example_file <- system.file(
+  "extdata",
+  "human_panc_islets.Rds",
+  package = "scGenePanel")
 human_panc_islets <- readRDS(example_file)
 
 # Basic usage - create gene panel for insulin expression in beta cells
