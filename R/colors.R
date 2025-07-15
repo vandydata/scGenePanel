@@ -39,7 +39,8 @@ discrete_col_palette <- function(num_colors, hex_cols = NULL,  palette = NULL) {
   } else {
     palette <- "default"
     palette_str <- paste0(names(col_list), collapse = ", ")
-    warning(paste0("You have provided an unknown palette so defaulting to pal_ucscgb. Please choose from: " , palette_str, "."))
+    message <- paste0("You have provided an unknown palette so defaulting to pal_ucscgb. Please choose from: ", palette_str, ".")
+    warning(message)
   }
 
   selected_palette <- col_list[[palette]]
@@ -47,7 +48,6 @@ discrete_col_palette <- function(num_colors, hex_cols = NULL,  palette = NULL) {
   if (num_colors > length(selected_palette)) {
     warning("Not enough colors in specified palette. Choose another or enter NULL (default to ggsci UCSCB Genome Browser palette).")
   }
-
 
   if (is.null(x = palette) && !is.null(x = hex_cols)) {
 

@@ -193,7 +193,8 @@
 
   gene_names <- rownames(seurat_obj)
   if (gene %in% gene_names == "FALSE") {
-    stop(paste0("Gene '", gene, "' not found in the object.\nUse rownames(your_object) to see all ", length(gene_names), " available genes."), call. = FALSE)
+    message <- paste0("Gene '", gene, "' not found in the object.\nUse `rownames(your_object) to see all ", length(gene_names), " available genes.")
+    stop(message, call. = FALSE)
   }
 }
 

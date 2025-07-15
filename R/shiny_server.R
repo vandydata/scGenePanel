@@ -198,12 +198,7 @@ create_genepanel_server <- function(data) {
         return(figure)
 
       }, error = function(e) {
-        message("Error in full panel: ", e$message)
-        ggplot2::ggplot() +
-          ggplot2::theme_void() +
-          ggplot2::annotate("text", x = 0.5, y = 0.5,
-                   label = paste("Error generating full panel:", e$message),
-                   size = 5, color = "red")
+        message("Something broke assembling the multi-panel: ", e$message)
       })
     })
 
