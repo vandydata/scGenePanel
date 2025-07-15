@@ -7,8 +7,8 @@
 #'
 #' @section Main Functions:
 #' \itemize{
-#'   \item \code{\link{create_gene_panel}}: Main function for creating multi-panel gene visualizations
-#'   \item \code{\link{genepanel_shiny}}: Interactive Shiny application for exploring data
+#'   \item \code{\link{scgenepanel}}: Main function for creating multi-panel gene visualizations
+#'   \item \code{\link{scgenepanel_shiny}}: Interactive Shiny application for exploring data
 #' }
 #'
 #' @section Key Features:
@@ -22,7 +22,7 @@
 #' }
 #'
 #' @section Getting Started:
-#' See \code{\link{create_gene_panel}} for detailed usage examples.
+#' See \code{\link{scgenepanel}} for detailed usage examples.
 #'
 #' @return This is package documentation and does not return a value.
 #' @keywords internal

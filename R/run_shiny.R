@@ -1,26 +1,33 @@
 
 #' Launch Interactive Gene Panel Shiny Application
 #'
-#' Opens a Shiny web application for interactive exploration of single-cell
-#' gene expression data with dynamic parameter selection.
+#' `scgenepanel_shiny` launches a Shiny web application for interactive
+#' exploration of single-cell gene expression data with dynamic parameter
+#' selection.
 #'
 #' @param object A Seurat or SingleCellExperiment object. If NULL, loads example data
-#'
 #' @return Invisibly returns NULL. Function is called for its side effect of launching the Shiny application.
-#'
 #' @examples
-#' \dontrun{
-#' # Launch with example data
-#' genepanel_shiny()
+#' # Example 1: Launch with example data
+#' if (interactive()){
+#'   scgenepanel_shiny()
+#' }
 #'
-#' # Launch with your own data
-#' my_data <- readRDS("path/to/your_data.rds")
-#' genepanel_shiny(my_data)
+#' # Example 2: Launch with seurat object
+#' data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package = "scGenePanel"))
+#' if (interactive()){
+#'   scgenepanel_shiny(data)
+#' }
+#'
+#' # Example 3: Launch with SCE object
+#' data <- readRDS(system.file("extdata", "sce_object.Rds", package = "scGenePanel"))
+#' if (interactive()){
+#'   scgenepanel_shiny(my_data)
 #' }
 #'
 #' @export
 
-genepanel_shiny <- function(object = NULL) {
+scgenepanel_shiny <- function(object = NULL) {
 
   # Capture the filename of the object
   object_name <- deparse(substitute(object))

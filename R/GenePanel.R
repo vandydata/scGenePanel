@@ -2,7 +2,7 @@
 #' visuals that are focused on one gene, all cell types, and a chosen metadata
 #' attribute of interest.
 #'
-#' `create_gene_panel` exports a multi-panel scRNAseq gene expression plots of
+#' `scgenepanel` exports a multi-panel scRNAseq gene expression plots of
 #'   UMAP clusters highlighted with user defined cell types and split view on
 #'   user defined sample groups, violin plot with user defined sample groups
 #'   along with tabular cell counts, ratios and expression values per sample
@@ -36,7 +36,7 @@
 #' human_panc_islets <- readRDS(example_file)
 #'
 #' # Basic usage - create gene panel for insulin expression in beta cells
-#' panel <- create_gene_panel(
+#' panel <- scgenepanel(
 #'   object = human_panc_islets,
 #'   gene = "INS",                      # Insulin gene
 #'   meta_group = "Age",                # Group by age (14y, 39y, 50y, 59y, 66y)
@@ -46,7 +46,7 @@
 #'
 #' \donttest{
 #' # Advanced usage with custom colors and ordering
-#' panel_advanced <- create_gene_panel(
+#' panel_advanced <- scgenepanel(
 #'   object = human_panc_islets,
 #'   gene = "GCG",                      # Glucagon for alpha cells
 #'   meta_group = "Sex",                # Group by sex (F/M)
@@ -58,7 +58,7 @@
 #' )
 #'
 #' # Example with different cell type and gene
-#' somatostatin_panel <- create_gene_panel(
+#' somatostatin_panel <- scgenepanel(
 #'   object = human_panc_islets,
 #'   gene = "SST",                      # Somatostatin for delta cells
 #'   meta_group = "Batch",              # Group by batch
@@ -69,7 +69,7 @@
 #' @export
 
 
-create_gene_panel <- function(object,
+scgenepanel <- function(object,
                               gene,
                               meta_group,
                               cell_type_name,
