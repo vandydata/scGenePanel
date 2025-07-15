@@ -12,6 +12,3 @@ dev/panc.filtered.celltypes.diet.Rds
 dev/panc_sub.Rds
 /Meta/
 *.Rcheck/
-/man/
-man/
-man/*.Rd
