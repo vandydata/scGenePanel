@@ -34,6 +34,18 @@ Source: `vignettes/scGenePanel.Rmd`
 
 scGenePanel is an R package designed to visualize single-cell RNA-seq gene expression data. Specifically, it provides a multi-panel plot that allows users to visualize gene expression counts across different cell identities and types. This package is particularly useful for researchers interested in exploring gene expression patterns in single-cell datasets.
 
+## Why scGenePanel in Bioconductor?
+
+Single-cell workflows commonly use either Seurat objects or Bioconductor's
+`SingleCellExperiment` class. scGenePanel accepts both, allowing the same
+gene-centred visualization workflow to be used alongside established
+Bioconductor infrastructure and across analysis pipelines. Rather than
+replacing general-purpose analysis or plotting tools, it assembles a recurring
+exploratory task into one coordinated output: group-stratified embeddings,
+expression distributions, and cell-frequency/expression summaries for a chosen
+gene and cell population. This makes the visualization specification easier to
+reuse in scripts while retaining an interactive Shiny interface for exploration.
+
 ## Features of scGenePanel visual
 
 -   A multi-panel plot that contains:
@@ -47,20 +59,14 @@ scGenePanel is an R package designed to visualize single-cell RNA-seq gene expre
 
 ## Installation
 
-From Bioconductor
-```{r eval=F, echo=T}
-cat("Pending review")
-```
-
 From Github repository
-```{r eval=F, echo=T}
+```r
 library(devtools)
 install_github("vandydata/scGenePanel")
 ```
 
 From local source (Git clone)
-```{r eval=F, echo=T}
-install.packages("d:/data/scGenePanel", repos = NULL, type="source")
+```r
 install.packages("/path/to/scGenePanel", repos = NULL, type = "source")
 #with dependencies
 install.packages("scGenePanel", repos = NULL, type = "source", dependencies = TRUE)
@@ -79,7 +85,7 @@ Key annotations included in the metadata are:
 
 scGenePanel works with Seurat and SingleCellExperiment objects as the main input data. To load test data:
 
-```{r}
+```{r load-example-objects}
 seurat_object <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
 sce_object <- readRDS(system.file("extdata", "sce_object.Rds", package="scGenePanel"))
 ```
@@ -88,7 +94,7 @@ Alternatively, you can use your own Seurat or SingleCellExperiment object.
 
 ## Create a multi-panel plot
 
-```{r}
+```{r prepare-seurat-example}
 library(Seurat)
 
 # Load the Seurat object
@@ -108,12 +114,12 @@ table(data$CellTypes)
 table(data$Age)
 ```
 
-`scgenepanel()` loads the multi-panel visual for the gene of interest among the cell identity of interest entered by parameter `meta_group` and cell type of interest entered by parameter `cell_type_name`.
+`scGenePanel()` loads the multi-panel visual for the gene of interest among the cell identity of interest entered by parameter `meta_group` and cell type of interest entered by parameter `cell_type_name`.
 
-```{r eval=F, echo=T}
+```{r create-gene-panel, fig.show='hide'}
 library(scGenePanel)
 
-scgenepanel(
+scGenePanel(
     object = data,
     gene = "INS",
     meta_group = "Age",
@@ -121,28 +127,30 @@ scgenepanel(
     cell_type_colname = "CellTypes",
     col_palette = "Tableau",
     group_order = NULL,
-    output_dir = ""
+    output_dir = tempdir()
   )
 ```
 ![Figure 1. Example output from scGenePanel](example-output.png){width=800px}
 
-`scgenepanel_shiny()` launches a Shiny app, allowing for interactive exploration of the gene expression data. In this case, you only need to provide the data object, the parameters will be set interactively in the app.
+`scGenePanelShiny()` launches a Shiny app, allowing for interactive exploration of the gene expression data. In this case, you only need to provide the data object, the parameters will be set interactively in the app.
 
 * scGenePanel pre-fills your available cell type and group information, just pick the ones you want to visualize
 * Several color palettes previews are available
 * You can render the multi-plot or individual plots
 * You can save both PNG and PDF versions of the plots
 
-```{r eval=F, echo=T}
+```{r launch-shiny-interactively}
 library(scGenePanel)
 
-scgenepanel_shiny(object = data)
+if (interactive()) {
+  scGenePanelShiny(object = data)
+}
 ```
 ![Figure 2. Shiny app](example-output-shiny.png){width=800px}
 
 
 # Session information
 
-```{r}
+```{r session-information}
 sessionInfo()
 ```

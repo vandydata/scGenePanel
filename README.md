@@ -27,6 +27,15 @@ scGenePanel creates a multi-panel visualization for various gene expression metr
 
 ## Installation
 
+From Bioconductor (once the package is available)
+
+```r
+if (!requireNamespace("BiocManager", quietly = TRUE))
+    install.packages("BiocManager")
+
+BiocManager::install("scGenePanel")
+```
+
 From Github repository (once publicly available)
 
 ```R

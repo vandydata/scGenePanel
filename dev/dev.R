@@ -20,7 +20,7 @@ library(Seurat)
 panc_sub <- readRDS("dev/panc_sub.Rds")
 
 library(scGenePanel)
-create_gene_panel(panc_sub,
+scGenePanel(panc_sub,
                    "INS",
                    "status",
                    "Beta",
@@ -99,7 +99,7 @@ Seurat::Idents(seurat_obj) <- meta_group
 
 
 library(scGenePanel)
-create_gene_panel(panc_human_test,
+scGenePanel(panc_human_test,
                   "GCG",
                   "Age",
                   "Alpha",

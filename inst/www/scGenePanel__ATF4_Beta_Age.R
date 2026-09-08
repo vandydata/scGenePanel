@@ -2,7 +2,7 @@
 data <- subset(x = data, idents = c("Beta", "Alpha",  "Ductal", "Acinar")) #  10,000 cells
 
 # Create figure panel
-create_gene_panel(data,
+scGenePanel(data,
                   gene="ATF4",
                   meta_group = "Age",
                   cell_type_name = "Beta",

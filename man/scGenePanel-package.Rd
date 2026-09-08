@@ -2,7 +2,6 @@
 % Please edit documentation in R/scGenePanel-package.R
 \docType{package}
 \name{scGenePanel-package}
-\alias{scGenePanel}
 \alias{scGenePanel-package}
 \title{scGenePanel: Multi-panel Gene Expression Visualization for Single-Cell Data}
 \value{
@@ -17,8 +16,8 @@ and summary tables in a single publication-ready figure.
 \section{Main Functions}{
 
 \itemize{
-\item \code{\link{scgenepanel}}: Main function for creating multi-panel gene visualizations
-\item \code{\link{scgenepanel_shiny}}: Interactive Shiny application for exploring data
+\item \code{\link{scGenePanel}}: Main function for creating multi-panel gene visualizations
+\item \code{\link{scGenePanelShiny}}: Interactive Shiny application for exploring data
 }
 }
 
@@ -36,7 +35,7 @@ and summary tables in a single publication-ready figure.
 
 \section{Getting Started}{
 
-See \code{\link{scgenepanel}} for detailed usage examples.
+See \code{\link{scGenePanel}} for detailed usage examples.
 }
 
 \seealso{

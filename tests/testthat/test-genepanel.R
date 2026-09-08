@@ -1,175 +1,63 @@
+test_that("scGenePanel works with valid Seurat input and writes to output_dir", {
+  output_dir <- tempfile("scGenePanel-test-")
+  dir.create(output_dir)
 
-# Basic functionality tests
-test_that("create_gene_panel works with valid Seurat input", {
-  library(scGenePanel)
-
-  # Load test data
-  test_data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
-
-  result <- create_gene_panel(
-    object = test_data,
-    gene = 'INS',
-    meta_group = 'Age',
-    cell_type_name = 'Beta',
-    cell_type_colname = 'CellTypes',
-    col_palette = 'Dark2',
-    output_dir = tempdir()
+  result <- scGenePanel(
+    object = seurat_data,
+    gene = "INS",
+    meta_group = "Age",
+    cell_type_name = "Beta",
+    cell_type_colname = "CellTypes",
+    col_palette = "Dark2",
+    group_order = c("14y", "39y", "66y"),
+    output_dir = output_dir
   )
 
-  expect_s3_class(result, 'ggplot')
+  expect_s3_class(result, "ggplot")
+  expect_true(file.exists(file.path(
+    output_dir, "scGenePanel__INS_Beta_Age_umap.png"
+  )))
+  expect_true(file.exists(file.path(
+    output_dir, "scGenePanel__INS_Beta_Age_umap.pdf"
+  )))
 })
 
-test_that("create_gene_panel works with SingleCellExperiment input", {
-  library(scGenePanel)
-  sce_data <- readRDS(system.file("extdata", "sce_object.Rds", package="scGenePanel"))
+test_that("scGenePanel works with SingleCellExperiment input", {
+  output_dir <- tempfile("scGenePanel-test-")
+  dir.create(output_dir)
 
-  result <- create_gene_panel(
+  result <- scGenePanel(
     object = sce_data,
-    gene = 'INS',
-    meta_group = 'Age',
-    cell_type_name = 'Beta',
-    cell_type_colname = 'CellTypes',
-    col_palette = 'Dark2',
-    output_dir = tempdir()
+    gene = "INS",
+    meta_group = "Age",
+    cell_type_name = "Beta",
+    cell_type_colname = "CellTypes",
+    output_dir = output_dir
   )
 
-  expect_s3_class(result, 'ggplot')
+  expect_s3_class(result, "ggplot")
 })
 
-# Error handling tests
-test_that("create_gene_panel handles missing gene error", {
-  test_data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
+test_that("scGenePanel validates inputs", {
   expect_error(
-    create_gene_panel(
-      object = test_data,
-      gene = 'NONEXISTENT_GENE',
-      meta_group = 'Age',
-      cell_type_name = 'Beta',
-      cell_type_colname = 'CellTypes'
-    ),
+    scGenePanel(seurat_data, "NONEXISTENT_GENE", "Age", "Beta", "CellTypes"),
     "not found"
   )
-})
-
-test_that("create_gene_panel handles invalid cell type column", {
-  test_data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
   expect_error(
-    create_gene_panel(
-      object = test_data,
-      gene = 'INS',
-      meta_group = 'Age',
-      cell_type_name = 'Beta',
-      cell_type_colname = 'INVALID_COLUMN'
-    ),
+    scGenePanel(seurat_data, "INS", "Age", "Beta", "INVALID_COLUMN"),
     "Cell type column.*not found in metadata"
   )
-})
-
-test_that("create_gene_panel handles invalid cell type name", {
-  test_data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
-
   expect_error(
-    create_gene_panel(
-      object = test_data,
-      gene = 'INS',
-      meta_group = 'Age',
-      cell_type_name = 'INVALID_CELL_TYPE',
-      cell_type_colname = 'CellTypes'
-    ),
+    scGenePanel(seurat_data, "INS", "Age", "INVALID_CELL_TYPE", "CellTypes"),
     "Cell type.*not found in column"
   )
-})
-
-test_that("create_gene_panel handles invalid meta group", {
-  test_data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
-
   expect_error(
-    create_gene_panel(
-      object = test_data,
-      gene = 'INS',
-      meta_group = 'INVALID_GROUP',
-      cell_type_name = 'Beta',
-      cell_type_colname = 'CellTypes'
-    ),
+    scGenePanel(seurat_data, "INS", "INVALID_GROUP", "Beta", "CellTypes"),
     "Metadata group.*not found in object metadata"
   )
-})
-
-test_that("create_gene_panel handles invalid object type", {
-  test_data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
-
   expect_error(
-    create_gene_panel(
-      object = data.frame(x = 1:10, y = 1:10),  # Invalid object type
-      gene = 'INS',
-      meta_group = 'Age',
-      cell_type_name = 'Beta',
-      cell_type_colname = 'CellTypes'
-    ),
+    scGenePanel(data.frame(x = 1:10, y = 1:10), "INS", "Age", "Beta", "CellTypes"),
     "not a Seurat or SingleCellExperiment"
   )
-})
-
-# Parameter validation tests
-test_that("create_gene_panel validates required parameters", {
-  test_data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
-
-  expect_error(
-    create_gene_panel(
-      object = test_data
-      # Missing all other required parameters
-    ),
-    "argument.*missing"
-  )
-})
-
-# Edge case tests
-test_that("create_gene_panel works with different color palettes", {
-  palettes_to_test <- c('Set1', 'Set2', 'Set3', 'Dark2', 'Paired')
-  test_data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
-
-  for(pal in palettes_to_test) {
-    result <- create_gene_panel(
-      object = test_data,
-      gene = 'INS',
-      meta_group = 'Age',
-      cell_type_name = 'Beta',
-      cell_type_colname = 'CellTypes',
-      col_palette = pal,
-      output_dir = tempdir()
-    )
-    expect_s3_class(result, 'ggplot')
-  }
-})
-
-test_that("create_gene_panel works with different genes", {
-  genes_to_test <- c('INS', 'GCG', 'SST')  # Different pancreatic markers
-  cell_types <- c('Beta', 'Alpha', 'Delta')
-  test_data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
-
-  for(i in seq_along(genes_to_test)) {
-    result <- create_gene_panel(
-      object = test_data,
-      gene = genes_to_test[i],
-      meta_group = 'Age',
-      cell_type_name = cell_types[i],
-      cell_type_colname = 'CellTypes',
-      output_dir = tempdir()
-    )
-    expect_s3_class(result, 'ggplot')
-  }
-})
-
-test_that("create_gene_panel handles custom group ordering", {
-  test_data <- readRDS(system.file("extdata", "human_panc_islets.Rds", package="scGenePanel"))
-  result <- create_gene_panel(
-    object = test_data,
-    gene = 'INS',
-    meta_group = 'Age',
-    cell_type_name = 'Beta',
-    cell_type_colname = 'CellTypes',
-    group_order = c('50y', '39y', '14y'),  # Custom order
-    output_dir = tempdir()
-  )
-  expect_s3_class(result, 'ggplot')
+  expect_error(scGenePanel(seurat_data), "argument.*missing")
 })

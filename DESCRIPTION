@@ -19,7 +19,12 @@ License: AGPL-3 + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
-Description: A package for creating a multi-panel view of a single gene within a selected cell population and variable trait, including UMAP embeddings, violin plots and expression metrics derived from single cell (or nucleus) gene expression data.
+Description: scGenePanel creates coordinated, gene-centric multi-panel
+    visualizations for single-cell RNA-seq data stored in Seurat or
+    SingleCellExperiment objects. It combines group-stratified UMAP embeddings,
+    cell-type-specific expression distributions, and quantitative cell-frequency
+    and expression summaries in a single figure. An accompanying Shiny
+    application supports interactive exploration using the same workflow.
 Depends:
     R (>= 4.0.0)
 Imports:

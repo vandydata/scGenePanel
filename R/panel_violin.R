@@ -48,7 +48,8 @@ violin_panel <- function(seurat_obj,
                                                    y = gene_expression,
                                                    fill = meta_group)) +
     ggplot2::geom_violin(trim = FALSE, alpha = 0.5, scale = "width",
-                         draw_quantiles = c(0.25, 0.5, 0.75)) +
+                         quantiles = c(0.25, 0.5, 0.75),
+                         quantile.linetype = 1) +
     ggplot2::scale_fill_manual(values = select_col) +
     ggplot2::theme_classic() +
     ggplot2::theme(plot.title = ggplot2::element_text(size = 20),
@@ -88,36 +89,45 @@ violin_sig_panel <- function(seurat_obj,
     Seurat::Idents(seurat_obj) <- cell_type_colname
     obj_idents <- subset(seurat_obj, idents = x)
 
-    #p <- suppressWarnings(Seurat::VlnPlot(object = obj_idents, features = gene, split.by = meta_group, cols = select_col, pt.size = -1))
-
     p <- scCustomize::VlnPlot_scCustom(seurat_object = obj_idents, features = gene, group.by = meta_group, pt.size = 0, colors_use = select_col)
 
     #p$data
 
-    # Get min/max values for plotting
-    max_value <- max(p$data[,1])
-    min_value <- min(p$data[,1])
-    ylim_max <- max_value + (max_value * 0.5)
-    ylim_min <- min_value - (min_value * 0.1)
-
     # Get unique values for current object subset
     levels_idents_subset <- as.character(unique(obj_idents@meta.data[[meta_group]]))
 
-    # only perform pairwise tests if pairwise data exists
-    if(length(levels_idents_subset) > 1){
-      # Assemble all pairwise comparisons
-      pairwise_combinations <- combn(sort(levels_idents_subset), 2, simplify = FALSE)
-      #pairwise_combinations <- list( c("50y", "66y"), c("59y", "66y") )
-      # pairwise_combinations HAVE to match x-axis values
-      #
+    group_expression <- split(p$data[[1]], p$data$ident)
+    groups_with_variation <- vapply(
+      group_expression,
+      function(values) {
+        length(unique(values[is.finite(values)])) > 1
+      },
+      logical(1)
+    )
+
+    # Pairwise tests require multiple groups with within-group variation.
+    # Otherwise ggpubr produces undefined p-value annotations.
+    if (length(levels_idents_subset) > 1 && all(groups_with_variation)) {
       if(TRUE){
         # Display ns, *, **, *** for significance
         # {p.format}{p.signif} also workds
-        p <- p + ggpubr::geom_pwc(ggplot2::aes(group = ident), method = "t_test", label = "{p.signif}",   hide.ns = TRUE) + ggplot2::ylim(ylim_min, ylim_max)
+        p <- p + ggpubr::geom_pwc(
+          ggplot2::aes(group = ident),
+          method = "t_test",
+          label = "{p.signif}",
+          hide.ns = TRUE,
+          na.rm = TRUE
+        )
 
       }else{
         # Display p-values, quite busy so disabled for now
-        p <- p + ggpubr::geom_pwc(ggplot2::aes(group = ident), method = "t_test", label = "{p.format}",   hide.ns = TRUE) + ggplot2::ylim(ylim_min, ylim_max)
+        p <- p + ggpubr::geom_pwc(
+          ggplot2::aes(group = ident),
+          method = "t_test",
+          label = "{p.format}",
+          hide.ns = TRUE,
+          na.rm = TRUE
+        )
       }
     }
 
@@ -127,7 +137,7 @@ violin_sig_panel <- function(seurat_obj,
     p[[1]]$labels$title <- x
 
 
-    suppressMessages(p)
+    p
   }
 
   cell_types <- unique(seurat_obj[[cell_type_colname]])
@@ -136,7 +146,7 @@ violin_sig_panel <- function(seurat_obj,
   #panels[[2]]
 
   # Remove legends
-  for(i in 1:length(panels)){
+  for (i in seq_along(panels)) {
     panels[[i]] <- panels[[i]] + ggplot2::theme(legend.position = "none")
   }
 

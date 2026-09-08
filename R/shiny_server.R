@@ -48,7 +48,7 @@ create_genepanel_server <- function(data) {
         cell_type_labels <- paste0(names(cell_type_counts), " (", cell_type_counts, ")")
 
         # Create named vector for selectizeInput (values are the actual cell types, labels show counts)
-        cell_types <- setNames(names(cell_type_counts), cell_type_labels)
+    cell_types <- stats::setNames(names(cell_type_counts), cell_type_labels)
 
         return(cell_types)
       }
@@ -167,16 +167,15 @@ create_genepanel_server <- function(data) {
 
         message("Combining panels...")
 
-        figure <- suppressWarnings(
-          ggpubr::ggarrange(
-            umap,
-            NULL,
-            violin,
-            NULL,
-            ggpubr::ggarrange(NULL, table, NULL, ncol=3, widths = c(1, 18, 1)),
-            heights = c(1.8, 0.1, 3, 0.1, 1.5),
-            ncol = 1,
-            nrow = 5)
+        figure <- ggpubr::ggarrange(
+          umap,
+          NULL,
+          violin,
+          NULL,
+          ggpubr::ggarrange(NULL, table, NULL, ncol = 3, widths = c(1, 18, 1)),
+          heights = c(1.8, 0.1, 3, 0.1, 1.5),
+          ncol = 1,
+          nrow = 5
         )
 
         figure <- ggpubr::annotate_figure(figure,
@@ -329,7 +328,7 @@ create_genepanel_server <- function(data) {
       },
       content = function(file) {
         figure <- generate_full_figure()
-        ggplot2::ggsave(file, plot = figure, device = cairo_pdf,
+    ggplot2::ggsave(file, plot = figure, device = grDevices::cairo_pdf,
                         width = 12, height = 10, units = "in")
       }
     )
@@ -351,7 +350,7 @@ create_genepanel_server <- function(data) {
       },
       content = function(file) {
         figure <- generate_umap_plot()
-        ggplot2::ggsave(file, plot = figure, device = cairo_pdf,
+    ggplot2::ggsave(file, plot = figure, device = grDevices::cairo_pdf,
                         width = 10, height = 8, units = "in")
       }
     )
@@ -373,7 +372,7 @@ create_genepanel_server <- function(data) {
       },
       content = function(file) {
         figure <- generate_violin_plot()
-        ggplot2::ggsave(file, plot = figure, device = cairo_pdf,
+    ggplot2::ggsave(file, plot = figure, device = grDevices::cairo_pdf,
                         width = 12, height = 6, units = "in")
       }
     )
@@ -395,7 +394,7 @@ create_genepanel_server <- function(data) {
       },
       content = function(file) {
         figure <- generate_table_plot()
-        ggplot2::ggsave(file, plot = figure, device = cairo_pdf,
+    ggplot2::ggsave(file, plot = figure, device = grDevices::cairo_pdf,
                         width = 10, height = 6, units = "in")
       }
     )

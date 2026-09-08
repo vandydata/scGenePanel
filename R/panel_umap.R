@@ -35,11 +35,12 @@ umap_panel <- function(seurat_obj,
     Seurat::Idents(seurat_obj) <- meta_group
     obj_idents <- subset(seurat_obj, idents = x)
 
-    p1.d <- suppressMessages(scCustomize::FeaturePlot_scCustom(
+    p1.d <- scCustomize::FeaturePlot_scCustom(
       obj_idents,
       reduction = dim_red,
       features = gene,
-      pt.size = 1) + ggplot2::labs(title = x))
+      pt.size = 1
+    ) + ggplot2::labs(title = x)
 
     p1.d[[1]]$layers[[1]]$aes_params$alpha <- .5
 
@@ -62,7 +63,7 @@ umap_panel <- function(seurat_obj,
                         colour = ggplot2::guide_legend(order = 2))
 
     plot1 <- plot1 + ggplot2::theme(aspect.ratio=1)
-    suppressMessages(plot1)
+    plot1
   }
 
   # Generate panels
@@ -73,8 +74,7 @@ umap_panel <- function(seurat_obj,
   panels <- lapply(levels_idents, loop_idents)
 
   # Remove legend from all panels except the last one
-  # TODO refactor seq_along(...)
-  for (i in 1:length(panels)) {
+  for (i in seq_along(panels)) {
     if(i != length(levels_idents)){
       panels[[i]] <- panels[[i]] + ggplot2::theme(legend.position = "none")
     }

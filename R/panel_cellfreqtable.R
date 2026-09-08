@@ -1,189 +1,137 @@
+#' Calculate cell-frequency and expression summaries for a selected cell type
 #'
-#' This functions generates cell frequency table for scGenePanel
+#' This separates the deterministic summary calculation from its flextable
+#' rendering, allowing the values displayed in the table to be unit tested.
 #'
-#'
-#' @param seurat_obj A Seurat object
-#' @param cell_type_colname The metadata column name that contains the cell
-#' identity annotations
-#' @param cell_type_name The cell type identity to highlight
-#' @param meta_group The metadata column name of the variable to split the UMAP,
-#' violinplot and cell frequency table by. for example, to split by disease
-#' condition
-#' @param gene Name of gene to explore gene expression in UMAP, violin plot and
-#' cell frequency table
-#' @param col_palette Color palettes to choose for violinplot panel. Options
-#' are "tableu","varibow" or RColorBrewer qualitative variables like "Dark2",
-#' "Paired", "Set1" etc
-#'
-#' @return ggpubr table
-#' @importFrom stats quantile
-#' @importFrom dplyr filter mutate
-#' @importFrom magrittr %>%
-#' @importFrom methods as
-#' @import flextable
+#' @return A data frame used to construct the cell-frequency table.
 #' @keywords internal
 #' @noRd
+.cellfreq_summary <- function(seurat_obj,
+                              cell_type_colname,
+                              cell_type_name,
+                              meta_group,
+                              gene) {
+  Seurat::Idents(seurat_obj) <- cell_type_colname
+  selected_cluster_cells <- subset(seurat_obj, idents = cell_type_name)
 
+  group_values <- selected_cluster_cells@meta.data[[meta_group]]
+  group_levels <- if (is.factor(group_values)) {
+    levels(droplevels(group_values))
+  } else {
+    unique(as.character(group_values))
+  }
+  expression <- as.numeric(
+    Seurat::GetAssayData(selected_cluster_cells[["RNA"]])[gene, ]
+  )
+
+  summary_table <- do.call(rbind, lapply(group_levels, function(group) {
+    group_expression <- expression[as.character(group_values) == group]
+    data.frame(
+      group = group,
+      n_cells = length(group_expression),
+      n_expressing = sum(group_expression > 0.25),
+      pct_expressed = round(mean(group_expression > 0.25) * 100, 1),
+      `25%` = round(stats::quantile(group_expression, 0.25), 2),
+      `50%` = round(stats::quantile(group_expression, 0.50), 2),
+      `75%` = round(stats::quantile(group_expression, 0.75), 2),
+      `100%` = round(stats::quantile(group_expression, 1), 2),
+      check.names = FALSE
+    )
+  }))
+  names(summary_table)[1] <- meta_group
+  names(summary_table)[3] <- "n_expressing (>0.25)"
+  names(summary_table)[4] <- "% expressed"
+  summary_table
+}
+
+#' Generate a cell-frequency table for scGenePanel
+#'
+#' @param seurat_obj A Seurat object.
+#' @param cell_type_colname Metadata column containing cell-type annotations.
+#' @param cell_type_name Cell type to summarize.
+#' @param meta_group Metadata column defining groups.
+#' @param gene Gene to summarize.
+#' @param col_palette Unused; retained for compatibility with the panel API.
+#' @return A grob containing cell counts and expression summaries.
+#' @keywords internal
+#' @noRd
 cellfreq_panel <- function(seurat_obj,
                            cell_type_colname,
                            cell_type_name,
                            meta_group,
                            gene,
-                           col_palette
-) {
-
-
-  # Table of cell counts/expression ratios
-  Seurat::Idents(seurat_obj) <- cell_type_colname
-  selected_cluster_cells <- subset(seurat_obj, idents = cell_type_name)
-  #cc_tally <- selected_cluster_cells@meta.data %>% group_by(!!! syms(meta_group)) %>% tally()
-  cell_counts_tally <- suppressMessages(
-    selected_cluster_cells@meta.data %>%
-      dplyr::group_by_at(meta_group) %>%
-      dplyr::tally()
+                           col_palette) {
+  combined_cc_table <- .cellfreq_summary(
+    seurat_obj = seurat_obj,
+    cell_type_colname = cell_type_colname,
+    cell_type_name = cell_type_name,
+    meta_group = meta_group,
+    gene = gene
   )
 
-  # if gene has no expression over 0.25, print message of "No detection"
-  selected_cells_expressed <- tryCatch({
-    check <- Seurat::GetAssayData(selected_cluster_cells[["RNA"]])[gene, ] > 0.25 # TODO parametize this, and a default
-    selected_cells_expressed <- selected_cluster_cells[, check]
-  }, error = function(e) {
-    selected_cells_expressed <- NULL
-  })
-
-  if (is.null(selected_cells_expressed)) {
-    message(paste0("No expression detected for: ", gene))
-  } else {
-
-    selected_cells_expressed_tally <- selected_cells_expressed@meta.data %>%
-      dplyr::group_by_at(meta_group) %>%
-      dplyr::tally()     # tally cells expressing the gene
-
-    # Merge cell frequency and expression tally
-    cc_table <- merge(cell_counts_tally,
-                      selected_cells_expressed_tally,
-                      by = meta_group,
-                      suffixes = c("_cells", "_expressing"),
-                      all = TRUE)
-
-    cc_table$ratio <- cc_table$n_expressing / cc_table$n_cells # ratio
-
-    cc_table[is.na(cc_table)] <- 0
-    names(cc_table)[names(cc_table) == 'ratio'] <- 'pct.expressed'
-    #t1 <- ggpubr::ggtexttable(cc_table, rows = NULL)
-
-    # Add quantiles for gene expression per meta_group
-    celltype <- NULL # need this to remove “no visible binding” note, peculiarity of using dplyr
-    obj_meta <- seurat_obj@meta.data
-    meta_subset <- obj_meta[, c(cell_type_colname, meta_group)]
-    names(meta_subset) <- c("celltype", "group") # TODO - I don't understand why this is necessary after setting the above
-    meta_subset <- meta_subset %>% dplyr::filter(celltype == cell_type_name)
-
-    exp_orig <- Seurat::GetAssayData(selected_cluster_cells[["RNA"]])[gene, ]
-    exp_orig <- as.data.frame(exp_orig)
-
-    reorder_exp <- exp_orig[match(rownames(meta_subset), rownames(exp_orig)), ]
-
-    meta_subset_final <- meta_subset %>% dplyr::mutate(gene_exp = reorder_exp)
-
-    result <- do.call("cbind", tapply(
-      meta_subset_final$gene_exp,
-      meta_subset_final$group,
-      quantile,
-      probs = seq(0, 1, 0.25)
-    ))
-    result <- round(t(result)[, 2:5], 2)
-
-
-    combined_cc_table <- cbind(cc_table, result)
-    names(combined_cc_table) <- c(
-      meta_group,
-      "n_cells",
-      "n_expressing (>0.25)",
-      "% expressed",
-      "25%",
-      "50%",
-      "75%",
-      "100%"
-    )
-
-    # round to one decimal point
-    combined_cc_table$`% expressed` <- round((combined_cc_table$`% expressed` * 100), 1)
-
-    if(TRUE){
-
-      subset <- combined_cc_table[, c("25%", "50%", "75%", "100%")]
-      subset_min <- min(subset)
-      subset_max <- max(subset)
-
-      flextable::set_flextable_defaults(
-        font.color = "#000000",
-        border.color = "#cccccc"
-      )
-
-      ft <- flextable::flextable(combined_cc_table)
-      ft <- flextable::add_header_row(ft,
-                           colwidths = c(1, 3, 4),
-                           values = c("", "Gene Expression", "Quantiles")
-      )
-      ft <- flextable::theme_vanilla(ft)
-      ft <- flextable::font(ft, part = "all", fontname = "mono")
-
-      border <- flextable::fp_border_default()
-
-      ft <- flextable::vline(ft, j = c(meta_group, '% expressed'), border = border, part = "all")
-
-      ft <- flextable::footnote(ft,
-               i = 2, j = 2:4,
-               value = flextable::as_paragraph(
-                 c(
-                   "n_cells - Number of cells in group",
-                   "n_expressing (>0.25%) - Number of cells with expression value at least 0.25",
-                   "% expressed = (n_expressing / n_cells) * 100"
-                 )
-               ),
-               ref_symbols = c("a", "b", "c"),
-               part = "header",
-               inline = TRUE
-      )
-
-      ft <- flextable::footnote(ft,
-                     i = 1, j = 5,
-                     value = flextable::as_paragraph(
-                       c(
-                         "Gene expression values per quantile for assessing distribution within each group."
-                       )
-                     ),
-                     ref_symbols = c("d"),
-                     part = "header",
-                     inline = TRUE
-      )
-
-      colourer <- scales::col_numeric(
-        palette = c("#fcee98", "#da4362"),
-        domain = c(subset_min, subset_max)
-      )
-      ft <- flextable::bg(ft,
-                 j = c(
-                   "25%", "50%", "75%", "100%"
-                 ),
-                 bg = colourer, part = "body"
-      )
-
-
-      ft <- flextable::fontsize(ft, size = 20, part = "header")
-      ft <- flextable::fontsize(ft, size = 18, part = "body")
-      ft <- flextable::fontsize(ft, size = 18, part = "footer")
-
-
-      #ft <- set_caption(ft, caption = "Title goes here")
-      t1 <- flextable::gen_grob(ft)
-
-    }
-
-
+  if (all(combined_cc_table$`n_expressing (>0.25)` == 0)) {
+    message(sprintf("No expression detected for: %s", gene))
   }
 
-  return(t1)
+  expression_quantiles <- combined_cc_table[, c("25%", "50%", "75%", "100%")]
+  colourer <- scales::col_numeric(
+    palette = c("#fcee98", "#da4362"),
+    domain = range(expression_quantiles)
+  )
 
+  flextable::set_flextable_defaults(
+    font.color = "#000000",
+    border.color = "#cccccc"
+  )
+  ft <- flextable::flextable(combined_cc_table)
+  ft <- flextable::add_header_row(
+    ft,
+    colwidths = c(1, 3, 4),
+    values = c("", "Gene Expression", "Quantiles")
+  )
+  ft <- flextable::theme_vanilla(ft)
+  ft <- flextable::font(ft, part = "all", fontname = "mono")
+
+  border <- flextable::fp_border_default()
+  ft <- flextable::vline(
+    ft,
+    j = c(meta_group, "% expressed"),
+    border = border,
+    part = "all"
+  )
+  ft <- flextable::footnote(
+    ft,
+    i = 2,
+    j = 2:4,
+    value = flextable::as_paragraph(c(
+      "n_cells - Number of cells in group",
+      "n_expressing (>0.25%) - Number of cells with expression value at least 0.25",
+      "% expressed = (n_expressing / n_cells) * 100"
+    )),
+    ref_symbols = c("a", "b", "c"),
+    part = "header",
+    inline = TRUE
+  )
+  ft <- flextable::footnote(
+    ft,
+    i = 1,
+    j = 5,
+    value = flextable::as_paragraph(
+      "Gene expression values per quantile for assessing distribution within each group."
+    ),
+    ref_symbols = "d",
+    part = "header",
+    inline = TRUE
+  )
+  ft <- flextable::bg(
+    ft,
+    j = c("25%", "50%", "75%", "100%"),
+    bg = colourer,
+    part = "body"
+  )
+  ft <- flextable::fontsize(ft, size = 20, part = "header")
+  ft <- flextable::fontsize(ft, size = 18, part = "body")
+  ft <- flextable::fontsize(ft, size = 18, part = "footer")
+
+  flextable::gen_grob(ft)
 }

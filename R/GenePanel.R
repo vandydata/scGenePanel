@@ -1,8 +1,8 @@
-#' scGenePanel - A method for generating scRNAseq multi-panel gene expression
+#' scGenePanel - A method for generating scRNAseq multi-panel gene expression plots /
 #' visuals that are focused on one gene, all cell types, and a chosen metadata
-#' attribute of interest.
+#' attribute of interest
 #'
-#' `scgenepanel` exports a multi-panel scRNAseq gene expression plots of
+#' `scGenePanel` exports a multi-panel scRNAseq gene expression plots of
 #'   UMAP clusters highlighted with user defined cell types and split view on
 #'   user defined sample groups, violin plot with user defined sample groups
 #'   along with tabular cell counts, ratios and expression values per sample
@@ -41,7 +41,7 @@
 #' human_panc_islets <- readRDS(example_file)
 #'
 #' # Basic usage - create gene panel for insulin expression in beta cells
-#' panel <- scgenepanel(
+#' panel <- scGenePanel(
 #'   object = human_panc_islets,
 #'   gene = "INS",                      # Insulin gene
 #'   meta_group = "Age",                # Group by age (14y, 39y, 50y, 59y, 66y)
@@ -51,7 +51,7 @@
 #'
 #' \donttest{
 #' # Advanced usage with custom colors and ordering
-#' panel_advanced <- scgenepanel(
+#' panel_advanced <- scGenePanel(
 #'   object = human_panc_islets,
 #'   gene = "GCG",                      # Glucagon for alpha cells
 #'   meta_group = "Sex",                # Group by sex (F/M)
@@ -63,7 +63,7 @@
 #' )
 #'
 #' # Example with different cell type and gene
-#' somatostatin_panel <- scgenepanel(
+#' somatostatin_panel <- scGenePanel(
 #'   object = human_panc_islets,
 #'   gene = "SST",                      # Somatostatin for delta cells
 #'   meta_group = "Batch",              # Group by batch
@@ -73,7 +73,7 @@
 #' }
 #' @export
 
-scgenepanel <- function(object,
+scGenePanel <- function(object,
                               gene,
                               meta_group,
                               cell_type_name,
@@ -81,10 +81,10 @@ scgenepanel <- function(object,
                               dim_red = "umap",
                               col_palette = "Tableau",
                               group_order = NULL,
-                              output_dir = getwd()) {
+                              output_dir = tempdir()) {
 
   # Convert to Seurat object
-  seurat_obj <- suppressMessages(.make_seurat(object = object))
+  seurat_obj <- .make_seurat(object = object)
 
   # Check if gene included in object
   .is_gene(seurat_obj, gene = gene)
@@ -167,16 +167,15 @@ scgenepanel <- function(object,
   message("Step 4 - Assembling panel")
 
   # Combine figures
-  figure  <- suppressWarnings(
-    ggpubr::ggarrange(
-      umap,
-      NULL,
-      violin,
-      NULL,
-      ggpubr::ggarrange(NULL, table, NULL, ncol=3, widths = c(1, 18, 1)),
-      heights = c(1.8, 0.1, 3, 0.1, 1.5),
-      ncol = 1,
-      nrow = 5)
+  figure <- ggpubr::ggarrange(
+    umap,
+    NULL,
+    violin,
+    NULL,
+    ggpubr::ggarrange(NULL, table, NULL, ncol = 3, widths = c(1, 18, 1)),
+    heights = c(1.8, 0.1, 3, 0.1, 1.5),
+    ncol = 1,
+    nrow = 5
   )
 
   figure <- ggpubr::annotate_figure(
@@ -217,7 +216,7 @@ scgenepanel <- function(object,
     # Convert forward slashes to backslashes
     filename_partial <- gsub("/", "\\\\", filename_partial)
   } else {
-    cat("Unsupported operating system, path slashed may be wrong")
+    warning("Unsupported operating system; output file paths may be incorrect.", call. = FALSE)
   }
 
   figure <- figure + ggpubr::rremove("grid")
@@ -234,7 +233,7 @@ scgenepanel <- function(object,
     units = "in",
     limitsize = FALSE,
     bg = "white")
-  message(paste0("Step 5 - Plot saved: ", filename))
+  message(sprintf("Step 5 - Plot saved: %s", filename))
 
   filename <- paste0(filename_partial , ".pdf")
   ggplot2::ggsave(
@@ -247,8 +246,8 @@ scgenepanel <- function(object,
     units = "in",
     limitsize = FALSE,
     bg = "white",
-    device = cairo_pdf)
-  message(paste0("Step 5 - Plot saved: ", filename))
+    device = grDevices::cairo_pdf)
+  message(sprintf("Step 5 - Plot saved: %s", filename))
 
   return(figure)
 }

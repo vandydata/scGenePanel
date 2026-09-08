@@ -15,7 +15,7 @@ create_genepanel_ui <- function(data) {
 
   # Get metadata column names, filtering for categorical variables only
   meta_cols_all <- colnames(data@meta.data)
-  meta_cols <- meta_cols_all[sapply(data@meta.data, function(x) {
+  meta_cols <- meta_cols_all[vapply(data@meta.data, function(x) {
     # Keep factors, characters, and logicals
     if(is.factor(x) || is.character(x) || is.logical(x)) {
       return(TRUE)
@@ -26,7 +26,7 @@ create_genepanel_ui <- function(data) {
     }
     # Exclude all other types (numeric, etc.)
     return(FALSE)
-  })]
+  }, logical(1))]
 
   # Get dimred embeddings from data object
   embeddings <- names(data@reductions)

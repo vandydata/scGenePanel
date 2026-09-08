@@ -18,7 +18,6 @@
   # Handle Seurat objects
   if (inherits(object, "Seurat")) {
     # Check if Seurat object needs version updating
-    print("in make_seurat1")
     if ("version" %in% slotNames(object) && !is.null(object@version)) {
       object_version <- package_version(object@version)
       current_version <- packageVersion("Seurat")
@@ -43,15 +42,12 @@
         }
       }
     }
-    print("in make_seurat2")
     return(object)
 
   } else if (is(object, "SingleCellExperiment")) {
     # Check if the count assay exists
     if (dim(SingleCellExperiment::counts(object))[1] == 0 || dim(SingleCellExperiment::counts(object))[2] == 0) {
-      stop(paste0(
-        "counts assay is empty"
-      ))
+      stop("counts assay is empty", call. = FALSE)
     }
 
     # Convert SingleCellExperiment object to Seurat object
@@ -95,8 +91,8 @@
   meta_col_names <- colnames(x = seurat_obj@meta.data)
 
     if (missing(cell_type_colname) || is.null(cell_type_colname) || cell_type_colname == "") {
-      stop(paste0("Please specify a cell_type_colname. Available options: ",
-          paste(meta_col_names, collapse = ", ")), call. = FALSE)
+      stop(sprintf("Please specify a cell_type_colname. Available options: %s",
+                   paste(meta_col_names, collapse = ", ")), call. = FALSE)
     }
 
   if (!cell_type_colname %in% meta_col_names) {
@@ -126,8 +122,8 @@
   # Check for missing or empty cell_type_name
   if (missing(cell_type_name) || is.null(cell_type_name) || cell_type_name == "") {
     available_types <- unique(seurat_obj@meta.data[[cell_type_colname]])
-    stop(paste0("Please specify the column cell types are stored in. Available columns: ",
-                paste(available_types, collapse = ", ")), call. = FALSE)
+    stop(sprintf("Please specify the column cell types are stored in. Available columns: %s",
+                 paste(available_types, collapse = ", ")), call. = FALSE)
   }
 
   meta <- seurat_obj@meta.data
@@ -157,8 +153,8 @@
 .is_meta_group <- function(seurat_obj, meta_group = "") {
 
   if (missing(meta_group) || is.null(meta_group) || meta_group == "") {
-    stop(paste0("Please specify a metadata group for splitting. Available columns: ",
-                paste(colnames(seurat_obj@meta.data), collapse = ", ")), call. = FALSE)
+    stop(sprintf("Please specify a metadata group for splitting. Available columns: %s",
+                 paste(colnames(seurat_obj@meta.data), collapse = ", ")), call. = FALSE)
   }
 
   meta_col_names <- colnames(x = seurat_obj@meta.data)
@@ -192,9 +188,9 @@
 .is_gene <- function(seurat_obj, gene) {
 
   gene_names <- rownames(seurat_obj)
-  if (gene %in% gene_names == "FALSE") {
-    message <- paste0("Gene '", gene, "' not found in the object.\nUse `rownames(your_object) to see all ", length(gene_names), " available genes.")
-    stop(message, call. = FALSE)
+  if (!gene %in% gene_names) {
+    stop(sprintf("Gene '%s' not found in the object.\nUse `rownames(your_object)` to see all %d available genes.",
+                 gene, length(gene_names)), call. = FALSE)
   }
 }
 
@@ -244,8 +240,8 @@
 .check_if_dim_red_exists <- function(seurat_obj, dim_red) {
 
   if (!dim_red %in% names(seurat_obj@reductions)) {
-    stop(paste0("Dimension reduction '", dim_red, "' not found in the object.\n",
-                "Available reductions: ", paste(names(seurat_obj@reductions), collapse = ", ")), call. = FALSE)
+    stop(sprintf("Dimension reduction '%s' not found in the object.\nAvailable reductions: %s",
+                 dim_red, paste(names(seurat_obj@reductions), collapse = ", ")), call. = FALSE)
   }
 }
 

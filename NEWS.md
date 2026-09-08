@@ -3,8 +3,8 @@
 ## New Features
 
 * Initial Bioconductor submission
-* `create_gene_panel()`: Main function for generating multi-panel gene expression visualizations
-* `genepanel_shiny()`: Interactive Shiny application for exploratory analysis
+* `scGenePanel()`: Main function for generating multi-panel gene expression visualizations
+* `scGenePanelShiny()`: Interactive Shiny application for exploratory analysis
 * Support for both Seurat and SingleCellExperiment objects
 * Automatic Seurat object version updating for compatibility
 * Comprehensive input validation with helpful error messages
