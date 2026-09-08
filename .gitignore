@@ -14,3 +14,5 @@ dev/panc_sub.Rds
 *.Rcheck/
 manuscript/
 /doc/
+dev/
+.github/
